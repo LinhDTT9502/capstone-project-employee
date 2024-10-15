@@ -17,7 +17,7 @@ function SignIn() {
         // Handle login logic here
         try {
             const decoded = await authenticateUser(dispatch, data);
-            console.log("User authenticated:", decoded);
+            // console.log("User authenticated:", decoded);
             navigate("/admin/dashboard")
         } catch (error) {
             console.error("Login failed", error);

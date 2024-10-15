@@ -72,7 +72,7 @@ export default function Dashboard() {
     );
   };
 // comment tạm
-  const isStaffOrAdmin = user && (user.role === 'staff' || user.role === 'Admin');
+  const isStaffOrAdmin = user && (user.role === 'Employee' || user.role === 'Admin');
 
   return (
     <><HeaderStaff/>

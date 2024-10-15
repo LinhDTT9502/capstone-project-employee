@@ -18,12 +18,12 @@ function App() {
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route
           path="/admin/*"
           element={
             <PrivateRoute
-            allowedRoles={['Admin']}
+            allowedRoles={['Admin', 'Employee']}
             >
               <AdminRoutes />
             </PrivateRoute>
