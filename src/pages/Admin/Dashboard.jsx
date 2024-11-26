@@ -42,35 +42,35 @@ export default function Dashboard() {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(value) + ' VND';
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const ordersData = await fetchOrders();
-        setOrders(ordersData);
-        // console.log(`${t("dashboard.orders")}`, ordersData);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const ordersData = await fetchOrders();
+  //       setOrders(ordersData);
+  //       // console.log(`${t("dashboard.orders")}`, ordersData);
         
-        // Calculate totals
-        const totalOrdersCount = ordersData.length;
-        const totalAmountSum = ordersData.reduce((acc, order) => acc + parseFloat(order.amount), 0);
-        setTotalOrders(totalOrdersCount);
-        setTotalAmount(totalAmountSum);
-        toast.success("Orders fetched successfully");
-      } catch (error) {
-        console.log(error);
-        setOrders([]);
-      }
-    };
+  //       // Calculate totals
+  //       const totalOrdersCount = ordersData.length;
+  //       const totalAmountSum = ordersData.reduce((acc, order) => acc + parseFloat(order.amount), 0);
+  //       setTotalOrders(totalOrdersCount);
+  //       setTotalAmount(totalAmountSum);
+  //       toast.success("Orders fetched successfully");
+  //     } catch (error) {
+  //       console.log(error);
+  //       setOrders([]);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
-  const onSelectChange = (selectedKey) => {
-    setSelectedRowKeys((prevSelectedRowKeys) =>
-      prevSelectedRowKeys.includes(selectedKey)
-        ? prevSelectedRowKeys.filter((key) => key !== selectedKey)
-        : [...prevSelectedRowKeys, selectedKey]
-    );
-  };
+  // const onSelectChange = (selectedKey) => {
+  //   setSelectedRowKeys((prevSelectedRowKeys) =>
+  //     prevSelectedRowKeys.includes(selectedKey)
+  //       ? prevSelectedRowKeys.filter((key) => key !== selectedKey)
+  //       : [...prevSelectedRowKeys, selectedKey]
+  //   );
+  // };
 // comment tạm
   const isStaffOrAdmin = user && (user.role === 'Employee' || user.role === 'Admin');
 
@@ -96,10 +96,10 @@ export default function Dashboard() {
               <BarChart/>
             </div>
             <div className="w-1/3">
-              <PieChart />
+              {/* <PieChart /> */}
             </div>
           </div>
-<RecentOrder/>
+{/* <RecentOrder/> */}
         </div>
       </div>
     </>

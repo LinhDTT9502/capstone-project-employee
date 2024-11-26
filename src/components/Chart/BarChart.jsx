@@ -6,49 +6,64 @@ import Chart from "react-apexcharts";
 const BarChart = () => {
   const [chartData, setChartData] = useState({
     series: [
-      {
-        name: "Tổng số đơn đặt hàng",
-        data: [],
-      },
-      {
-        name: "Tổng doanh thu",
-        data: [],
-      },
+      { name: "Tổng số đơn đặt hàng (Bán)", data: [] },
+      { name: "Tổng số đơn đặt hàng (Cho Thuê)", data: [] },
     ],
     categories: [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     ],
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const months = Array.from({ length: 12 }, (_, i) => i + 1);
-        const totalOrders = [];
-        const totalIntoMoney = [];
+        // Fetch Sale Orders
+        const saleResponse = await axios.get(
+          "https://twosportapi-295683427295.asia-southeast2.run.app/api/SaleOrder/get-all-sale-orders"
+        );
 
-        for (const month of months) {
-          const response = await axios.get(`https://twosportapi-295683427295.asia-southeast2.run.app/api/Order/get-orders-sales?month=${month}`);
-          if (response.data.isSuccess) {
-            totalOrders.push(response.data.data.totalOrders);
-            totalIntoMoney.push(response.data.data.totalIntoMoney);
-          } else {
-            totalOrders.push(0);
-            totalIntoMoney.push(0);
-          }
+        // Fetch Rental Orders
+        const rentalResponse = await axios.get(
+          "https://twosportapi-295683427295.asia-southeast2.run.app/api/RentalOrder/get-all-rental-orders"
+        );
+
+        if (saleResponse.data.isSuccess && rentalResponse.data.isSuccess) {
+          const saleOrders = saleResponse.data.data.$values;
+          const rentalOrders = rentalResponse.data.data.$values;
+
+          // Initialize arrays for totals
+          const totalSaleOrders = Array(12).fill(0);
+          const totalRentalOrders = Array(12).fill(0);
+
+          // Process Sale Orders (no need to check for COMPLETED status)
+          saleOrders.forEach((order) => {
+            const createdAt = new Date(order.createdAt);
+            const month = createdAt.getMonth();
+            totalSaleOrders[month] += 1; // Count all orders
+          });
+
+          // Process Rental Orders (no need to check for orderStatus)
+          rentalOrders.forEach((order) => {
+            const createdAt = new Date(order.createdAt);
+            const month = createdAt.getMonth();
+            totalRentalOrders[month] += 1; // Count all orders
+          });
+
+          // Update chart data
+          setChartData({
+            series: [
+              { name: "Tổng số đơn đặt hàng (Bán)", data: totalSaleOrders },
+              { name: "Tổng số đơn đặt hàng (Cho Thuê)", data: totalRentalOrders },
+            ],
+            categories: [
+              "T1", "T2", "T3", "T4", "T5","T6", "T7", "T8", "T9","T10", "T11", "T12",
+            ],
+          });
+        } else {
+          console.error("Failed to fetch data from APIs.");
         }
-
-        setChartData({
-          series: [
-            { name: "Tổng số đơn đặt hàng", data: totalOrders },
-            { name: "Tổng doanh thu", data: totalIntoMoney },
-          ],
-          categories: [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-          ],
-        });
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -60,27 +75,21 @@ const BarChart = () => {
     height: 240,
     series: chartData.series,
     options: {
-      chart: {
-        toolbar: { show: false },
-      },
-      title: { show: "" },
+      chart: { toolbar: { show: false } },
+      title: { show: false },
       dataLabels: { enabled: false },
-      colors: ["#020617", "#4CAF50"], // Add colors for both series
+      colors: ["#020617", "#FF6F00"], // Add distinct colors for both series
       plotOptions: {
         bar: { columnWidth: "40%", borderRadius: 2 },
       },
       xaxis: {
         axisTicks: { show: false },
         axisBorder: { show: false },
-        labels: {
-          style: { colors: "#616161", fontSize: "12px", fontFamily: "inherit", fontWeight: 400 },
-        },
+        labels: { style: { colors: "#616161", fontSize: "12px" } },
         categories: chartData.categories,
       },
       yaxis: {
-        labels: {
-          style: { colors: "#616161", fontSize: "12px", fontFamily: "inherit", fontWeight: 400 },
-        },
+        labels: { style: { colors: "#616161", fontSize: "12px" } },
       },
       grid: {
         show: true,
@@ -102,7 +111,7 @@ const BarChart = () => {
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
       >
-        Doanh thu theo tháng
+        Tổng số đơn hàng theo tháng
       </CardHeader>
       <CardBody className="px-2 pb-0">
         <Chart {...chartConfig} />

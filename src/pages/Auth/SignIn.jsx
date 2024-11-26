@@ -18,7 +18,16 @@ function SignIn() {
         try {
             const decoded = await authenticateUser(dispatch, data);
             // console.log("User authenticated:", decoded);
-            navigate("/admin/dashboard")
+            if (decoded.role === "Admin") {
+                navigate("/admin/dashboard");
+            } else if (decoded.role === "Order Coordinator") {
+                navigate("/staff/orders");
+            } else if (decoded.role === "Staff") {
+                navigate("/staff/orders");
+            } else {
+                console.error("Unknown role:", decoded.role);
+                alert("You don't have permission to access this page.");
+            }
         } catch (error) {
             console.error("Login failed", error);
         }
@@ -29,7 +38,7 @@ function SignIn() {
       };
     
     return (
-        <div className="flex items-center justify-center h-screen ">
+        <div className="flex backdrop-blur-lg bg-gradient-to-r from-blue-200 to-blue-700 items-center justify-center h-screen ">
         <form 
             onSubmit={handleSubmit(onSubmit)} 
             className="bg-white p-6 rounded shadow-md w-80 space-y-2"

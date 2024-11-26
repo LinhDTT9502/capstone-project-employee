@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 export const authenticateUser = async (dispatch, data) => {
   try {
     const response = await signIn(data.userName, data.password);
+    console.log(response);
+    
     localStorage.setItem('token', response.data.data.token);
     localStorage.setItem('refreshToken', response.data.data.refreshToken);
     const decoded = jwtDecode(response.data.data.token);

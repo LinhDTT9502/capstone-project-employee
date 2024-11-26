@@ -1,0 +1,153 @@
+import React, { useEffect, useState } from 'react';
+import { getOrderbyStatus, getOrderList } from '../../services/Staff/OrderService';
+import { Link } from 'react-router-dom';
+import OrderDetailModal from '../Staff/OrderDetailModal';
+
+const PendingOrderList = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [reload, setReload] = useState(false);
+
+  const statusStyles = {
+    CANCELLED: 'bg-red-100 text-red-600',
+    PENDING: 'bg-yellow-100 text-yellow-600',
+    CONFIRMED: 'bg-blue-100 text-blue-600',
+    PAID: 'bg-green-100 text-green-600',
+    PROCESSING: 'bg-indigo-100 text-indigo-600',
+    SHIPPED: 'bg-teal-100 text-teal-600',
+    DELAYED: 'bg-orange-100 text-orange-600',
+    COMPLETED: 'bg-purple-100 text-purple-600',
+    REFUNDED: 'bg-gray-100 text-gray-600',
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getOrderbyStatus(1);
+        const pendingOrders = data.filter(order => order.branchId === null);
+        setOrders(pendingOrders);
+        console.log(pendingOrders);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        setError('Failed to fetch orders');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchOrders();
+  }, [reload]);
+  
+
+  const handleOpenModal = (orderId) => {
+    setSelectedOrderId(orderId);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setReload(prev => !prev);
+    setSelectedOrderId(null);
+    setModalOpen(false);
+  };
+  
+
+  if (loading) return <p className="text-center py-4">Loading...</p>;
+  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
+
+  return (
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search for order"
+          className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
+        />
+        <div className="flex gap-4">
+          <select className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400">
+            <option value="">Filter by status</option>
+            {/* Add more status options here */}
+          </select>
+          <select className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400">
+            <option value="">All Categories</option>
+            {/* Add more category options here */}
+          </select>
+          <select className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400">
+            <option value="">All Customers</option>
+            {/* Add more customer options here */}
+          </select>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
+        <thead className="bg-gray-100 border-b border-gray-200">
+          <tr>
+            <th className="text-left p-4 font-semibold text-gray-600">Invoice</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Customer</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Date</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Total amount</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Payment Status</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Order Status</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.saleOrderId} className="border-b border-gray-200 hover:bg-gray-50">
+              <td className="p-4">{order.orderCode}</td>
+              <td className="p-4">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-700">{order.fullName}</span>
+                  <span className="text-sm text-gray-500">{order.email}</span>
+                </div>
+              </td>
+              <td className="p-4">{new Date(order.dateOfReceipt).toLocaleDateString()}</td>
+              <td className="p-4">{order.totalAmount.toLocaleString()}</td>
+              <td className="p-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'IsCanceled' ? 'bg-red-100 text-red-600' :
+                      order.paymentStatus === 'IsPaid' ? 'bg-green-100 text-green-600' :
+                        'bg-blue-100 text-blue-600'
+                    }`}
+                >
+                {order.paymentStatus}
+                </span>
+              </td>
+              <td className="p-4">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[order.orderStatus] || 'bg-gray-100 text-gray-600'}`}
+                >
+                  {order.orderStatus}
+                </span>
+              </td>
+
+              <td className="p-4 space-x-4 flex">
+              <button
+                  onClick={() => handleOpenModal(order.saleOrderId)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                >
+                  Bàn giao
+                </button>
+                {/* <button>Từ chối</button> */}
+                {/* <Link to={`/admin/orders/${order.saleOrderId}`}>Xem chi tiết</Link> */}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {modalOpen && (
+        <OrderDetailModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          orderId={selectedOrderId}
+        />
+      )}
+    </div>
+  );
+};
+
+export default PendingOrderList;

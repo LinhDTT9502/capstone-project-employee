@@ -24,6 +24,14 @@ export default function SidebarStaff() {
       customer account
         </ListItem>
         </Link>
+
+        <Link to="/admin/orders" >
+        <ListItem>
+        <FontAwesomeIcon icon={faGauge} className="pr-3" /> 
+      List orders
+        </ListItem>
+        </Link>
+
         <Link to="/admin/blog" >
         <ListItem>
         <FontAwesomeIcon icon={faGauge} className="pr-3" /> blog
