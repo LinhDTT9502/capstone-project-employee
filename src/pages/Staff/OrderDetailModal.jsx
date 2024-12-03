@@ -36,7 +36,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
 
     try {
       const response = await fetch(
-        `https://twosportapi-295683427295.asia-southeast2.run.app/api/SaleOrder/assign-branch?orderId=${orderId}&branchId=${selectedBranchId}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/assign-branch?orderId=${orderId}&branchId=${selectedBranchId}`,
         {
           method: 'PUT',
           headers: {
@@ -88,8 +88,8 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
                     <div>
                       <p><strong>{item.productName}</strong></p>
                       <p>Quantity: {item.quantity}</p>
-                      <p>Unit Price: {item.unitPrice.toLocaleString()}</p>
-                      <p>Total Price: {item.totalPrice.toLocaleString()}</p>
+                      {/* <p>Unit Price: {item.unitPrice.toLocaleString()}</p>
+                      <p>Total Price: {item.totalPrice.toLocaleString()}</p> */}
                     </div>
                   </div>
                 </li>

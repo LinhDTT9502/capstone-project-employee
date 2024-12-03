@@ -14,11 +14,12 @@ const useOrderNotification = (onNotificationReceived) => {
 
         // Create a new SignalR connection
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl("https://twosportapi-295683427295.asia-southeast2.run.app/notificationHub", options)
+            .withUrl("https://capstone-project-703387227873.asia-southeast1.run.app/notificationHub", options)
             .withAutomaticReconnect()  // Enable automatic reconnect
             .build();
 
         setConnection(newConnection);
+        
 
         // Cleanup function
         return () => {
@@ -41,13 +42,8 @@ const useOrderNotification = (onNotificationReceived) => {
                     console.log("SignalR Connected");
 
                     // Listen for notifications
-                    connection.on("ReceiveOrderCreated", (message) => {
+                    connection.on("ReceiveMessage", (message) => {
                         console.log("Notification received:", message);
-                        onNotificationReceived(message);
-                    });
-
-                    connection.on("ReceiveOrderRejected", (message) => {
-                        console.log("Order rejected notification:", message);
                         onNotificationReceived(message);
                     });
 
@@ -71,8 +67,8 @@ const useOrderNotification = (onNotificationReceived) => {
 
         return () => {
             if (connection && connection.state !== signalR.HubConnectionState.Disconnected) {
-                connection.off("ReceiveOrderCreated");
-                connection.off("ReceiveOrderRejected");
+                connection.off("ReceiveMessage");
+                connection.off("ReceiveMessage");
                 connection.stop();
             }
         };
@@ -88,7 +84,7 @@ export default useOrderNotification;
 // class useOrderNotification {
 //     constructor() {
 //         this.connection = new HubConnectionBuilder()
-//             .withUrl('https://twosportapi-295683427295.asia-southeast2.run.app/notificationHub', {
+//             .withUrl('https://capstone-project-703387227873.asia-southeast1.run.app/notificationHub', {
 //                 accessTokenFactory: () => localStorage.getItem('token') // Assume JWT token is stored in localStorage
 //             })
 //             .build();

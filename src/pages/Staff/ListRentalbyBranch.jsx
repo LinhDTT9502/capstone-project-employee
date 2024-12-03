@@ -3,11 +3,12 @@ import { getOrderbyBranch, getOrderList } from '../../services/Staff/OrderServic
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { getRentalbyBranch } from '../../services/Staff/RentalService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
 
 
-const ListOrder = () => {
+const ListRentalbyBranch = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +28,7 @@ const ListOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await getOrderbyBranch(user.BranchId);
+        const data = await getRentalbyBranch(user.BranchId);
         setOrders(data);
         console.log(data);
         
@@ -128,4 +129,4 @@ const ListOrder = () => {
   );
 };
 
-export default ListOrder;
+export default ListRentalbyBranch;

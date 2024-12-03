@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://twosportapi-295683427295.asia-southeast2.run.app/api/Auth';
+const API_BASE_URL = 'https://capstone-project-703387227873.asia-southeast1.run.app/api/Auth';
 
 export const signIn = (userName, password) => {
   return axios.post(`${API_BASE_URL}/sign-in`, {
@@ -14,7 +14,7 @@ export const signIn = (userName, password) => {
 };
 
 export const refreshTokenAPI = (token, refreshToken) => {
-  return axios.post(`https://twosportapi-295683427295.asia-southeast2.run.app/api/Auth/refresh-token`, {
+  return axios.post(`https://capstone-project-703387227873.asia-southeast1.run.app/api/Auth/refresh-token`, {
     token,
     refreshToken,
   }, {

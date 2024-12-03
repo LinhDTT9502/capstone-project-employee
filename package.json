@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "https://twosportapi-295683427295.asia-southeast2.run.app",
+  "proxy": "https://capstone-project-703387227873.asia-southeast1.run.app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

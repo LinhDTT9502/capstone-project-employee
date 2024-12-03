@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getOrderbyStatus } from '../../services/Staff/OrderService';
 import { Link } from 'react-router-dom';
 import OrderDetailModal from '../Staff/OrderDetailModal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { getRentalbyStatus } from '../../services/Staff/RentalService';
+import RentalDetailModal from './RentalDetailModal';
 
-const PendingOrderList = () => {
+const PendingRentalList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [selectedOrderCode, setSelectedOrderCode] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [reload, setReload] = useState(false);
   const [sortOrder, setSortOrder] = useState('latest');
@@ -32,9 +33,13 @@ const PendingOrderList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await getOrderbyStatus(1);
-        const pendingOrders = data.filter(order => order.branchId === null);
+        const data = await getRentalbyStatus(1);
+        console.log(data);
+        
+        const pendingOrders = data.filter(order => order.branchId === null && order.parentOrderCode === null);
         setOrders(pendingOrders);
+        console.log(orders);
+        
       } catch (error) {
         console.error('Error fetching orders:', error);
         setError('Failed to fetch orders');
@@ -46,14 +51,14 @@ const PendingOrderList = () => {
     fetchOrders();
   }, [reload]);
 
-  const handleOpenModal = (orderId) => {
-    setSelectedOrderId(orderId);
+  const handleOpenModal = (orderCode) => {
+    setSelectedOrderCode(orderCode);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setReload(prev => !prev);
-    setSelectedOrderId(null);
+    setSelectedOrderCode(null);
     setModalOpen(false);
   };
 
@@ -144,7 +149,7 @@ const PendingOrderList = () => {
           {currentOrders.map((order, index) => (
             <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-50">
               <td className="p-4">{(currentPage - 1) * ordersPerPage + index + 1}</td>
-              <td className="p-4">{order.saleOrderCode}</td>
+              <td className="p-4">{order.rentalOrderCode}</td>
               <td className="p-4">
                 <div className="flex flex-col">
                   <span className="font-medium text-gray-700">{order.fullName}</span>
@@ -171,7 +176,7 @@ const PendingOrderList = () => {
               </td>
               <td className="p-4 space-x-4 flex">
                 <button
-                  onClick={() => handleOpenModal(order.id)}
+                  onClick={() => handleOpenModal(order.rentalOrderCode)}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg"
                 >
                   Bàn giao
@@ -212,14 +217,14 @@ const PendingOrderList = () => {
       </div>
 
       {modalOpen && (
-        <OrderDetailModal
+        <RentalDetailModal
           open={modalOpen}
           onClose={handleCloseModal}
-          orderId={selectedOrderId}
+          orderCode={selectedOrderCode}
         />
       )}
     </div>
   );
 };
 
-export default PendingOrderList;
+export default PendingRentalList;

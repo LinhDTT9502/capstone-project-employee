@@ -10,7 +10,7 @@ import PendingOrderList from '../pages/OnlineStaff/PendingOrderList';
 const AdminDashboard = () => {
 
   const user = useSelector(selectUser)
-  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Admin');
+  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Admin'|| user.role === 'Staff');
 
   return (
     <><HeaderStaff />
@@ -18,8 +18,8 @@ const AdminDashboard = () => {
         {isStaffOrAdmin && <SidebarStaff />}
         <div className='flex-grow border-l-2'>
           <div className="container mx-auto p-4">
-          <ListOrder/>
-          <PendingOrderList/>
+            {user.role === 'Staff' ? (<ListOrder/>):(<PendingOrderList/>)}
+          
           </div>
         </div>
       </div>

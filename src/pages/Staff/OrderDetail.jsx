@@ -1,6 +1,6 @@
 // src/components/OrderDetail.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
@@ -10,35 +10,36 @@ import { Button, Option, Select, Step, Stepper } from '@material-tailwind/react'
 import { approveOrder, rejectOrder } from '../../services/Staff/OrderService';
 
 const ORDER_STEPS = [
-  { id: 1, label: 'PENDING' },
-  { id: 2, label: 'CONFIRMED' },
-  { id: 3, label: 'PAID' },
-  { id: 4, label: 'PROCESSING' },
-  { id: 5, label: 'SHIPPED' },
-  { id: 6, label: 'COMPLETED' },
+  { id: 1, label: 'Chờ xử lý' },
+  { id: 2, label: 'Đã xác nhận' },
+  { id: 3, label: 'Đã thanh toán' },
+  { id: 4, label: 'Đang xử lý' },
+  { id: 5, label: 'Đã giao hàng' },
+  { id: 6, label: 'Hoàn thành' },
 ];
 
 const OrderDetail = () => {
   const { orderId } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const user = useSelector(selectUser);
   const [reload, setReload] = useState(false);
-  console.log(user);
+  // console.log(orderId);
 
   const [newStatus, setNewStatus] = useState(null); // State for selected status
   const [updating, setUpdating] = useState(false);
   const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Admin');
   const statusOptions = [
-    { label: 'CANCELLED', value: 0 },
-    { label: 'PENDING', value: 1 },
-    { label: 'CONFIRMED', value: 2 },
-    { label: 'PAID', value: 3 },
-    { label: 'PROCESSING', value: 4 },
-    { label: 'SHIPPED', value: 5 },
-    { label: 'DELAYED', value: 6 },
-    { label: 'COMPLETED', value: 7 },
+    { label: 'Đã hủy', value: 0 },
+    { label: 'Chờ xử lý', value: 1 },
+    { label: 'Đã xác nhận', value: 2 },
+    { label: 'Đã thanh toán', value: 3 },
+    { label: 'Đang xử lý', value: 4 },
+    { label: 'Đã giao hàng', value: 5 },
+    { label: 'Bị trì hoãn', value: 6 },
+    { label: 'Hoàn thành', value: 7 },
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -50,10 +51,11 @@ const OrderDetail = () => {
     const fetchOrderDetail = async () => {
       try {
         const response = await axios.get(
-          `https://twosportapi-295683427295.asia-southeast2.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
         );
         if (response.data.isSuccess) {
           setOrder(response.data.data);
+          
         } else {
           setError('Failed to retrieve order details');
         }
@@ -72,7 +74,7 @@ const OrderDetail = () => {
     setUpdating(true);
     try {
       const response = await axios.put(
-        `https://twosportapi-295683427295.asia-southeast2.run.app/api/SaleOrder/update-order-status?orderId=${order.saleOrderId}&status=${newStatus}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
         {},
         {
           headers: {
@@ -103,7 +105,8 @@ const OrderDetail = () => {
   const handleReject = async () => {
     const response = await rejectOrder(orderId)
     setReload(prev => !prev);
-    console.log(response);
+    navigate(-1)
+    // console.log(response);
   }
 
   if (loading) return <p>Loading...</p>;
@@ -168,7 +171,7 @@ const OrderDetail = () => {
                         <p className="text-gray-500">Quantity: {item.quantity}</p>
                       </div>
                     </div>
-                    <p className="font-semibold">{item.totalPrice.toLocaleString()} VND</p>
+                    {/* <p className="font-semibold">{item.totalPrice.toLocaleString()} VND</p> */}
                   </li>
                 ))}
               </ul>
@@ -178,7 +181,7 @@ const OrderDetail = () => {
             <div className="mt-6 bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between py-2">
                 <p>Subtotal</p>
-                <p className="font-semibold">{order.subTotal.toLocaleString()} VND</p>
+                {/* <p className="font-semibold">{order.subTotal.toLocaleString()} VND</p> */}
               </div>
               <div className="flex justify-between py-2">
                 <p>Shipping Fee</p>
@@ -186,10 +189,10 @@ const OrderDetail = () => {
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="font-bold">Total</p>
-                <p className="font-bold text-lg">{order.totalAmount.toLocaleString()} VND</p>
+                {/* <p className="font-bold text-lg">{order.totalAmount.toLocaleString()} VND</p> */}
               </div>
             </div>
-            {order.orderStatus === 'PENDING' && <> 
+            {order.orderStatus === 'Chờ xử lý' && order.deliveryMethod !== 'Đến cửa hàng nhận' && <> 
               <Button color="green" onClick={handleApprove}>Approve</Button>
               <Button color="red" onClick={handleReject}>Reject</Button>
             </>}
@@ -212,10 +215,10 @@ const OrderDetail = () => {
             {/* Order Summary */}
             <div className="mb-6 border-b pb-4">
               <h3 className="text-xl font-semibold mb-2">Order Summary</h3>
-              <p><strong>Subtotal:</strong> {order.subTotal.toLocaleString()} VND</p>
+              {/* <p><strong>Subtotal:</strong> {order.subTotal.toLocaleString()} VND</p> */}
               <p><strong>Discount:</strong> 0.00 VND</p>
               <p><strong>Shipping Fee:</strong> Free</p>
-              <p><strong>Total:</strong> {order.totalAmount.toLocaleString()} VND</p>
+              {/* <p><strong>Total:</strong> {order.totalAmount.toLocaleString()} VND</p> */}
               <p><strong>Delivery Method:</strong> {order.deliveryMethod}</p>
               <p><strong>branch:</strong> {order.branchId}</p>
               <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
