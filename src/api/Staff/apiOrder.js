@@ -18,6 +18,14 @@ export const getOrderDetailAPI = (orderId) => {
   });
 };
 
+export const getOrderbyCodeAPI = (orderCode) => {
+  return axios.get(`${API_BASE_URL}/get-order-by-code?orderCode=${orderCode}`, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};
+
 export const getOrderbyBranchAPI = (branchId) => {
   return axios.get(`${API_BASE_URL}/get-orders-by-branch?branchId=${branchId}`, {
     headers: {

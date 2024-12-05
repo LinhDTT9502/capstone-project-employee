@@ -1,4 +1,4 @@
-import { approveOrderAPI, getOrderbyBranchAPI, getOrderbyStatusAPI, getOrderDetailAPI, getOrderListAPI, rejectOrderAPI } from "../../api/Staff/apiOrder";
+import { approveOrderAPI, getOrderbyBranchAPI, getOrderbyCodeAPI, getOrderbyStatusAPI, getOrderDetailAPI, getOrderListAPI, rejectOrderAPI } from "../../api/Staff/apiOrder";
 
 export const getOrderList = async () => {
   try {
@@ -13,6 +13,16 @@ export const getOrderList = async () => {
 export const getOrderDetail = async (orderId) => {
   try {
     const response = await getOrderDetailAPI(orderId);
+    return response.data.data; 
+  } catch (error) {
+    console.error('Error fetching orders list:', error);
+    throw error;
+  }
+};
+
+export const getOrderbyCode = async (orderCode) => {
+  try {
+    const response = await getOrderbyCodeAPI(orderCode);
     return response.data.data; 
   } catch (error) {
     console.error('Error fetching orders list:', error);

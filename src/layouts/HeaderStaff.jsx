@@ -8,6 +8,8 @@ import Logout from "../pages/Auth/Logout";
 import useOrderNotification from "../hooks/Notification";
 import OrderDetailModal from "../pages/Staff/OrderDetailModal";
 import { getNoti } from "../services/Notification/NotificationService";
+import { useNavigate } from "react-router-dom";
+import { getOrderbyCode } from "../services/Staff/OrderService";
 
 function HeaderStaff() {
     const [open, setOpen] = useState(false);
@@ -19,20 +21,67 @@ function HeaderStaff() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [noti, setNoti] = useState([])
     const token = localStorage.getItem('token');
-    
+    const [branchId, setBranchId] = useState(null);
+    const navigate = useNavigate();
+    const [orderId, setOrderId] = useState(null);
 
     const getNotification = async () => {
         const data = await getNoti(user.UserId, token);
-        setNoti(data);
+
+        const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setNoti(sortedData);
     };
+
     useEffect(() => {
         getNotification();
-    }, []);
-    const handleOpenModal = (part) => {
-        setSelectedOrder(part)
-        setModalOpen(true);
-        getNotification()
+    }, [branchId]);
+
+    const handleOpenModal = async (orderCode, id) => {
+
+        const numericOrderCode = orderCode.replace(/^[A-Za-z]-/, "");
+
+        // Set the selectedOrder to the numeric part
+        setSelectedOrder(numericOrderCode);
+        console.log(selectedOrder);
+        const data = await getOrderbyCode(numericOrderCode)
+        console.log(data);
+
+        setBranchId(data.branchId)
+        setOrderId(data.id)
+        console.log(orderCode, branchId, id);
+        const response = await fetch(`https://capstone-project-703387227873.asia-southeast1.run.app/api/Notification/update-status?id=${id}&isRead=true`, {
+            method: 'PUT',
+            headers: {
+                'accept': '*/*',
+            },
+        });
+
+
+
+
+
+        // Open the appropriate modal based on the prefix
+        if (orderCode.startsWith("S-")) {
+            if (user.role === "Order Coordinator") {
+                if (data.branchId !== null) {
+                    alert("Đơn hàng này đã được bàn giao!");
+                    console.log(branchId);
+
+                    setBranchId(null)
+                    return; // Prevent opening the modal
+                }
+                setModalOpen(true)
+            } else {
+                navigate(`/admin/orders/${data.id}`)
+            }
+        } else if (orderCode.startsWith("T-")) {
+            setModalOpen("true");
+        }
+
+        getNotification();
     };
+
+
 
     const handleCloseModal = () => {
         setSelectedOrder(null)
@@ -54,12 +103,53 @@ function HeaderStaff() {
         }
     };
 
+    // const handleNotificationClick = async (notificationId, event) => {
+    //     event.stopPropagation();  // Prevent the Menu from closing when clicking on the notification
+    //     try {
+    //         const response = await fetch(`https://capstone-project-703387227873.asia-southeast1.run.app/api/Notification/update-status?id=${notificationId}&isRead=true`, {
+    //             method: 'PUT',
+    //             headers: {
+    //                 'accept': '*/*',
+    //             },
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (data.isSuccess) {
+    //             // Update the local state to mark this notification as read
+    //             setNoti((prevNoti) => 
+    //                 prevNoti.map((noti) =>
+    //                     noti.id === notificationId ? { ...noti, isRead: true } : noti
+    //                 )
+    //             );
+    //         } else {
+    //             console.error("Failed to update notification status");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error updating notification:", error);
+    //     }
+    // };
+
     // Function to highlight numbers
-    const highlightNumbers = (message) => {
-        return message.split(/(\d+)/).map((part, index) =>
-            /\d+/.test(part) ? (
-                <span key={index} className="font-bold text-orange-500"
-                    onClick={() => handleOpenModal(part)}>
+    const highlightNumbers = (notification) => {
+        let message;
+        let id;
+
+        // Check if notification is an object or a string
+        if (typeof notification === "object") {
+            message = notification.message;
+            id = notification.id;
+        } else {
+            message = notification; // Assume it's already the message string
+        }
+
+        return message.split(/(S-\d+|T-\d+)/).map((part, index) =>
+            /(S-\d+|T-\d+)/.test(part) ? (
+                <span
+                    key={index}
+                    className="font-bold text-orange-500"
+                    onClick={() => handleOpenModal(part, id)}
+                >
                     {part}
                 </span>
             ) : (
@@ -67,6 +157,8 @@ function HeaderStaff() {
             )
         );
     };
+
+
 
     return (
         <div className="justify-between flex items-center py-5 space-x-4 border-2">
@@ -92,21 +184,26 @@ function HeaderStaff() {
                             )}
                         </Button>
                     </MenuHandler>
-                    <MenuList>
+                    <MenuList className="max-h-[40vh] overflow-y-auto">
                         {notifications.length === 0 ? (
                             <MenuItem>Chưa có thông báo mới</MenuItem>
                         ) : (
-                            notifications.map((noti, index) => (
+                            notifications.map((notification, index) => (
                                 <MenuItem key={index}>
-                                    <p className="text-sm">{highlightNumbers(noti)}</p>
+                                    <p className="text-sm">{highlightNumbers(notification)}</p>
                                 </MenuItem>
                             ))
                         )}
-                        {noti.map((notification) => (
-                            <MenuItem key={notification.id}>
-                                <div>{highlightNumbers(notification.message)}</div>
+                        {noti.map((notiItem) => (
+                            <MenuItem
+                                key={notiItem.id}
+                                className={notiItem.isRead ? "bg-white" : "bg-blue-100"}
+                            // onClick={(event) => handleNotificationClick(notification.id, event)} 
+                            >
+                                <div>{highlightNumbers(notiItem)}</div>
                             </MenuItem>
                         ))}
+
                     </MenuList>
                 </Menu>
 
@@ -135,11 +232,14 @@ function HeaderStaff() {
             </div>
             {modalOpen && (
                 <OrderDetailModal
-                    open={modalOpen}
+                    open={true}
                     onClose={handleCloseModal}
-                    orderId={selectedOrder}
+                    orderId={orderId}
                 />
             )}
+
+
+
         </div>
     );
 }
