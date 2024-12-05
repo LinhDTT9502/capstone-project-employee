@@ -8,6 +8,7 @@ import HeaderStaff from '../../layouts/HeaderStaff';
 import SidebarStaff from '../../layouts/SidebarStaff';
 import { Button, Option, Select, Step, Stepper } from '@material-tailwind/react';
 import { approveOrder, rejectOrder } from '../../services/Staff/OrderService';
+import { approveRental, rejectRental } from '../../services/Staff/RentalService';
 
 const ORDER_STEPS = [
   { id: 1, label: 'Chờ xử lý' },
@@ -18,8 +19,8 @@ const ORDER_STEPS = [
   { id: 6, label: 'Hoàn thành' },
 ];
 
-const OrderDetail = () => {
-  const { orderId } = useParams();
+const RentalDetail = () => {
+  const { rentalId } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,8 +29,6 @@ const OrderDetail = () => {
   const [reload, setReload] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const token = localStorage.getItem('token');
-  console.log(orderId);
-  
 
   const [newStatus, setNewStatus] = useState(null); // State for selected status
   const [updating, setUpdating] = useState(false);
@@ -54,8 +53,10 @@ const OrderDetail = () => {
     const fetchOrderDetail = async () => {
       try {
         const response = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
         );
+        console.log(response);
+        
         if (response.data.isSuccess) {
           setOrder(response.data.data);
           
@@ -69,7 +70,7 @@ const OrderDetail = () => {
       }
     };
     fetchOrderDetail();
-  }, [orderId, reload]);
+  }, [rentalId, reload]);
 
   const handleStatusChange = async () => {
     if (newStatus === null || updating) return;
@@ -77,7 +78,7 @@ const OrderDetail = () => {
     setUpdating(true);
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status?orderId=${rentalId}&status=${newStatus}`,
         {},
         {
           headers: {
@@ -99,15 +100,14 @@ const OrderDetail = () => {
   };
 
   const handleApprove = async () => {
-    const response = await approveOrder(orderId)
+    const response = await approveRental(rentalId)
     setReload(prev => !prev);
-    console.log(response);
     setIsApproved(true);
 
   }
 
   const handleReject = async () => {
-    const response = await rejectOrder(orderId)
+    const response = await rejectRental(rentalId)
     setReload(prev => !prev);
     navigate(-1)
     // console.log(response);
@@ -130,12 +130,13 @@ const OrderDetail = () => {
                 <span className="px-3 py-1 bg-blue-100 text-blue-600 text-sm font-semibold rounded-full">
                   {order.orderStatus}
                 </span>
-                {isApproved && <><select
+                {isApproved && <>
+                    <select
                   onChange={(e) => setNewStatus(e.target.value)}
                   value={newStatus || order.orderStatus}
                   className="w-36 px-2 py-1 border rounded"
                 >
-                  <option> {order.orderStatus}</option>
+                  <option>{order.orderStatus}</option>
                   {statusOptions.map((status) => (
                     <option key={status.value} value={status.value}>
                       {status.label}
@@ -144,9 +145,9 @@ const OrderDetail = () => {
                 </select>
 
                 <Button onClick={handleStatusChange} disabled={updating} color="blue">
-                  {updating ? 'Đang cập nhật' : 'Cập nhật'}
-                </Button></> 
-                }
+                  {updating ? 'Đang cập nhật...' : 'Cập nhật'}
+                </Button>
+                </>}
                 
               </div>
             </div>
@@ -168,18 +169,18 @@ const OrderDetail = () => {
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-2">Ordered Products</h3>
               <ul>
-                {order.saleOrderDetailVMs.$values.map((item) => (
-                  <li key={item.productId} className="flex items-center justify-between py-4 border-b">
+               
+                  <li key={order.productId} className="flex items-center justify-between py-4 border-b">
                     <div className="flex items-center space-x-4">
-                      <img src={item.imageUrl} alt={item.productName} className="w-16 h-16 object-cover rounded" />
+                      <img src={order.imageUrl} alt={order.productName} className="w-16 h-16 object-cover rounded" />
                       <div>
-                        <p className="font-semibold">{item.productName}</p>
-                        <p className="text-gray-500">Quantity: {item.quantity}</p>
+                        <p className="font-semibold">{order.productName}</p>
+                        <p className="text-gray-500">Quantity: {order.quantity}</p>
                       </div>
                     </div>
-                    {/* <p className="font-semibold">{item.totalPrice.toLocaleString()} VND</p> */}
+                    {/* <p className="font-semibold">{order.totalPrice.toLocaleString()} VND</p> */}
                   </li>
-                ))}
+
               </ul>
             </div>
 
@@ -244,4 +245,4 @@ const OrderDetail = () => {
   );
 };
 
-export default OrderDetail;
+export default RentalDetail;

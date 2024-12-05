@@ -1,16 +1,16 @@
 // src/Blog.js
 import React, { useState } from 'react';
-import HeaderStaff from '../layouts/HeaderStaff';
-import SidebarStaff from '../layouts/SidebarStaff';
+import HeaderStaff from './HeaderStaff';
+import SidebarStaff from './SidebarStaff';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../redux/slices/authSlice';
 import ListOrder from '../pages/Staff/ListOrders';
 import PendingOrderList from '../pages/OnlineStaff/PendingOrderList';
 
-const AdminDashboard = () => {
+const ListOrders = () => {
 
   const user = useSelector(selectUser)
-  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Admin'|| user.role === 'Staff');
+  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Staff' || user.role === 'Manager');
 
   return (
     <><HeaderStaff />
@@ -28,4 +28,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ListOrders;

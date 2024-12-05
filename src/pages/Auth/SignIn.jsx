@@ -24,7 +24,10 @@ function SignIn() {
                 navigate("/staff/orders");
             } else if (decoded.role === "Staff") {
                 navigate("/staff/orders");
-            } else {
+            } else if (decoded.role === "Manager") {
+                navigate("/staff/orders");
+            }
+            else {
                 console.error("Unknown role:", decoded.role);
                 alert("You don't have permission to access this page.");
             }

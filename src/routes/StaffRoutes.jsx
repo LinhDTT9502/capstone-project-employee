@@ -1,13 +1,17 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import AdminDashboard from '../layouts/AdminDashboard';
-import PendingRentalList from '../pages/OnlineStaff/PendingRentalList';
+import ListOrders from '../layouts/ListOrders';
+import ListRentals from '../layouts/ListRentals';
+import OrderDetail from '../pages/Staff/OrderDetail';
+import RentalDetail from '../pages/Staff/RentalDetail';
 
 const StaffRoutes = () => {
   return (
     <Routes>
-      <Route path="/orders" element={<AdminDashboard />} />
-      <Route path="/rentals" element={<PendingRentalList />} />
+      <Route path="/orders" element={<ListOrders />} />
+      <Route path="/orders/:orderId" element={<OrderDetail />} />
+      <Route path="/rentals" element={<ListRentals />} />
+      <Route path="/rentals/:rentalId" element={<RentalDetail />} />
     </Routes>
   );
 };

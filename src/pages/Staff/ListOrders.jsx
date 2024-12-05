@@ -117,7 +117,7 @@ const ListOrder = () => {
               </td>
 
               <td className="p-4">
-                <Link to={`/admin/orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                <Link to={`/staff/orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
               </td>
             </tr>
 

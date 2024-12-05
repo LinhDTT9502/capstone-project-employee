@@ -28,3 +28,19 @@ export const getRentalbyStatusAPI = (orderStatus) => {
       }
     });
   };
+
+  export const approveRentalAPI = (orderId) => {
+    return axios.post(`${API_BASE_URL}/${orderId}/approve`, {
+      headers: {
+        'accept': '*/*'
+      }
+    });
+  };
+  
+  export const rejectRentalAPI = (orderId) => {
+    return axios.post(`${API_BASE_URL}/${orderId}/reject`, {
+      headers: {
+        'accept': '*/*'
+      }
+    });
+  };

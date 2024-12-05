@@ -10,37 +10,43 @@ export default function SidebarStaff() {
     <div className="w-1/6  flex flex-col items-center  py-5 px-5">
       <List>
         <Link to="/admin/dashboard" >
-        <ListItem>
-        <FontAwesomeIcon icon={faGauge} className="pr-3" /> dashboard
-        </ListItem>
+          <ListItem>
+            <FontAwesomeIcon icon={faGauge} className="pr-3" /> dashboard
+          </ListItem>
         </Link>
         {/* <ListItem>
           
         <FontAwesomeIcon icon={faFileArrowDown} className="pr-3" /> {t("sidebar_staff.import")}
         </ListItem> */}
-      <Link to="/admin/manage-user" >
-        <ListItem>
-        <FontAwesomeIcon icon={faGauge} className="pr-3" /> 
-      customer account
-        </ListItem>
+        <Link to="/admin/manage-user" >
+          <ListItem>
+            <FontAwesomeIcon icon={faGauge} className="pr-3" />
+            customer account
+          </ListItem>
         </Link>
 
-        <Link to="/admin/orders" >
-        <ListItem>
-        <FontAwesomeIcon icon={faGauge} className="pr-3" /> 
-      List orders
-        </ListItem>
+        <Link to="/staff/orders" >
+          <ListItem>
+            <FontAwesomeIcon icon={faGauge} className="pr-3" />
+            Đơn mua
+          </ListItem>
+        </Link>
+        <Link to="/staff/rentals" >
+          <ListItem>
+            <FontAwesomeIcon icon={faGauge} className="pr-3" />
+            Đơn thuê
+          </ListItem>
         </Link>
 
         <Link to="/admin/blog" >
-        <ListItem>
-        <FontAwesomeIcon icon={faGauge} className="pr-3" /> blog
-        </ListItem>
+          <ListItem>
+            <FontAwesomeIcon icon={faGauge} className="pr-3" /> blog
+          </ListItem>
         </Link>
-        
+
       </List>
-      
-     
+
+
     </div>
   );
 }

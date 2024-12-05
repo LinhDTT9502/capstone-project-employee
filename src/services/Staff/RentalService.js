@@ -1,4 +1,4 @@
-import { getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI } from "../../api/Staff/apiRental";
+import { approveRentalAPI, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, rejectRentalAPI } from "../../api/Staff/apiRental";
 
 
 export const getRentalbyStatus = async (orderStatus) => {
@@ -27,6 +27,26 @@ export const getRentalbyBranch = async (branchId) => {
     return response.data.data.$values; 
   } catch (error) {
     console.error('Error fetching orders list:', error);
+    throw error;
+  }
+};
+
+export const approveRental = async (orderId) => {
+  try {
+    const response = await approveRentalAPI(orderId);
+    return response.data.data; 
+  } catch (error) {
+    console.error('Error approve:', error);
+    throw error;
+  }
+};
+
+export const rejectRental = async (orderId) => {
+  try {
+    const response = await rejectRentalAPI(orderId);
+    return response.data.data; 
+  } catch (error) {
+    console.error('Error approve:', error);
     throw error;
   }
 };

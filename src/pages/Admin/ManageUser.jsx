@@ -20,7 +20,7 @@ import {
   getUserDetails,
   changeUserStatus,
 } from "../../api/apiAdmin";
-import { fetchAllUsers } from "../../services/ManageUserService";
+import { createUser, fetchAllUsers } from "../../services/ManageUserService";
 import HeaderStaff from "../../layouts/HeaderStaff";
 import SidebarStaff from "../../layouts/SidebarStaff";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -60,6 +60,8 @@ export default function ManageUser() {
     const fetchData = async () => {
       try {
         const usersData = await fetchAllUsers();
+        console.log(usersData);
+        
         setUsers(usersData);
       } catch (error) {
         console.error(error);
@@ -132,7 +134,7 @@ export default function ManageUser() {
     if (Object.keys(errors).length === 0) {
       try {
         console.log("Creating user with data:", newUserData);
-        await createAdminUser(newUserData);
+        await createUser(newUserData);
         const updatedUsers = await fetchAllUsers();
         setUsers(updatedUsers);
         setModalOpen(false);
@@ -199,6 +201,7 @@ export default function ManageUser() {
     try {
       await updateUser(editUserData.id, editUserData);
       const updatedUsers = await fetchAllUsers();
+
       setUsers(updatedUsers);
       setEditModalOpen(false);
       toast.success("User updated successfully");
@@ -248,14 +251,20 @@ export default function ManageUser() {
 
   const getRoleName = (roleId) => {
     switch (roleId) {
+      case 1:
+        return "Admin";
       case 2:
         return "Manager";
       case 3:
-        return "Employee";
+        return "Staff";
       case 4:
         return "Customer";
       case 5:
         return "Owner";
+      case 16:
+        return "Coordinator";
+      case 17:
+        return "Content Staff";
       default:
         return "Unknown role";
     }
@@ -316,6 +325,7 @@ export default function ManageUser() {
                         }
                       />
                     </th>
+
                     <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
                       <Typography
                         variant="large"
@@ -682,10 +692,13 @@ export default function ManageUser() {
                 setNewUserData((prevData) => ({ ...prevData, roleId: value }))
               }
             >
+              <Option value="1">Admin</Option>
               <Option value="2">Manager</Option>
-              <Option value="3">Employee</Option>
+              <Option value="3">Staff</Option>
               <Option value="4">Customer</Option>
               <Option value="5">Owner</Option>
+              <Option value="16">Coordinator</Option>
+              <Option value="17">Content Staff</Option>
             </Select>
           </div>
         </DialogBody>

@@ -1,20 +1,21 @@
-import { fetchAllUsers as apiFetchAllUsers } from '../api/apiManageUser';
-import { toast } from "react-toastify";
+import { createNewUser, getAllUser } from "../api/apiManageUser";
 
-export const fetchAllUsers = async (token) => {
+export const fetchAllUsers = async () => {
   try {
-    const users = await apiFetchAllUsers(token);
-    console.log(users);
-    console.log("hello");
-    // toast.success("Users fetched successfully");
-    toast.dismiss();
-    return users;
+    const  response = await getAllUser();
+    return  response.data.data.$values;
   } catch (error) {
     console.error('Error fetching users:', error);
-    // toast.error("Error fetching users: " + error.message);
-    toast.dismiss();
-
     throw error;
   }
 };
 
+export const createUser = async (data) => {
+  try {
+    const  response = await createNewUser(data);
+    return  response.data.data.$values;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};

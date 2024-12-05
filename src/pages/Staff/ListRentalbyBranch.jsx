@@ -89,7 +89,7 @@ const ListRentalbyBranch = () => {
           {orders.map((order) => (
 
             <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-50">
-              <td className="p-4">{order.saleOrderCode}</td>
+              <td className="p-4">{order.rentalOrderCode}</td>
               <td className="p-4">
                 <div className="flex flex-col">
                   <span className="font-medium text-gray-700">{order.fullName}</span>
@@ -118,7 +118,7 @@ const ListRentalbyBranch = () => {
               </td>
 
               <td className="p-4">
-                <Link to={`/admin/orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                <Link to={`/staff/rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
               </td>
             </tr>
 

@@ -72,7 +72,7 @@ function HeaderStaff() {
                 }
                 setModalOpen(true)
             } else {
-                navigate(`/admin/orders/${data.id}`)
+                navigate(`/staff/orders/${data.id}`)
             }
         } else if (orderCode.startsWith("T-")) {
             setModalOpen("true");
@@ -81,7 +81,13 @@ function HeaderStaff() {
         getNotification();
     };
 
-
+    const handleLogo = () => {
+        if (user.role === "Order Coordinator" || user.role === "Staff") {
+            navigate(`/staff/orders`)
+        } else if (user.role === "Admin") {
+            navigate(`/admin/dashboard`)
+        }
+    }
 
     const handleCloseModal = () => {
         setSelectedOrder(null)
@@ -162,7 +168,7 @@ function HeaderStaff() {
 
     return (
         <div className="justify-between flex items-center py-5 space-x-4 border-2">
-            <div className="pl-10">
+            <div className="pl-10" onClick={handleLogo}>
                 <img src="/Logo.png" alt="2Sport" className="object-scale-down w-20" />
             </div>
             <div className="flex">

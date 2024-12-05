@@ -46,7 +46,7 @@ function App() {
           path="/staff/*"
           element={
             <PrivateRoute
-            allowedRoles={['Order Coordinator','Staff']}
+            allowedRoles={['Order Coordinator','Staff', 'Manager']}
             >
               <StaffRoutes />
             </PrivateRoute>
