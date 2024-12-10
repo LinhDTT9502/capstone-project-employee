@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { fetchOrders } from "../../services/DashboardService";
+import { getOrderList } from "../../services/Staff/OrderService";
+import { getRentalsList } from "../../services/Staff/RentalService";
 
 const PieChart = () => {
-  const [orders, setOrders] = useState([]); 
   const [chartData, setChartData] = useState({
     series: [],
     labels: [],
@@ -12,52 +12,64 @@ const PieChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const ordersData = await fetchOrders();
-        setOrders(ordersData.data.$values)
-        // Calculate the count of orders by status
-        const statusCounts = orders.reduce((acc, order) => {
-          acc[order.status] = (acc[order.status] || 0) + 1;
-          return acc;
-        }, {});
+        const ordersData = await getOrderList();
+        const rentalsData = await getRentalsList();
 
-        // Prepare data for the chart
-        const series = Object.values(statusCounts);
-        const labels = Object.keys(statusCounts);
+        // Calculate totalAmount for orders and rentals
+        const ordersTotal = ordersData.reduce(
+          (acc, order) => acc + (order.totalAmount || 0),
+          0
+        );
+        const rentalsTotal = rentalsData.reduce(
+          (acc, rental) => acc + (rental.totalAmount || 0),
+          0
+        );
 
-        setChartData({ series, labels });
+        // Update chart data
+        setChartData({
+          series: [ordersTotal, rentalsTotal],
+          labels: ["Doanh thu đơn đã bán", "Doanh thu đơn cho thuê"],
+        });
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [orders]);
+  }, []);
 
   const chartOptions = {
     chart: {
       width: 380,
-      type: 'pie',
+      type: "pie",
     },
     labels: chartData.labels,
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        chart: {
-          width: 200
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
+          },
         },
-        legend: {
-          position: 'bottom'
-        }
-      }
-    }]
+      },
+    ],
   };
 
   return (
     <div>
       <div id="chart">
-        <ReactApexChart options={chartOptions} series={chartData.series} type="pie" width={380} />
+        <h3>Tổng doanh thu tính đến hiện tại</h3>
+        <ReactApexChart
+          options={chartOptions}
+          series={chartData.series}
+          type="pie"
+          width={380}
+        />
       </div>
-      <div id="html-dist"></div>
     </div>
   );
 };

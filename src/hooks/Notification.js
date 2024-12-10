@@ -32,47 +32,30 @@ const useOrderNotification = (onNotificationReceived) => {
     useEffect(() => {
         if (connection) {
             const startConnection = async () => {
-                if (connection.state !== signalR.HubConnectionState.Disconnected) {
-                    console.log("SignalR is already connected or connecting");
-                    return;
-                }
-
+                if (connection.state === signalR.HubConnectionState.Connected) return;
+    
                 try {
                     await connection.start();
                     console.log("SignalR Connected");
-
-                    // Listen for notifications
+    
                     connection.on("ReceiveMessage", (message) => {
                         console.log("Notification received:", message);
                         onNotificationReceived(message);
                     });
-
-                    // Reconnection handler
-                    connection.onreconnected(() => {
-                        console.log("SignalR Reconnected");
-                    });
-
-                    // Connection close handler
-                    connection.onclose((error) => {
-                        console.error("SignalR Disconnected", error);
-                    });
-
-                } catch (err) {
-                    console.error("Error connecting to SignalR", err);
+                } catch (error) {
+                    console.error("Error connecting to SignalR:", error);
                 }
             };
-
+    
             startConnection();
-        }
-
-        return () => {
-            if (connection && connection.state !== signalR.HubConnectionState.Disconnected) {
-                connection.off("ReceiveMessage");
+    
+            return () => {
                 connection.off("ReceiveMessage");
                 connection.stop();
-            }
-        };
-    }, [connection, onNotificationReceived]);  // Re-run when the connection changes
+            };
+        }
+    }, [connection, onNotificationReceived]);
+    
 
 };
 

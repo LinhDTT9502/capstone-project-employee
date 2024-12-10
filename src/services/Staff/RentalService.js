@@ -1,5 +1,14 @@
-import { approveRentalAPI, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, rejectRentalAPI } from "../../api/Staff/apiRental";
+import { approveRentalAPI, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, getRentalsListAPI, rejectRentalAPI, removeRentalAPI } from "../../api/Staff/apiRental";
 
+export const getRentalsList = async () => {
+  try {
+    const response = await getRentalsListAPI();
+    return response.data.data.$values; 
+  } catch (error) {
+    console.error('Error fetching orders list:', error);
+    throw error;
+  }
+};
 
 export const getRentalbyStatus = async (orderStatus) => {
     try {
@@ -47,6 +56,16 @@ export const rejectRental = async (orderId) => {
     return response.data.data; 
   } catch (error) {
     console.error('Error approve:', error);
+    throw error;
+  }
+};
+
+export const removeRental = async (orderId) => {
+  try {
+    const response = await removeRentalAPI(orderId);
+    return response.data; 
+  } catch (error) {
+    console.error('Error remove:', error);
     throw error;
   }
 };

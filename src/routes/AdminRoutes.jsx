@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Dashboard from '../pages/Admin/Dashboard';
-import Blog from '../components/Blog';
+import { useNavigate } from "react-router-dom";
 import ManageUser from '../pages/Admin/ManageUser';
+import ListAllStaff from '../pages/Admin/ListAllStaff';
+import StaffDetail from '../pages/Admin/StaffDetail';
+import ListAllManagers from '../pages/Admin/ListAllManagers';
 
 const AdminRoutes = () => {
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!token) {
+      navigate('/');
+    }
+}, [token, navigate]);
   return (
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/manage-user" element={<ManageUser />} />
-      <Route path="/blog" element={<Blog />} />
+      <Route path="/manage-staff" element={<ListAllStaff />} />
+      <Route path="/manage-staff/:staffId" element={<StaffDetail />} />
+      <Route path="/manage-managers" element={<ListAllManagers />} />
     </Routes>
   );
 };

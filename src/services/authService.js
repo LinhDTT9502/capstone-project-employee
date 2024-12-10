@@ -12,7 +12,7 @@ export const authenticateUser = async (dispatch, data) => {
     localStorage.setItem('refreshToken', response.data.data.refreshToken);
     const decoded = jwtDecode(response.data.data.token);
     dispatch(login(decoded));
-    toast.success("Đăng nhập thành công");
+    // toast.success("Đăng nhập thành công");
     return decoded;
   } catch (error) {
     console.error('Login failed', error);

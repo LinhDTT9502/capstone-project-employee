@@ -10,238 +10,261 @@ import { Button, Option, Select, Step, Stepper } from '@material-tailwind/react'
 import { approveOrder, rejectOrder } from '../../services/Staff/OrderService';
 
 const ORDER_STEPS = [
-  { id: 1, label: 'Chờ xử lý' },
-  { id: 2, label: 'Đã xác nhận' },
-  { id: 3, label: 'Đã thanh toán' },
-  { id: 4, label: 'Đang xử lý' },
-  { id: 5, label: 'Đã giao hàng' },
-  { id: 6, label: 'Hoàn thành' },
+	{ id: 1, label: 'Chờ xử lý' },
+	{ id: 2, label: 'Đã xác nhận' },
+	{ id: 3, label: 'Đã thanh toán' },
+	{ id: 4, label: 'Đang xử lý' },
+	{ id: 5, label: 'Đã giao hàng' },
+	{ id: 6, label: 'Hoàn thành' },
 ];
 
 const OrderDetail = () => {
-  const { orderId } = useParams();
-  const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const user = useSelector(selectUser);
-  const [reload, setReload] = useState(false);
-  const [isApproved, setIsApproved] = useState(false);
-  const token = localStorage.getItem('token');
-  console.log(orderId);
-  
+	const { orderId } = useParams();
+	const navigate = useNavigate();
+	const [order, setOrder] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const user = useSelector(selectUser);
+	const [reload, setReload] = useState(false);
+	const [newStatus, setNewStatus] = useState(null); 
+	const [updating, setUpdating] = useState(false);
 
-  const [newStatus, setNewStatus] = useState(null); // State for selected status
-  const [updating, setUpdating] = useState(false);
-  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Admin');
-  const statusOptions = [
-    { label: 'Đã hủy', value: 0 },
-    { label: 'Chờ xử lý', value: 1 },
-    { label: 'Đã xác nhận', value: 2 },
-    { label: 'Đã thanh toán', value: 3 },
-    { label: 'Đang xử lý', value: 4 },
-    { label: 'Đã giao hàng', value: 5 },
-    { label: 'Bị trì hoãn', value: 6 },
-    { label: 'Hoàn thành', value: 7 },
-  ];
+	const isStaffOrAdmin =
+		user && (user.role === 'Order Coordinator' || user.role === 'Admin' || user.role === 'Staff');
 
-  const getCurrentStepIndex = (orderStatus) => {
-    const step = ORDER_STEPS.find((step) => step.label === orderStatus);
-    return step ? step.id - 1 : 0; // Return 0 if not found (safe default)
-  };
+	const statusOptions = [
+		{ label: 'Đã hủy', value: 0 },
+		{ label: 'Chờ xử lý', value: 1 },
+		{ label: 'Đã xác nhận', value: 2 },
+		{ label: 'Đã thanh toán', value: 3 },
+		{ label: 'Đang xử lý', value: 4 },
+		{ label: 'Đã giao hàng', value: 5 },
+		{ label: 'Bị trì hoãn', value: 6 },
+		{ label: 'Hoàn thành', value: 7 },
+	];
 
-  useEffect(() => {
-    const fetchOrderDetail = async () => {
-      try {
-        const response = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
-        );
-        if (response.data.isSuccess) {
-          setOrder(response.data.data);
-          
-        } else {
-          setError('Failed to retrieve order details');
-        }
-      } catch (error) {
-        setError('Error fetching order details');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrderDetail();
-  }, [orderId, reload]);
+	const getCurrentStepIndex = (orderStatus) => {
+		const step = ORDER_STEPS.find((step) => step.label === orderStatus);
+		return step ? step.id - 1 : 0;
+	};
 
-  const handleStatusChange = async () => {
-    if (newStatus === null || updating) return;
+	useEffect(() => {
+		const fetchOrderDetail = async () => {
+			try {
+				const response = await axios.get(
+					`https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
+				);
+				if (response.data.isSuccess) {
+					setOrder(response.data.data);
+				} else {
+					setError('Failed to retrieve order details');
+				}
+			} catch (error) {
+				setError('Error fetching order details');
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchOrderDetail();
+		getCurrentStepIndex();
+	}, [orderId, reload, statusOptions]);
 
-    setUpdating(true);
-    try {
-      const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.data.isSuccess) {
-        setOrder({ ...order, orderStatus: newStatus }); // Update order status locally
-        alert('Order status updated successfully');
-      } else {
-        alert('Failed to update order status');
-      }
-    } catch (error) {
-      alert('Error updating order status');
-    } finally {
-      setUpdating(false);
-    }
-  };
+	const handleStatusChange = async () => {
+		if (newStatus === null || updating) return;
 
-  const handleApprove = async () => {
-    const response = await approveOrder(orderId)
-    setReload(prev => !prev);
-    console.log(response);
-    setIsApproved(true);
+		setUpdating(true);
+		try {
+			const response = await axios.put(
+				`https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${user.token}`,
+					},
+				}
+			);
+			if (response.data.isSuccess) {
+				// Update order status locally without needing to reload
+				setOrder((prevOrder) => ({ ...prevOrder, orderStatus: newStatus }));
+				alert('Order status updated successfully');
+			} else {
+				alert('Failed to update order status');
+			}
+		} catch (error) {
+			alert('Error updating order status');
+		} finally {
+			setUpdating(false);
+		}
+	};
 
-  }
+	const handleApprove = async () => {
+		const response = await approveOrder(orderId);
+		setReload((prev) => !prev);
+		console.log(response);
+	};
 
-  const handleReject = async () => {
-    const response = await rejectOrder(orderId)
-    setReload(prev => !prev);
-    navigate(-1)
-    // console.log(response);
-  }
+	const handleReject = async () => {
+		const response = await rejectOrder(orderId);
+		setReload((prev) => !prev);
+		navigate(-1);
+	};
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p className='text-red-500'>{error}</p>;
 
-  return (
-    <>
-      <HeaderStaff />
-      <div className="flex h-full">
-        {isStaffOrAdmin && <SidebarStaff />}
-        <div className="flex-grow border-l-2 p-4">
-          <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-            {/* Header with Order ID and Status */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Order Details #{order.orderCode}</h2>
-              <div className="flex items-center space-x-4">
-                <span className="px-3 py-1 bg-blue-100 text-blue-600 text-sm font-semibold rounded-full">
-                  {order.orderStatus}
-                </span>
-                {isApproved && <><select
-                  onChange={(e) => setNewStatus(e.target.value)}
-                  value={newStatus || order.orderStatus}
-                  className="w-36 px-2 py-1 border rounded"
-                >
-                  <option> {order.orderStatus}</option>
-                  {statusOptions.map((status) => (
-                    <option key={status.value} value={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </select>
+	return (
+		<>
 
-                <Button onClick={handleStatusChange} disabled={updating} color="blue">
-                  {updating ? 'Đang cập nhật' : 'Cập nhật'}
-                </Button></> 
-                }
-                
-              </div>
-            </div>
+			<div className='flex flex-col h-full md:flex-row'>
 
-            {/* Order Progress */}
-            <div className="mb-6">
-              <Stepper activeStep={getCurrentStepIndex(order.orderStatus)} color="blue">
-                {ORDER_STEPS.map((status, index) => (
-                  <Step key={index} completed={index < getCurrentStepIndex(order.orderStatus)}>
-                    <div className="flex flex-col items-center">
-                      <div>{status.id}</div>
-                    </div>
-                  </Step>
-                ))}
-              </Stepper>
-            </div>
 
-            {/* Items Ordered */}
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-2">Ordered Products</h3>
-              <ul>
-                {order.saleOrderDetailVMs.$values.map((item) => (
-                  <li key={item.productId} className="flex items-center justify-between py-4 border-b">
-                    <div className="flex items-center space-x-4">
-                      <img src={item.imageUrl} alt={item.productName} className="w-16 h-16 object-cover rounded" />
-                      <div>
-                        <p className="font-semibold">{item.productName}</p>
-                        <p className="text-gray-500">Quantity: {item.quantity}</p>
-                      </div>
-                    </div>
-                    {/* <p className="font-semibold">{item.totalPrice.toLocaleString()} VND</p> */}
-                  </li>
-                ))}
-              </ul>
-            </div>
+				<div className='flex-grow p-4 md:p-8'>
+					<div className='container p-6 mx-auto bg-white shadow-lg rounded-xl'>
+						<div className='flex items-center justify-between mb-6'>
+							<h2 className='text-3xl font-semibold text-gray-800'>Order Details #{order.orderCode}</h2>
+						</div>
 
-            {/* Order Summary */}
-            <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-              <div className="flex justify-between py-2">
-                <p>Subtotal</p>
-                {/* <p className="font-semibold">{order.subTotal.toLocaleString()} VND</p> */}
-              </div>
-              <div className="flex justify-between py-2">
-                <p>Shipping Fee</p>
-                <p className="font-semibold text-green-600">Free</p>
-              </div>
-              <div className="flex justify-between py-2 border-t mt-4 pt-4">
-                <p className="font-bold">Total</p>
-                {/* <p className="font-bold text-lg">{order.totalAmount.toLocaleString()} VND</p> */}
-              </div>
-            </div>
-            {order.orderStatus === 'Chờ xử lý' && order.deliveryMethod !== 'Đến cửa hàng nhận' && <> 
-              <Button color="green" onClick={handleApprove}>Chấp nhận</Button>
-              <Button color="red" onClick={handleReject}>Từ chối</Button>
-            </>}
-                
-          </div>
-        </div>
+						{/* Order Progress */}
+						<div className='mb-8'>
+							<Stepper activeStep={getCurrentStepIndex(order.orderStatus)} color='blue'>
+								{ORDER_STEPS.map((status, index) => (
+									<Step key={index} completed={index < getCurrentStepIndex(order.orderStatus)}>
+										<div className='flex flex-col items-center'>
+											<div className='text-xl font-semibold'>{status.id}</div>
+										</div>
+									</Step>
+								))}
+							</Stepper>
+						</div>
 
-        {/* Right Side - Customer Info & Summary */}
-        <div className="w-1/4 p-4">
-          <div className="container mx-auto bg-white shadow-lg rounded-lg p-4">
-            {/* Customer Information */}
-            <div className="mb-6 border-b pb-4">
-              <h3 className="text-xl font-semibold mb-2">Customer Information</h3>
-              <p><strong>Name:</strong> {order.fullName}</p>
-              <p><strong>Email:</strong> {order.email}</p>
-              <p><strong>Phone:</strong> {order.contactPhone}</p>
-              <p><strong>Address:</strong> {order.address}</p>
-            </div>
+						{/* Ordered Products */}
+						<div className='mb-8'>
+							<h3 className='mb-4 text-2xl font-semibold text-gray-800'>Ordered Products</h3>
+							<ul>
+								{order.saleOrderDetailVMs.$values.map((item) => (
+									<li
+										key={item.productId}
+										className='flex items-center justify-between py-4 border-b border-gray-200'
+									>
+										<div className='flex items-center space-x-4'>
+											<img
+												src={item.imgAvatarPath}
+												alt={item.productName}
+												className='object-cover w-16 h-16 rounded-lg shadow-md'
+											/>
+											<div>
+												<p className='font-semibold text-gray-700'>{item.productName}</p>
+												<p className='text-gray-500'>Quantity: {item.quantity}</p>
+											</div>
+										</div>
+									</li>
+								))}
+							</ul>
+							<div className='flex items-center space-x-6'>
+								<span className='px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-100 rounded-full'>
+									{order.orderStatus}
+								</span>
+								<select
+									onChange={(e) => setNewStatus(e.target.value)}
+									value={newStatus || order.orderStatus}
+									className='px-4 py-2 transition duration-200 ease-in-out border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400'
+								>
+									<option>Choose Status</option>
+									{statusOptions.map((status) => (
+										<option key={status.value} value={status.value}>
+											{status.label}
+										</option>
+									))}
+								</select>
+								<Button onClick={handleStatusChange} disabled={updating} color='blue'>
+									{updating ? 'Updating...' : 'Change Status'}
+								</Button>
+							</div>
+						</div>
 
-            {/* Order Summary */}
-            <div className="mb-6 border-b pb-4">
-              <h3 className="text-xl font-semibold mb-2">Order Summary</h3>
-              {/* <p><strong>Subtotal:</strong> {order.subTotal.toLocaleString()} VND</p> */}
-              <p><strong>Discount:</strong> 0.00 VND</p>
-              <p><strong>Shipping Fee:</strong> Free</p>
-              {/* <p><strong>Total:</strong> {order.totalAmount.toLocaleString()} VND</p> */}
-              <p><strong>Delivery Method:</strong> {order.deliveryMethod}</p>
-              <p><strong>branch:</strong> {order.branchId}</p>
-              <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
-            </div>
+						{/* Order Summary */}
+						<div className='p-2 mt-8 rounded-lg bg-gray-50'>
+							<div className='flex justify-between py-3'>
+								<p className='text-lg font-medium text-gray-700'>Tạm tính</p>
+								<p className='text-lg font-medium text-gray-700'>{order.totalAmount}</p>
+							</div>
+							<div className='flex justify-between py-3'>
+								<p className='text-lg font-medium text-gray-700'>Phí vận chuyển</p>
+								<p className='text-lg font-medium text-green-600'>Free</p>
+							</div>
+							<div className='flex justify-between py-3 pt-4 mt-4 border-t border-gray-200'>
+								<p className='text-xl font-semibold'>Tổng cộng</p>
+								<p className='text-xl font-semibold'>{order.totalAmount}</p>
+							</div>
+						</div>
 
-            {/* Additional Details */}
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-2">Additional Information</h3>
-              <p><strong>Order Note:</strong> {order.note}</p>
-              <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
-              <p><strong>Payment Date:</strong></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+						{order.orderStatus === 'Chờ xử lý' && order.deliveryMethod !== 'Đến cửa hàng nhận' && (
+							<div className='mt-6 space-x-4'>
+								<Button color='green' onClick={handleApprove}>
+									Approve
+								</Button>
+								<Button color='red' onClick={handleReject}>
+									Reject
+								</Button>
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div className='w-full p-4 md:w-1/4'>
+					<div className='container p-6 mx-auto bg-white rounded-lg shadow-lg'>
+						<div className='pb-4 mb-6 border-b'>
+							<h3 className='mb-2 text-xl font-semibold'>Customer Information</h3>
+							<p>
+								<strong>Name:</strong> {order.fullName}
+							</p>
+							<p>
+								<strong>Email:</strong> {order.email}
+							</p>
+							<p>
+								<strong>Phone:</strong> {order.contactPhone}
+							</p>
+							<p>
+								<strong>Address:</strong> {order.address}
+							</p>
+						</div>
+
+						{/* Order Summary */}
+						<div className='pb-4 mb-6 border-b'>
+							<h3 className='mb-2 text-xl font-semibold'>Order Summary</h3>
+							<p>
+								<strong>Discount:</strong> 0.00 VND
+							</p>
+							<p>
+								<strong>Shipping Fee:</strong> Free
+							</p>
+							<p>
+								<strong>Delivery Method:</strong> {order.deliveryMethod}
+							</p>
+							<p>
+								<strong>Branch:</strong> {order.branchId}
+							</p>
+							<p>
+								<strong>Payment Method:</strong> {order.paymentMethod}
+							</p>
+						</div>
+
+						{/* Additional Details */}
+						<div className='mb-6'>
+							<h3 className='mb-2 text-xl font-semibold'>Additional Information</h3>
+							<p>
+								<strong>Order Note:</strong> {order.note}
+							</p>
+							<p>
+								<strong>Order Date:</strong> {new Date(order.createdAt).toLocaleDateString()}
+							</p>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default OrderDetail;

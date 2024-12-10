@@ -214,7 +214,7 @@ export default function ManageUser() {
   const handleChangeStatus = async (userId, currentStatus) => {
     const newStatus = !currentStatus;
     try {
-      await changeUserStatus(userId, { isActive: newStatus });
+      await changeUserStatus(userId, { isActived: newStatus });
       const updatedUsers = await fetchAllUsers();
       setUsers(updatedUsers);
       toast.success(`User status changed to ${newStatus ? "Active" : "Inactive"}`);
@@ -274,36 +274,26 @@ export default function ManageUser() {
     return isActive ? "bg-blue-500 text-white" : "bg-gray-500 text-white";
   };
 
-  const filteredUsers = users.filter((user) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      user.fullName.toLowerCase().includes(query) ||
-      user.userName.toLowerCase().includes(query)
-    );
-  });
+  // const filteredUsers = users.filter((user) => {
+  //   const query = searchQuery.toLowerCase();
+  //   return (
+  //     user.fullName.toLowerCase().includes(query) ||
+  //     user.userName.toLowerCase().includes(query)
+  //   );
+  // });
   return (
     <>
-      <ToastContainer />
-      <HeaderStaff />
-      <div className="flex h-full">
-        <SidebarStaff />
-        <div className="flex-grow border-l-2">
+
+          <div className="flex justify-between items-center mx-10">
           <h2 className="text-2xl font-bold mx-10 mt-4">
             Customer Account
           </h2>
-          <div className="flex justify-between items-center mx-10 my-4">
-            <Breadcrumbs className="flex-grow">
-              <a href="#" className="opacity-60">
-                Home
-              </a>
-              <a href="#">Customer Account</a>
-            </Breadcrumbs>
             <Button onClick={() => setModalOpen(true)} className="mt-4">
               Create User
             </Button>
           </div>
   
-          <Card className="h-full w-[95.7%] mx-10 my-10">
+          <Card className="h-full w-[95.7%] mx-10">
             <CardBody className="overflow-scroll px-0">
               <table className="w-full min-w-max table-auto text-left">
                 <thead>
@@ -445,13 +435,13 @@ export default function ManageUser() {
                         <td className={classes}>
                           <Button
                             className={`${getStatusButtonStyle(
-                              user.isActive
+                              user.isActived
                             )} px-4 py-2`}
                             onClick={() =>
-                              handleChangeStatus(user.id, user.isActive)
+                              handleChangeStatus(user.id, user.isActived)
                             }
                           >
-                            {user.isActive ? "Active" : "Inactive"}
+                            {user.isActived ? "Hoạt động" : "Tạm khóa"}
                           </Button>
                         </td>
                       </tr>
@@ -479,8 +469,7 @@ export default function ManageUser() {
               </Button>
             </div>
           </Card>
-        </div>
-      </div>
+
   
       {/* View User Modal */}
       <Dialog

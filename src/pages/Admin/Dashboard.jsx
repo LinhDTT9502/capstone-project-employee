@@ -72,13 +72,10 @@ export default function Dashboard() {
   //   );
   // };
 // comment tạm
-  const isStaffOrAdmin = user && (user.role === 'Employee' || user.role === 'Admin');
+
 
   return (
-    <><HeaderStaff/>
-      <div className='flex h-full'>
-        {isStaffOrAdmin && <SidebarStaff />}
-        <div className='flex-grow border-l-2'>
+    <>
 
           <h2 className="text-2xl font-bold mx-10 mt-4">dashboard</h2>
           <div className="flex justify-between items-center mx-10 my-4">
@@ -96,12 +93,11 @@ export default function Dashboard() {
               <BarChart/>
             </div>
             <div className="w-1/3">
-              {/* <PieChart /> */}
+              <PieChart />
             </div>
           </div>
 {/* <RecentOrder/> */}
-        </div>
-      </div>
+
     </>
   );
 }

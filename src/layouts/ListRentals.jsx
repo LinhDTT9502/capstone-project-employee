@@ -13,15 +13,9 @@ const ListRentals = () => {
   const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Staff');
 
   return (
-    <><HeaderStaff />
-      <div className='flex h-full'>
-        {isStaffOrAdmin && <SidebarStaff />}
-        <div className='flex-grow border-l-2'>
-          <div className="container mx-auto p-4">
+    <>
             {user.role === 'Staff' ? (<ListRentalbyBranch/>):(<PendingRentalList/>)}
-          </div>
-        </div>
-      </div>
+
     </>
 
   );

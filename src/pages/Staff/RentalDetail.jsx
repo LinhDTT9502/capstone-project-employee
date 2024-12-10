@@ -118,10 +118,8 @@ const RentalDetail = () => {
 
   return (
     <>
-      <HeaderStaff />
-      <div className="flex h-full">
-        {isStaffOrAdmin && <SidebarStaff />}
-        <div className="flex-grow border-l-2 p-4">
+
+       
           <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
             {/* Header with Order ID and Status */}
             <div className="flex items-center justify-between mb-4">
@@ -205,7 +203,7 @@ const RentalDetail = () => {
             </>}
                 
           </div>
-        </div>
+
 
         {/* Right Side - Customer Info & Summary */}
         <div className="w-1/4 p-4">
@@ -240,7 +238,7 @@ const RentalDetail = () => {
             </div>
           </div>
         </div>
-      </div>
+
     </>
   );
 };

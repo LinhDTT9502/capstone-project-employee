@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../redux/slices/authSlice";
 import Logout from "../pages/Auth/Logout";
 import useOrderNotification from "../hooks/Notification";
-import OrderDetailModal from "../pages/Staff/OrderDetailModal";
+import OrderDetailModal from "../pages/OnlineStaff/OrderDetailModal";
 import { getNoti } from "../services/Notification/NotificationService";
 import { useNavigate } from "react-router-dom";
 import { getOrderbyCode } from "../services/Staff/OrderService";

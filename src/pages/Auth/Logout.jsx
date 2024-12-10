@@ -59,7 +59,7 @@ const Logout = () => {
     return (
         <button onClick={handleLogout} className="">
             <FontAwesomeIcon className="pr-1" icon={faRightFromBracket} />
-                đăng xuất
+                Đăng xuất
         </button>
     );
 };

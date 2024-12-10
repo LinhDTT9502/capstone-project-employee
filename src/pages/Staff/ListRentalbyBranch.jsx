@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getOrderbyBranch, getOrderList } from '../../services/Staff/OrderService';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { getRentalbyBranch } from '../../services/Staff/RentalService';
+import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { getRentalbyBranch, removeRental } from '../../services/Staff/RentalService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
 
@@ -24,24 +24,47 @@ const ListRentalbyBranch = () => {
     REFUNDED: 'bg-gray-100 text-gray-600',
   };
   const user = useSelector(selectUser)
+  const fetchOrders = async () => {
+    try {
+      const data = await getRentalbyBranch(user.BranchId);
+      setOrders(data);
+      console.log(data);
+      
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setError('Failed to fetch orders');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await getRentalbyBranch(user.BranchId);
-        setOrders(data);
-        console.log(data);
-        
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        setError('Failed to fetch orders');
-      } finally {
-        setLoading(false);
-      }
-    };
+    
 
     fetchOrders();
   }, []);
+
+  const handleRemoveOrder = async (orderId) => {
+    // Confirm before proceeding with removal
+    const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');
+    if (!confirmDelete) {
+        return; // Exit if user cancels
+    }
+
+    try {
+        console.log(orderId);
+
+        const data = await removeRental(orderId); 
+        if (data.isSuccess) {
+            alert('Bạn đã xóa đơn hàng thành công!');
+            fetchOrders();
+        } else {
+            console.error('Không thể xóa đơn hàng:', data.message);
+        }
+    } catch (error) {
+        console.error('Lỗi khi xóa đơn hàng:', error);
+    }
+};
 
   if (loading) return <p className="text-center py-4">Loading...</p>;
   if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
@@ -118,7 +141,10 @@ const ListRentalbyBranch = () => {
               </td>
 
               <td className="p-4">
-                <Link to={`/staff/rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                <Link to={`/staff/list-rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+              </td>
+              <td className="p-4">
+               <button  onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
               </td>
             </tr>
 

@@ -1,4 +1,4 @@
-import { approveOrderAPI, getOrderbyBranchAPI, getOrderbyCodeAPI, getOrderbyStatusAPI, getOrderDetailAPI, getOrderListAPI, rejectOrderAPI } from "../../api/Staff/apiOrder";
+import { approveOrderAPI, getOrderbyBranchAPI, getOrderbyCodeAPI, getOrderbyStatusAPI, getOrderDetailAPI, getOrderListAPI, rejectOrderAPI, removeOrderAPI } from "../../api/Staff/apiOrder";
 
 export const getOrderList = async () => {
   try {
@@ -66,6 +66,16 @@ export const rejectOrder = async (orderId) => {
     return response.data.data; 
   } catch (error) {
     console.error('Error approve:', error);
+    throw error;
+  }
+};
+
+export const removeOrder = async (orderId) => {
+  try {
+    const response = await removeOrderAPI(orderId);
+    return response.data; 
+  } catch (error) {
+    console.error('Error remove:', error);
     throw error;
   }
 };

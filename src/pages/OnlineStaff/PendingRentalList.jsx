@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import OrderDetailModal from '../Staff/OrderDetailModal';
+import OrderDetailModal from './OrderDetailModal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { getRentalbyStatus } from '../../services/Staff/RentalService';

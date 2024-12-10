@@ -61,3 +61,11 @@ export const rejectOrderAPI = (orderId) => {
     }
   });
 };
+
+export const removeOrderAPI = (orderId) => {
+  return axios.delete(`${API_BASE_URL}/remove/${orderId}`, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};
