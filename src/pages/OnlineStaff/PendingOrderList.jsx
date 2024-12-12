@@ -91,7 +91,7 @@ const PendingOrderList = () => {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Search for order"
+            placeholder="Tìm kiếm đơn hàng"
             className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
           />
           <select

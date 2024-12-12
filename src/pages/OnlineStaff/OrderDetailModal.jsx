@@ -66,7 +66,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
 
   return (
     <Dialog open={open} handler={onClose}>
-      <DialogHeader>Order Detail: {orderDetail?.orderCode}</DialogHeader>
+      <DialogHeader>Chi tiết đơn hàng: {orderDetail?.saleOrderCode}</DialogHeader>
       <DialogBody divider className="max-h-[70vh] overflow-y-auto">
         {loading ? (
           <p>Loading...</p>
@@ -74,13 +74,13 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
           <p className="text-red-500">{error}</p>
         ) : (
           <div>
-            <p><strong>Customer:</strong> {orderDetail?.fullName}</p>
+            <p><strong>Khách hàng:</strong> {orderDetail?.fullName}</p>
             <p><strong>Email:</strong> {orderDetail?.email}</p>
-            <p><strong>deliveryMethod:</strong> {orderDetail?.deliveryMethod}</p>
-            <p><strong>Phone:</strong> {orderDetail?.contactPhone}</p>
-            <p><strong>Address:</strong> {orderDetail?.address}</p>
-            <p><strong>Total Amount:</strong> {orderDetail?.totalAmount.toLocaleString()}</p>
-            <h4 className="mt-4 mb-2">Products:</h4>
+            <p><strong>Phương thức nhận hàng:</strong> {orderDetail?.deliveryMethod}</p>
+            <p><strong>Số điện thoại:</strong> {orderDetail?.contactPhone}</p>
+            <p><strong>Địa chỉ:</strong> {orderDetail?.address}</p>
+            <p><strong>Tổng cộng:</strong> {orderDetail?.totalAmount.toLocaleString()}</p>
+            <h4 className="mt-4 mb-2">Sản phẩm:</h4>
             <ul>
               {orderDetail?.saleOrderDetailVMs?.$values.map((item) => (
                 <li key={item.productId} className="mb-2">
@@ -88,7 +88,8 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
                     <img src={item.imgAvatarPath} alt={item.productName} className="w-16 h-16 object-cover rounded-lg" />
                     <div>
                       <p><strong>{item.productName}</strong></p>
-                      <p>Quantity: {item.quantity}</p>
+                      <p> {item.color} - {item.size} - {item.condition}%</p>
+                      <p>Số lượng: {item.quantity}</p>
                       {/* <p>Unit Price: {item.unitPrice.toLocaleString()}</p>
                       <p>Total Price: {item.totalPrice.toLocaleString()}</p> */}
                     </div>
@@ -108,8 +109,8 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
         )}
       </DialogBody>
       <DialogFooter>
-      <Button color="green" onClick={handleAssignBranch}>Assign Branch</Button>
-        <Button color="red" onClick={onClose}>Close</Button>
+      <Button color="green" onClick={handleAssignBranch}>Bàn giao</Button>
+        <Button color="red" onClick={onClose}>Đóng</Button>
       </DialogFooter>
     </Dialog>
   );

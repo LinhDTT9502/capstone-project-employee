@@ -101,12 +101,12 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
           <p className="text-red-500">{error}</p>
         ) : (
           <div>
-            <p><strong>Customer:</strong> {customerInfo.fullName}</p>
+            <p><strong>Khách hàng:</strong> {customerInfo.fullName}</p>
             <p><strong>Email:</strong> {customerInfo.email}</p>
-            <p><strong>Delivery Method:</strong> {customerInfo.deliveryMethod}</p>
-            <p><strong>Phone:</strong> {customerInfo.contactPhone}</p>
-            <p><strong>Address:</strong> {customerInfo.address}</p>
-            <h4 className="mt-4 mb-2">Products:</h4>
+            <p><strong>Phương thức nhận hàng:</strong> {customerInfo.deliveryMethod}</p>
+            <p><strong>Số điện thoại:</strong> {customerInfo.contactPhone}</p>
+            <p><strong>Địa chỉ  :</strong> {customerInfo.address}</p>
+            <h4 className="mt-4 mb-2">Sản phẩm:</h4>
             <ul>
               {childOrders.map((order) => (
                 <li key={order.id} className="mb-2">
@@ -118,8 +118,14 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
                     />
                     <div>
                       <p><strong>{order.productName || 'Unknown Product'}</strong></p>
-                      <p>Rent Price: {order.rentPrice ? order.rentPrice.toLocaleString() : 'N/A'}</p>
-                      <p>Subtotal: {order.subTotal.toLocaleString()}</p>
+                      <p>{order.color} - {order.size} - {order.condition}%</p>
+                      <p>
+                      <span >Thời gian thuê:</span>{" "}
+                      {new Date(order.rentalStartDate).toLocaleDateString()} -{" "}
+                      {new Date(order.rentalEndDate).toLocaleDateString()}
+                    </p>
+                      <p>Giá thuê: {order.rentPrice ? order.rentPrice.toLocaleString() : 'N/A'}</p>
+                      <p>Tạm tính: {order.subTotal.toLocaleString()}</p>
                     </div>
                   </div>
                 </li>
@@ -135,8 +141,8 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
         )}
       </DialogBody>
       <DialogFooter>
-        <Button color="green" onClick={handleAssignBranch}>Assign Branch</Button>
-        <Button color="red" onClick={onClose}>Close</Button>
+        <Button color="green" onClick={handleAssignBranch}>Bàn giao</Button>
+        <Button color="red" onClick={onClose}>Đóng</Button>
       </DialogFooter>
     </Dialog>
   );
