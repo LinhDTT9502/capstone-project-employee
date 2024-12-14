@@ -7,6 +7,7 @@ import ListAllStaff from '../pages/Admin/ListAllStaff';
 import StaffDetail from '../pages/Admin/StaffDetail';
 import ListAllManagers from '../pages/Admin/ListAllManagers';
 import Feedback from '../pages/Admin/Feedback';
+import ListImportHistory from '../pages/Admin/ListImportHistory';
 
 const AdminRoutes = () => {
   const token = localStorage.getItem('token');
@@ -23,6 +24,7 @@ const AdminRoutes = () => {
       <Route path="/manage-staff" element={<ListAllStaff />} />
       <Route path="/manage-staff/:staffId" element={<StaffDetail />} />
       <Route path="/manage-managers" element={<ListAllManagers />} />
+      <Route path="/import-history" element={<ListImportHistory />} />
       <Route path="/manage-feedback" element={<Feedback />} />
     </Routes>
   );

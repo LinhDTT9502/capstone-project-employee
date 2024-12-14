@@ -49,6 +49,14 @@ export default function SidebarStaff() {
             </ListItem>
           </Link>
         )}
+         {user.role === 'Admin' && (
+          <Link to='/admin/import-history'>
+            <ListItem>
+              <FontAwesomeIcon icon={faGauge} className='pr-3' />
+              Lịch sử nhập hàng
+            </ListItem>
+          </Link>
+        )}
         {user.role === 'Admin' && (
           <Link to='/admin/manage-feedback'>
             <ListItem>
