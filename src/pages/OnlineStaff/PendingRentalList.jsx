@@ -86,8 +86,12 @@ const PendingRentalList = () => {
     }
   };
 
-  if (loading) return <p className="text-center py-4">Loading...</p>;
-  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
+  if (loading) return (
+    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+      <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+    </div>
+  );  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
