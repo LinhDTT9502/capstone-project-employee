@@ -13,7 +13,7 @@ import {
   faEllipsisVertical,
   faArrowUp,
   faCalendar,
-  faBagShopping
+  faBagShopping,
 } from "@fortawesome/free-solid-svg-icons";
 import { fetchOrders } from "../../services/DashboardService";
 import { selectUser } from "../../redux/slices/authSlice";
@@ -25,7 +25,6 @@ import SidebarStaff from "../../layouts/SidebarStaff";
 import PieChart from "../../components/Chart/PieChart";
 import BarChart from "../../components/Chart/BarChart";
 
-
 export default function Dashboard() {
   // const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
@@ -36,10 +35,14 @@ export default function Dashboard() {
   const [completedAmount, setCompletedAmount] = useState(0);
   const [activeLength, setActiveLength] = useState(0);
   const [completedLength, setCompletedLength] = useState(0);
-  const user = useSelector(selectUser)
+  const user = useSelector(selectUser);
 
   const formatPrice = (value) => {
-    return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(value) + ' VND';
+    return (
+      new Intl.NumberFormat("en-US", { minimumFractionDigits: 0 }).format(
+        value
+      ) + " VND"
+    );
   };
 
   // useEffect(() => {
@@ -48,7 +51,7 @@ export default function Dashboard() {
   //       const ordersData = await fetchOrders();
   //       setOrders(ordersData);
   //       // console.log(`${t("dashboard.orders")}`, ordersData);
-        
+
   //       // Calculate totals
   //       const totalOrdersCount = ordersData.length;
   //       const totalAmountSum = ordersData.reduce((acc, order) => acc + parseFloat(order.amount), 0);
@@ -71,33 +74,22 @@ export default function Dashboard() {
   //       : [...prevSelectedRowKeys, selectedKey]
   //   );
   // };
-// comment tạm
-
+  // comment tạm
 
   return (
     <>
+      <h2 className="text-2xl font-bold mx-10 mt-4">Thống kê dữ liệu</h2>
 
-          <h2 className="text-2xl font-bold mx-10 mt-4">dashboard</h2>
-          <div className="flex justify-between items-center mx-10 my-4">
-            {/* <Breadcrumbs className="flex-grow">
-              <a href="#" className="opacity-60">
-                {t("dashboard.home")}
-              </a>
-              <a href="#">{t("dashboard.dashboard")}</a>
-              
-            </Breadcrumbs> */}
-          </div>
-
-          <div className="flex mx-10  space-x-2">
-            <div className="w-2/3">
-              <BarChart/>
-            </div>
-            <div className="w-1/3">
-              <PieChart />
-            </div>
-          </div>
-{/* <RecentOrder/> */}
-
+      <hr className="mb-8 flex justify-between items-center mx-10 my-4" />
+      <div className="flex mx-10  space-x-2">
+        <div className="w-2/3">
+          <BarChart />
+        </div>
+        <div className="w-1/3">
+          <PieChart />
+        </div>
+      </div>
+      {/* <RecentOrder/> */}
     </>
   );
 }
