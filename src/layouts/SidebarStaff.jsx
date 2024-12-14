@@ -159,6 +159,7 @@ export default function SidebarStaff() {
     </div>
   );
 
+
   const renderStaffLinks = () => (
     <>
       <SidebarLink to="/staff/list-orders" icon={faClipboardList}>
@@ -202,6 +203,7 @@ export default function SidebarStaff() {
           >
             Dashboard
           </h2>
+
           <button
             onClick={toggleSidebar}
             className="p-2 rounded-md hover:bg-indigo-100 transition-colors duration-300"
@@ -211,6 +213,7 @@ export default function SidebarStaff() {
               className="w-5 h-5 text-indigo-600"
             />
           </button>
+
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           <div className="space-y-2">
