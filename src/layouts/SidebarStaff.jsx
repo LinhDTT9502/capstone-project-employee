@@ -92,6 +92,14 @@ export default function SidebarStaff() {
             </ListItem>
           </Link>
         )}
+        {user.role === 'Staff' && (
+          <Link to='/staff/list-refund'>
+            <ListItem>
+              <FontAwesomeIcon icon={faGauge} className='pr-3' />
+              Yêu cầu hoàn tiền
+            </ListItem>
+          </Link>
+        )}
         {user.role === 'Content Staff' && (
           <Link to='/content-staff/blogs'>
             <ListItem>
