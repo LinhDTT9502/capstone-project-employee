@@ -78,12 +78,12 @@ const ListOrder = () => {
       <div className="flex items-center gap-4 mb-4">
         <input
           type="text"
-          placeholder="Search for order"
+          placeholder="Tìm kiếm đơn hàng..."
           className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
         />
         <div className="flex gap-4">
           <select className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400">
-            <option value="">Filter by status</option>
+            <option value="">Trạng thái</option>
             {/* Add more status options here */}
           </select>
           <select className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400">

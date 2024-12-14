@@ -29,10 +29,10 @@ import {
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
   { id: 2, label: "Đã xác nhận" },
-  { id: 3, label: "Đã thanh toán" },
-  { id: 4, label: "Đang xử lý" },
+  { id: 3, label: "Đang xử lý" },
+  { id: 4, label: "Đã vận chuyển" },
   { id: 5, label: "Đã giao hàng" },
-  { id: 6, label: "Hoàn thành" },
+  { id: 6, label: "Đã hoàn thành" },
 ];
 
 const OrderDetail = () => {
@@ -46,21 +46,14 @@ const OrderDetail = () => {
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
 
-  const isStaffOrAdmin =
-    user &&
-    (user.role === "Order Coordinator" ||
-      user.role === "Admin" ||
-      user.role === "Staff");
-
   const statusOptions = [
     { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-800" },
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
-    { label: "Đã thanh toán", value: 3, color: "bg-green-100 text-green-800" },
-    { label: "Đang xử lý", value: 4, color: "bg-purple-100 text-purple-800" },
+    { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
+    { label: "Đã vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" },
     { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" },
-    { label: "Bị trì hoãn", value: 6, color: "bg-orange-100 text-orange-800" },
-    { label: "Hoàn thành", value: 7, color: "bg-teal-100 text-teal-800" },
+    { label: "Đã hoàn thành", value: 11, color: "bg-orange-100 text-orange-800" },
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -89,12 +82,11 @@ const OrderDetail = () => {
     fetchOrderDetail();
     // console.log(order)
     getCurrentStepIndex();
-  }, [orderId, reload, statusOptions]);
+  }, []);
 
   const handleStatusChange = async () => {
     if (newStatus === null || updating) return;
-
-    setUpdating(true);
+    
     try {
       const response = await axios.put(
         `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
@@ -105,9 +97,13 @@ const OrderDetail = () => {
           },
         }
       );
-      if (response.data.isSuccess) {
+      
+      if (response) {
         // Update order status locally without needing to reload
         setOrder((prevOrder) => ({ ...prevOrder, orderStatus: newStatus }));
+        setUpdating(true);
+
+        
         alert("Cập nhật trạng thái thành công");
       } else {
         alert("Failed to update order status");
@@ -170,7 +166,7 @@ const OrderDetail = () => {
                 onClick={() => navigate(-1)}
               >
                 <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
-                Back
+                Quay lại
               </Button>
             </div>
           </div>
@@ -383,7 +379,7 @@ const OrderDetail = () => {
 
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Chi tiết đơn hàng</h3>
+              <h3 className="text-lg font-semibold">Thông tin khác</h3>
               <button className="text-gray-500 hover:text-black">
                 <FontAwesomeIcon icon={faEdit} />
               </button>

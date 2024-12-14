@@ -3,6 +3,16 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/authSlice";
 import { getListOrderRefund } from "../../services/Staff/RefundService";
 import { Chip } from "@material-tailwind/react";
+import { getOrderbyCode } from "../../services/Staff/OrderService";
+import { useNavigate } from "react-router-dom";
+import { getRentalDetail } from "../../services/Staff/RentalService";
+import RentalRefundModal from "./RentalRefundModal";
+import {
+    faEdit,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import UpdateRefundModal from "./UpdateRefundModal";
+
 
 const ListRefund = () => {
     const user = useSelector(selectUser);
@@ -10,11 +20,19 @@ const ListRefund = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [orderType, setOrderType] = useState(1);
+    const navigate = useNavigate();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalUpdateOpen, setModalUpdateOpen] = useState(false);
+    const [reload, setReload] = useState(false);
+    const [selectedOrderCode, setSelectedOrderCode] = useState(null);
+    const [selectedRenalCode, setSelectedRentalCode] = useState(null);
+    const [selectRefundId, setSelectRefundId] = useState(null);
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const data = await getListOrderRefund(status, user.BranchId);
+            const data = await getListOrderRefund(orderType, status, user.BranchId);
             console.log(data);
 
             setOrders(data);
@@ -29,22 +47,67 @@ const ListRefund = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [status]);
+    }, [reload,status, orderType]);
 
     const handleStatusChange = (newStatus) => {
         setStatus(newStatus);
     };
 
+    const handleOrderDetail = async (order) => {
+
+        try {
+            if (order.saleOrderCode) {
+                setSelectedOrderCode(order.saleOrderCode);
+
+            } else if (order.rentalOrderCode) {
+                setSelectedOrderCode(order.rentalOrderCode);
+                setModalOpen(true);
+
+            } else {
+                console.warn("No valid order code provided");
+            }
+        } catch (error) {
+            console.error("Error fetching order or rental details:", error);
+        }
+    };
+    const handleUpdateRefund = async (order) => {
+        setSelectedOrderCode(order.saleOrderCode);
+        setSelectedRentalCode(order.rentalOrderCode)
+        setSelectRefundId(order.refundID);
+        setModalUpdateOpen(true);
+    };
+    // const handleOpenModal = (order) => {
+    //     setSelectedOrderCode(orderCode);
+    //     setModalOpen(true);
+    //   };
+
+    const handleCloseModal = () => {
+        setReload(prev => !prev);
+        setSelectedOrderCode(null);
+        setSelectedRentalCode(null)
+        setModalOpen(false);
+    };
+
+    const handleCloseUpdateModal = () => {
+        setReload(prev => !prev);
+        setSelectedOrderCode(null);
+        setSelectedRentalCode(null)
+        setModalUpdateOpen(false);
+    };
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-xl font-bold mb-4">Đơn hàng yêu cầu hoàn tiền</h1>
 
             <div className="flex justify-between mb-4">
                 <div className="flex gap-2">
-                    <button className=" border-2 border-orange-500 focus:text-white hover:text-white hover:bg-orange-500 focus:bg-orange-500  text-orange-500 font-bold p-2 rounded">
+                    <button
+                        onClick={() => setOrderType(1)}
+                        className={`cursor-pointer ${orderType === 1 ? "bg-blue-500 text-white p-2 rounded" : "p-2 rounded bg-gray-200 text-black"}`}>
                         Đơn mua
                     </button>
-                    <button className="border-2 border-orange-500 focus:text-white hover:text-white hover:bg-orange-500 focus:bg-orange-500  text-orange-500 font-bold p-2 rounded">
+                    <button
+                        onClick={() => setOrderType(2)}
+                        className={`cursor-pointer ${orderType === 2 ? "bg-blue-500 text-white p-2 rounded" : "p-2 rounded bg-gray-200 text-black"}`}>
                         Đơn thuê
                     </button>
                 </div>
@@ -87,6 +150,7 @@ const ListRefund = () => {
                                 <th className="py-2 px-4 border">Lý do</th>
                                 <th className="py-2 px-4 border">Trạng thái</th>
                                 <th className="py-2 px-4 border">Ngày tạo</th>
+                                <th className="py-2 px-4 border"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,15 +158,21 @@ const ListRefund = () => {
                                 orders.map((order) => (
                                     <tr key={order.refundID} className="hover:bg-gray-50">
                                         <td className="py-2 px-4 border">{order.refundID}</td>
-                                        <td className="py-2 px-4 border">
-                                            {order.saleOrderCode || order.rentalOrderCode || "N/A"}
+                                        <td
+                                            className="py-2 px-4 border"
+                                        >
+                                            <button
+                                                className="text-blue-500"
+                                                onClick={() => handleOrderDetail(order)}>
+                                                {order.saleOrderCode || order.rentalOrderCode || "N/A"}
+                                            </button>
                                         </td>
                                         <td className="py-2 px-4 border">{order.reason}</td>
                                         <td className="py-2 px-4 border text-center">
                                             <span
                                                 className={`px-2 py-1 text-xs font-medium rounded-full ${order.status === "Pending"
                                                     ? "bg-yellow-100 text-yellow-600"
-                                                    : order.status === "Processed"
+                                                    : order.status === "Approved"
                                                         ? "bg-green-100 text-green-600"
                                                         : "bg-red-100 text-red-600"
                                                     }`}
@@ -112,6 +182,13 @@ const ListRefund = () => {
                                         </td>
                                         <td className="py-2 px-4 border">
                                             {new Date(order.createdAt).toLocaleDateString()}
+                                        </td>
+                                        <td className="p-2 border flex space-x-4 justify-center">
+                                            <button
+                                                onClick={() => handleUpdateRefund(order)}
+                                                className="bg-green-500 text-white p-2 rounded">
+                                                <FontAwesomeIcon icon={faEdit} />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -125,6 +202,24 @@ const ListRefund = () => {
                         </tbody>
                     </table>
                 </div>
+            )}
+
+            {modalOpen && (
+                <RentalRefundModal
+                    open={modalOpen}
+                    onClose={handleCloseModal}
+                    orderCode={selectedOrderCode}
+                />
+            )}
+
+            {modalUpdateOpen && (
+                <UpdateRefundModal
+                    open={modalUpdateOpen}
+                    onClose={handleCloseUpdateModal}
+                    orderCode={selectedOrderCode}
+                    rentalCode={selectedRenalCode}
+                    id={selectRefundId}
+                />
             )}
         </div>
     );
