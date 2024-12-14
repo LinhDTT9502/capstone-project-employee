@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
-import { getOrderDetail } from '../../services/Staff/OrderService';
-import ProductOfBranch from '../../components/OnlineStaff/ProductOfBranch/ProductOfBranch';
-import { getRentalDetail } from '../../services/Staff/RentalService';
+import React, { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Button,
+} from "@material-tailwind/react";
+import { getOrderDetail } from "../../services/Staff/OrderService";
+import ProductOfBranch from "../../components/OnlineStaff/ProductOfBranch/ProductOfBranch";
+import { getRentalDetail } from "../../services/Staff/RentalService";
 
 const RentalDetailModal = ({ open, onClose, orderCode }) => {
   const [orderDetail, setOrderDetail] = useState(null);
@@ -20,11 +26,10 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
           setLoading(true);
           const response = await getRentalDetail(orderCode);
           console.log(response);
-          
-          
+
           if (response?.isSuccess) {
             const data = response.data;
-            setOrderId(data.id)
+            setOrderId(data.id);
             // Check for child orders
             if (data.childOrders?.$values.length > 0) {
               setCustomerInfo({
@@ -46,10 +51,10 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
               setChildOrders([data]); // Treat self as a single child order
             }
           } else {
-            setError('Failed to fetch order details');
+            setError("Failed to fetch order details");
           }
         } catch (err) {
-          setError('Failed to fetch order details');
+          setError("Failed to fetch order details");
         } finally {
           setLoading(false);
         }
@@ -61,7 +66,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
 
   const handleAssignBranch = async () => {
     if (!selectedBranchId) {
-      alert('Please select a branch first!');
+      alert("Please select a branch first!");
       return;
     }
 
@@ -69,23 +74,23 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
       const response = await fetch(
         `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/assign-branch?orderId=${orderId}&branchId=${selectedBranchId}`,
         {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
-            accept: '*/*',
+            "Content-Type": "application/json",
+            accept: "*/*",
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to assign branch. Please try again.');
+        throw new Error("Failed to assign branch. Please try again.");
       }
 
-      alert('Branch assigned successfully!');
+      alert("Branch assigned successfully!");
       onClose(); // Close the modal after successful assignment
     } catch (error) {
       console.error(error);
-      alert('Error assigning branch. Please try again.');
+      alert("Error assigning branch. Please try again.");
     }
   };
 
@@ -96,35 +101,64 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
       <DialogHeader>Order Detail: {orderCode}</DialogHeader>
       <DialogBody divider className="max-h-[70vh] overflow-y-auto">
         {loading ? (
-          <p>Loading...</p>
+          <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+            <p className="mt-4 text-lg font-semibold text-gray-700">
+              Đang tải...
+            </p>
+          </div>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
           <div>
-            <p><strong>Khách hàng:</strong> {customerInfo.fullName}</p>
-            <p><strong>Email:</strong> {customerInfo.email}</p>
-            <p><strong>Phương thức nhận hàng:</strong> {customerInfo.deliveryMethod}</p>
-            <p><strong>Số điện thoại:</strong> {customerInfo.contactPhone}</p>
-            <p><strong>Địa chỉ  :</strong> {customerInfo.address}</p>
+            <p>
+              <strong>Khách hàng:</strong> {customerInfo.fullName}
+            </p>
+            <p>
+              <strong>Email:</strong> {customerInfo.email}
+            </p>
+            <p>
+              <strong>Phương thức nhận hàng:</strong>{" "}
+              {customerInfo.deliveryMethod}
+            </p>
+            <p>
+              <strong>Số điện thoại:</strong> {customerInfo.contactPhone}
+            </p>
+            <p>
+              <strong>Địa chỉ :</strong> {customerInfo.address}
+            </p>
             <h4 className="mt-4 mb-2">Sản phẩm:</h4>
             <ul>
               {childOrders.map((order) => (
                 <li key={order.id} className="mb-2">
                   <div className="flex items-center gap-4">
                     <img
-                      src={order.imgAvatarPath || 'https://via.placeholder.com/100'}
-                      alt={order.productName || 'Product'}
+                      src={
+                        order.imgAvatarPath || "https://via.placeholder.com/100"
+                      }
+                      alt={order.productName || "Product"}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                     <div>
-                      <p><strong>{order.productName || 'Unknown Product'}</strong></p>
-                      <p>{order.color} - {order.size} - {order.condition}%</p>
                       <p>
-                      <span >Thời gian thuê:</span>{" "}
-                      {new Date(order.rentalStartDate).toLocaleDateString()} -{" "}
-                      {new Date(order.rentalEndDate).toLocaleDateString()}
-                    </p>
-                      <p>Giá thuê: {order.rentPrice ? order.rentPrice.toLocaleString() : 'N/A'}</p>
+                        <strong>
+                          {order.productName || "Unknown Product"}
+                        </strong>
+                      </p>
+                      <p>
+                        {order.color} - {order.size} - {order.condition}%
+                      </p>
+                      <p>
+                        <span>Thời gian thuê:</span>{" "}
+                        {new Date(order.rentalStartDate).toLocaleDateString()} -{" "}
+                        {new Date(order.rentalEndDate).toLocaleDateString()}
+                      </p>
+                      <p>
+                        Giá thuê:{" "}
+                        {order.rentPrice
+                          ? order.rentPrice.toLocaleString()
+                          : "N/A"}
+                      </p>
                       <p>Tạm tính: {order.subTotal.toLocaleString()}</p>
                     </div>
                   </div>
@@ -134,15 +168,21 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
             <ProductOfBranch
               selectedBranchId={selectedBranchId}
               setSelectedBranchId={setSelectedBranchId}
-              productIds={childOrders.map((order) => order.productId).filter(Boolean)}
+              productIds={childOrders
+                .map((order) => order.productId)
+                .filter(Boolean)}
               orderCode={orderCode}
             />
           </div>
         )}
       </DialogBody>
       <DialogFooter>
-        <Button color="green" onClick={handleAssignBranch}>Bàn giao</Button>
-        <Button color="red" onClick={onClose}>Đóng</Button>
+        <Button color="green" onClick={handleAssignBranch}>
+          Bàn giao
+        </Button>
+        <Button color="red" onClick={onClose}>
+          Đóng
+        </Button>
       </DialogFooter>
     </Dialog>
   );

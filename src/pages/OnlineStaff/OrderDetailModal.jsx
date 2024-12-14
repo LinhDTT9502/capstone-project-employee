@@ -69,7 +69,10 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
       <DialogHeader>Chi tiết đơn hàng: {orderDetail?.saleOrderCode}</DialogHeader>
       <DialogBody divider className="max-h-[70vh] overflow-y-auto">
         {loading ? (
-          <p>Loading...</p>
+            <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+              <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+            </div>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
