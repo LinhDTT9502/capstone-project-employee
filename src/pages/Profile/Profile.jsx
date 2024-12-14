@@ -25,8 +25,12 @@ const Profile = ({ open, onClose }) => {
     fetchProfile();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return (
+    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+      <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+    </div>
+  );  if (error) return <div>{error}</div>;
 
   return (
     <Dialog
