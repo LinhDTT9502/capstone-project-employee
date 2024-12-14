@@ -49,6 +49,14 @@ export default function SidebarStaff() {
             </ListItem>
           </Link>
         )}
+        {user.role === 'Admin' && (
+          <Link to='/admin/manage-feedback'>
+            <ListItem>
+              <FontAwesomeIcon icon={faGauge} className='pr-3' />
+              Danh sách phản hồi
+            </ListItem>
+          </Link>
+        )}
         {user.role === 'Order Coordinator' && (<>
           <button
             onClick={handleToggle}
