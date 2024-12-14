@@ -90,6 +90,9 @@ export default function SidebarStaff() {
       <SidebarLink to="/admin/manage-feedback" icon={faComments}>
       Danh sách phản hồi
       </SidebarLink>
+      <SidebarLink to="/admin/import-history" icon={faComments}>
+      Lịch sử nhập hàng
+      </SidebarLink>
       <SidebarLink to="/admin/manage-role" icon={faUsers}>
       Quản lý vai trò
       </SidebarLink>
@@ -167,6 +170,9 @@ export default function SidebarStaff() {
       </SidebarLink>
       <SidebarLink to="/staff/list-rentals" icon={faHandshake}>
         Danh sách đơn cho thuê
+      </SidebarLink>
+      <SidebarLink to="/staff/list-refund" icon={faHandshake}>
+        Yêu cầu hoàn tiền
       </SidebarLink>
     </>
   );

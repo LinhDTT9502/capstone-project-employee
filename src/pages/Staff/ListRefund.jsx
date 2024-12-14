@@ -58,9 +58,9 @@ const ListRefund = () => {
         try {
             if (order.saleOrderCode) {
                 setSelectedOrderCode(order.saleOrderCode);
-
+                setModalOpen(true);
             } else if (order.rentalOrderCode) {
-                setSelectedOrderCode(order.rentalOrderCode);
+                setSelectedRentalCode(order.rentalOrderCode)
                 setModalOpen(true);
 
             } else {
@@ -209,6 +209,7 @@ const ListRefund = () => {
                     open={modalOpen}
                     onClose={handleCloseModal}
                     orderCode={selectedOrderCode}
+                    rentalCode={selectedRenalCode}
                 />
             )}
 

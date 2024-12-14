@@ -7,18 +7,29 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { getRentalDetail } from "../../services/Staff/RentalService";
+import { getOrderbyCode } from "../../services/Staff/OrderService";
 
-const RentalRefundModal = ({ open, onClose, orderCode }) => {
+const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (open && orderCode) {
+    if (open && rentalCode) {
       const fetchOrderDetail = async () => {
         try {
-          const response = await getRentalDetail(orderCode);
+          const response = await getRentalDetail(rentalCode);
           setOrderDetails(response.data);
-          setRefundAmount(response.data.totalAmount)
+        } catch (err) {
+          setError("Failed to fetch order details");
+        }
+      };
+
+      fetchOrderDetail();
+    } else if (open && orderCode){
+      const fetchOrderDetail = async () => {
+        try {
+          const response = await getOrderbyCode(orderCode);
+          setOrderDetails(response);
         } catch (err) {
           setError("Failed to fetch order details");
         }
