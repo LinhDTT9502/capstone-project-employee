@@ -7,6 +7,11 @@ import ListAllStaff from '../pages/Admin/ListAllStaff';
 import StaffDetail from '../pages/Admin/StaffDetail';
 import ListAllManagers from '../pages/Admin/ListAllManagers';
 import Feedback from '../pages/Admin/Feedback';
+import BrandManagement from '../pages/Admin/BrandManagement';
+import CategoryManagement from '../pages/Admin/CategoryManagement';
+import RoleManagement from '../pages/Admin/RoleManagement';
+import SportManagement from '../pages/Admin/SportManagement';
+import PromotionManagement from '../pages/Admin/PromotionManagement';
 
 const AdminRoutes = () => {
   const token = localStorage.getItem('token');
@@ -24,6 +29,11 @@ const AdminRoutes = () => {
       <Route path="/manage-staff/:staffId" element={<StaffDetail />} />
       <Route path="/manage-managers" element={<ListAllManagers />} />
       <Route path="/manage-feedback" element={<Feedback />} />
+      <Route path="/manage-brand" element={<BrandManagement />} />
+      <Route path="/manage-category" element={<CategoryManagement />} />
+      <Route path="/manage-role" element={<RoleManagement />} />
+      <Route path="/manage-sport" element={<SportManagement />} />
+      <Route path="/manage-promotion" element={<PromotionManagement />} />
     </Routes>
   );
 };
