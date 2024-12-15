@@ -79,7 +79,7 @@ export default function SidebarStaff() {
       <SidebarLink to="/admin/dashboard" icon={faGauge}>
         Tổng quan
       </SidebarLink>
-      <SidebarLink to="/admin/manage-user2" icon={faUser}>
+      <SidebarLink to="/admin/manage-user" icon={faUser}>
         Quản lý tài khoản
       </SidebarLink>
       <SidebarLink to="/admin/manage-staff" icon={faUserTie}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Spinner } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   getAllBrands,
@@ -13,28 +13,30 @@ import EditBrandModal from "../../components/Admin/EditBrandModal.jsx";
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
+  const [filteredBrands, setFilteredBrands] = useState([]); // For search filtering
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Fetch all brands
   const fetchBrands = async () => {
     try {
       setLoading(true);
       const response = await getAllBrands();
       setBrands(response?.$values || []);
+      setFilteredBrands(response?.$values || []); // Initialize filtered brands
       setCurrentPage(1); // Reset pagination when fetching new data
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu thương hiệu.");
       toast.error("Không thể lấy dữ liệu thương hiệu!", { position: "top-right" });
       setBrands([]);
+      setFilteredBrands([]);
     } finally {
       setLoading(false);
     }
@@ -44,15 +46,24 @@ const BrandManagement = () => {
     fetchBrands();
   }, []);
 
+  // Filter brands based on search term
+  useEffect(() => {
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    const filtered = brands.filter((brand) =>
+      brand.brandName?.toLowerCase().includes(lowerCaseTerm)
+    );
+    setFilteredBrands(filtered);
+    setCurrentPage(1); // Reset to the first page when search term changes
+  }, [searchTerm, brands]);
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentBrands = brands.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(brands.length / itemsPerPage);
+  const currentBrands = filteredBrands.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Add brand handler
   const handleAddBrand = async (formData) => {
     try {
       await createBrand(formData);
@@ -63,7 +74,6 @@ const BrandManagement = () => {
     }
   };
 
-  // Edit brand handler
   const handleEditBrand = async (brandId, formData) => {
     try {
       await updateBrand(brandId, formData);
@@ -74,7 +84,6 @@ const BrandManagement = () => {
     }
   };
 
-  // Delete brand handler
   const handleDeleteBrand = async (brandId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
       try {
@@ -94,7 +103,7 @@ const BrandManagement = () => {
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
             <Typography variant="h4" color="blue-gray">
-              Quản lý Thương Hiệu
+              Quản lý Thương Hiệu ({filteredBrands.length})
             </Typography>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded shadow"
@@ -103,6 +112,17 @@ const BrandManagement = () => {
               Thêm Thương Hiệu
             </button>
           </div>
+
+          {/* Search Bar */}
+          <div className="p-4">
+          <input
+            type="text"
+            placeholder="Tìm kiếm thương hiệu..."
+            className="w-full p-2 border border-gray-300 rounded"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
           {loading ? (
             <div className="flex justify-center p-4">
@@ -149,6 +169,7 @@ const BrandManagement = () => {
                   ))}
                 </tbody>
               </table>
+
               {/* Pagination */}
               <div className="flex justify-center mt-4">
                 {[...Array(totalPages).keys()].map((number) => (

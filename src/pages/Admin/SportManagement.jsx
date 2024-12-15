@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Card, Spinner } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
 import { fetchSports, createSport, updateSport, deleteSport } from "../../services/sportService";
 import SportActions from "../../components/Admin/SportActions.jsx";
 import AddSportModal from "../../components/Admin/AddSportModal.jsx";
@@ -8,8 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 
 const SportManagement = () => {
   const [sports, setSports] = useState([]);
+  const [filteredSports, setFilteredSports] = useState([]); // State for search results
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -24,7 +26,8 @@ const SportManagement = () => {
     try {
       setLoading(true);
       const response = await fetchSports();
-      setSports(response); // Assuming response is a list
+      setSports(response); // Assuming response is a list of sports
+      setFilteredSports(response); // Initialize filtered sports
       setCurrentPage(1); // Reset to first page
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu.");
@@ -38,11 +41,21 @@ const SportManagement = () => {
     fetchSportData();
   }, []);
 
+  // Filter sports based on search term
+  useEffect(() => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const filtered = sports.filter((sport) =>
+      sport.name?.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+    setFilteredSports(filtered);
+    setCurrentPage(1); // Reset pagination when search changes
+  }, [searchTerm, sports]);
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentSports = sports.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sports.length / itemsPerPage);
+  const currentSports = filteredSports.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredSports.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -88,7 +101,7 @@ const SportManagement = () => {
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
             <Typography variant="h4" color="blue-gray">
-              Quản lý Môn Thể Thao
+              Quản lý Môn Thể Thao ({filteredSports.length})
             </Typography>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded shadow"
@@ -97,6 +110,17 @@ const SportManagement = () => {
               Tạo mới
             </button>
           </div>
+
+          {/* Search Bar */}
+          <div className="p-4">
+          <input
+            type="text"
+            placeholder="Tìm kiếm môn thể thao..."
+            className="w-full p-2 border border-gray-300 rounded"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
           {loading ? (
             <div className="flex justify-center p-4">
@@ -135,6 +159,7 @@ const SportManagement = () => {
                   ))}
                 </tbody>
               </table>
+
               {/* Pagination */}
               <div className="flex justify-center mt-4">
                 {[...Array(totalPages).keys()].map((number) => (

@@ -47,3 +47,21 @@ export const updateUser = (id, data) => {
     },
   });
 };
+
+// Get user details
+export const getUserDetailsApi = (userId) => {
+  return axios.get(`${API_BASE_URL}/get-users-detail?userId=${userId}`, {
+    headers: {
+      accept: "*/*",
+    },
+  });
+};
+
+// Change user status
+export const changeUserStatusApi = (userId, status) => {
+  return axios.put(`${API_BASE_URL}/edit-status/${userId}`, status, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Card, Spinner } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
 import { fetchRoles, createRole, updateRole, deleteRole } from "../../services/roleService";
 import RoleActions from "../../components/Admin/RoleActions.jsx";
 import AddRoleModal from "../../components/Admin/AddRoleModal.jsx";
@@ -8,8 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 
 const RoleManagement = () => {
   const [roles, setRoles] = useState([]);
+  const [filteredRoles, setFilteredRoles] = useState([]); // For filtered roles
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // For search functionality
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -18,9 +20,10 @@ const RoleManagement = () => {
   // Fetch all roles
   const fetchRoleData = async () => {
     try {
-        setLoading(true);
+      setLoading(true);
       const response = await fetchRoles();
       setRoles(response);
+      setFilteredRoles(response); // Initialize filtered roles
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu.");
       toast.error("Không thể lấy dữ liệu vai trò!", { position: "top-right" });
@@ -33,14 +36,25 @@ const RoleManagement = () => {
     fetchRoleData();
   }, []);
 
+  // Filter roles based on search term
+  useEffect(() => {
+    const lowerCaseTerm = searchTerm.toLowerCase();
+    const filtered = roles.filter(
+      (role) =>
+        role.roleName?.toLowerCase().includes(lowerCaseTerm) ||
+        role.description?.toLowerCase().includes(lowerCaseTerm)
+    );
+    setFilteredRoles(filtered);
+  }, [searchTerm, roles]);
+
   // Add role handler
   const handleAddRole = async (roleData) => {
     try {
       await createRole(roleData);
-      fetchRoleData(); 
+      fetchRoleData();
       toast.success("Thêm vai trò thành công!", { position: "top-right" });
     } catch (error) {
-        toast.error("Thêm vai trò thất bại!", { position: "top-right" });
+      toast.error("Thêm vai trò thất bại!", { position: "top-right" });
       console.error("Error adding role:", error);
     }
   };
@@ -49,8 +63,10 @@ const RoleManagement = () => {
   const handleEditRole = async (roleId, updatedData) => {
     try {
       await updateRole(roleId, updatedData);
-      fetchRoleData(); toast.success("Cập nhật vai trò thành công!", { position: "top-right" });
-    } catch (error) { toast.error("Cập nhật vai trò thất bại!", { position: "top-right" });
+      fetchRoleData();
+      toast.success("Cập nhật vai trò thành công!", { position: "top-right" });
+    } catch (error) {
+      toast.error("Cập nhật vai trò thất bại!", { position: "top-right" });
       console.error("Error editing role:", error);
     }
   };
@@ -61,6 +77,7 @@ const RoleManagement = () => {
       try {
         await deleteRole(roleId);
         setRoles((prevRoles) => prevRoles.filter((role) => role.roleId !== roleId));
+        setFilteredRoles((prevRoles) => prevRoles.filter((role) => role.roleId !== roleId));
         toast.success("Vai trò đã được xóa!", { position: "top-right" });
       } catch (error) {
         toast.error("Xóa vai trò thất bại!", { position: "top-right" });
@@ -70,12 +87,13 @@ const RoleManagement = () => {
   };
 
   return (
-    <><ToastContainer />
-    <div className="container mx-auto p-4">
-       <Card className="shadow-lg">
+    <>
+      <ToastContainer />
+      <div className="container mx-auto p-4">
+        <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
             <Typography variant="h4" color="blue-gray">
-              Quản lý vai trò
+              Quản lý vai trò ({filteredRoles.length})
             </Typography>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded shadow"
@@ -85,68 +103,80 @@ const RoleManagement = () => {
             </button>
           </div>
 
-        {loading ? (
-          <div className="flex justify-center p-4">
-            <Spinner className="h-10 w-10" />
-          </div>
-        ) : error ? (
-          <Typography variant="h6" color="red" className="text-center p-4">
-            {error}
-          </Typography>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-200 bg-white">
-              <thead>
-                <tr className="bg-gray-100 text-left">
-                  <th className="p-4 border-b">#</th>
-                  <th className="p-4 border-b">Tên vai trò</th>
-                  <th className="p-4 border-b">Mô tả</th>
-                  <th className="p-4 border-b">Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.map((role, index) => (
-                  <tr key={role.roleId} className="hover:bg-gray-50">
-                    <td className="p-4 border-b">{index + 1}</td>
-                    <td className="p-4 border-b">{role.roleName}</td>
-                    <td className="p-4 border-b">{role.description}</td>
-                    <td className="p-4 border-b">
-                      <RoleActions
-                        role={role}
-                        onEdit={() => {
-                          setSelectedRole(role);
-                          setIsEditModalOpen(true);
-                        }}
-                        onDelete={() => handleDeleteRole(role.roleId)}
-                      />
-                    </td>
+          {/* Search Input */}
+          <div className="p-4">
+          <input
+            type="text"
+            placeholder="Tìm kiếm vai trò..."
+            className="w-full p-2 border border-gray-300 rounded"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+          {loading ? (
+            <div className="flex justify-center p-4">
+              <Spinner className="h-10 w-10" />
+            </div>
+          ) : error ? (
+            <Typography variant="h6" color="red" className="text-center p-4">
+              {error}
+            </Typography>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-200 bg-white">
+                <thead>
+                  <tr className="bg-gray-100 text-left">
+                    <th className="p-4 border-b">#</th>
+                    <th className="p-4 border-b">Tên vai trò</th>
+                    <th className="p-4 border-b">Mô tả</th>
+                    <th className="p-4 border-b">Hành động</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredRoles.map((role, index) => (
+                    <tr key={role.roleId} className="hover:bg-gray-50">
+                      <td className="p-4 border-b">{index + 1}</td>
+                      <td className="p-4 border-b">{role.roleName}</td>
+                      <td className="p-4 border-b">{role.description}</td>
+                      <td className="p-4 border-b">
+                        <RoleActions
+                          role={role}
+                          onEdit={() => {
+                            setSelectedRole(role);
+                            setIsEditModalOpen(true);
+                          }}
+                          onDelete={() => handleDeleteRole(role.roleId)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+
+        {/* Add Role Modal */}
+        {isAddModalOpen && (
+          <AddRoleModal
+            isOpen={isAddModalOpen}
+            onClose={() => setIsAddModalOpen(false)}
+            onAddRole={handleAddRole}
+          />
         )}
-      </Card>
 
-      {/* Add Role Modal */}
-      {isAddModalOpen && (
-        <AddRoleModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onAddRole={handleAddRole}
-        />
-      )}
-
-      {/* Edit Role Modal */}
-      {isEditModalOpen && selectedRole && (
-        <EditRoleModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onEditRole={handleEditRole}
-          role={selectedRole}
-        />
-      )}
-    </div></>
+        {/* Edit Role Modal */}
+        {isEditModalOpen && selectedRole && (
+          <EditRoleModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onEditRole={handleEditRole}
+            role={selectedRole}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
