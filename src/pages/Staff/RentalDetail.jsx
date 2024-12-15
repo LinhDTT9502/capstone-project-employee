@@ -58,28 +58,55 @@ const RentalDetail = () => {
     const step = ORDER_STEPS.find((step) => step.label === orderStatus);
     return step ? step.id - 1 : 0; // Return 0 if not found (safe default)
   };
+  const fetchOrderDetail = async () => {
+    try {
+      const response = await axios.get(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
+      );
+      console.log(response);
+
+      if (response.data.isSuccess) {
+        setOrder(response.data.data);
+      } else {
+        setError("Failed to retrieve order details");
+      }
+    } catch (error) {
+      setError("Error fetching order details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrderDetail = async () => {
-      try {
-        const response = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
-        );
-        console.log(response);
-
-        if (response.data.isSuccess) {
-          setOrder(response.data.data);
-        } else {
-          setError("Failed to retrieve order details");
-        }
-      } catch (error) {
-        setError("Error fetching order details");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrderDetail();
   }, [rentalId, reload]);
+
+  // Only destructure if `order` is not null or undefined
+  if (!order) {
+    return <div>Loading...</div>;
+  }
+
+  const {
+    id,
+    fullName,
+    email,
+    contactPhone,
+    address,
+    rentalOrderCode,
+    childOrders,
+    isExtended,
+    productName,
+    rentPrice,
+    rentalStartDate,
+    rentalEndDate,
+    totalAmount,
+    orderStatus,
+    paymentStatus,
+    subTotal
+  } = order;
+
+  const children = childOrders?.$values || [];
+
 
   const handleStatusChange = async () => {
     if (newStatus === null || updating) return;
@@ -191,32 +218,93 @@ const RentalDetail = () => {
         {/* Items Ordered */}
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">Ordered Products</h3>
-          <ul>
-            <li
-              key={order.productId}
-              className="flex items-center justify-between py-4 border-b"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={order.imageUrl}
-                  alt={order.productName}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                <div>
-                  <p className="font-semibold">{order.productName}</p>
-                  <p className="text-gray-500">Quantity: {order.quantity}</p>
+
+          {children.length > 0 ? (
+            children.map((child, index) => (
+              <div
+                key={child.id}
+                className="bg-gray-50 p-4 mb-4 rounded-lg shadow-sm"
+              >
+                <div className="flex flex-col md:flex-row gap-4">
+                  <img
+                    src={child.imgAvatarPath}
+                    alt={child.productName}
+                    className="w-full md:w-32 h-32 object-cover rounded"
+                  />
+                  <div className="flex-grow">
+                    <h4 className="font-semibold text-lg mb-2">
+                      {child.productName}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <p>
+                        <span className="font-semibold">Color:</span>{" "}
+                        {child.color}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Size:</span>{" "}
+                        {child.size}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Condition:</span>{" "}
+                        {child.condition}%
+                      </p>
+                      <p>
+                        <span className="font-semibold">Quantity:</span>{" "}
+                        {child.quantity}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Rent Price:</span>{" "}
+                        {child.rentPrice} ₫
+                      </p>
+                      <p>
+                        <span className="font-semibold">Total:</span>{" "}
+                        {child.totalAmount} ₫
+                      </p>
+                    </div>
+                    <p className="mt-2">
+                      <span className="font-semibold">Rental Period:</span>{" "}
+                      {new Date(child.rentalStartDate).toLocaleDateString()} -{" "}
+                      {new Date(child.rentalEndDate).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
               </div>
-              {/* <p className="font-semibold">{order.totalPrice.toLocaleString()} VND</p> */}
-            </li>
-          </ul>
+            ))
+          ) : (
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+
+              <div className="flex flex-col md:flex-row gap-4">
+                <img
+                  src={order.imgAvatarPath || "/placeholder.jpg"}
+                  alt={productName}
+                  className="w-full md:w-32 h-32 object-cover rounded"
+                />
+                <div className="flex-grow">
+                  <h4 className="font-semibold text-lg mb-2">{productName}</h4>
+                  <p>
+                    <span className="font-semibold">Rent Price:</span>{" "}
+                    {rentPrice || "N/A"} ₫
+                  </p>
+                  <p className="mt-2">
+                    <span className="font-semibold">Rental Period:</span>{" "}
+                    {new Date(rentalStartDate).toLocaleDateString()} -{" "}
+                    {new Date(rentalEndDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Total:</span>{" "}
+                    {totalAmount || "N/A"} ₫
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Order Summary */}
         <div className="mt-6 bg-gray-50 p-4 rounded-lg">
           <div className="flex justify-between py-2">
             <p>Subtotal</p>
-            {/* <p className="font-semibold">{order.subTotal.toLocaleString()} VND</p> */}
+            <p className="font-semibold">{subTotal.toLocaleString()} VND</p>
           </div>
           <div className="flex justify-between py-2">
             <p>Shipping Fee</p>
@@ -224,7 +312,7 @@ const RentalDetail = () => {
           </div>
           <div className="flex justify-between py-2 border-t mt-4 pt-4">
             <p className="font-bold">Total</p>
-            {/* <p className="font-bold text-lg">{order.totalAmount.toLocaleString()} VND</p> */}
+            <p className="font-bold text-lg">{order.totalAmount.toLocaleString()} VND</p>
           </div>
         </div>
         {order.orderStatus === "Chờ xử lý" &&

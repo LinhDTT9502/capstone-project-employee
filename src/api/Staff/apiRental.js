@@ -59,3 +59,11 @@ export const getRentalbyStatusAPI = (orderStatus) => {
       }
     });
   };
+
+  export const getListExtension = (extensionStatus, branchId) => {
+    return axios.get(`${API_BASE_URL}/get-extension-orders/${extensionStatus }?branchId=${branchId}`, {
+      headers: {
+        'accept': '*/*'
+      }
+    });
+  };
