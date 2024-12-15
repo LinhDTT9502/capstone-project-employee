@@ -3,23 +3,23 @@ import { Typography, Card, Spinner } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import { getAllPromotions, createOrUpdatePromotion } from "../../services/promotionService";
 import SearchModal from "../../components/Admin/SearchModal.jsx";
+
 export default function PromotionManagement() {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleAddPromotion = (productName, discount) => {
-    setPromotions((prev) => [...prev, { productName, discount }]);
-    toast.success("Thêm khuyến mãi thành công!", { position: "top-right" });
-  };
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch all promotions
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const fetchPromotions = async () => {
     try {
       setLoading(true);
       const response = await getAllPromotions();
-      setPromotions(response?.data?.$values || []); 
+      setPromotions(response?.data?.$values || []);
+      setCurrentPage(1);
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy danh sách khuyến mãi.");
       toast.error("Không thể lấy dữ liệu khuyến mãi!", { position: "top-right" });
@@ -32,17 +32,22 @@ export default function PromotionManagement() {
     fetchPromotions();
   }, []);
 
-  // Add or Update Promotion handler
-  const handleAddOrUpdatePromotion = async (productName, percentDiscount) => {
+  const handleAddPromotion = async (productName, discount) => {
     try {
-      await createOrUpdatePromotion(productName, percentDiscount);
+      await createOrUpdatePromotion(productName, discount);
       fetchPromotions();
       toast.success("Khuyến mãi được cập nhật thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Cập nhật khuyến mãi thất bại!", { position: "top-right" });
-      console.error("Error adding/updating promotion:", error);
     }
   };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPromotions = promotions.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(promotions.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
@@ -70,7 +75,7 @@ export default function PromotionManagement() {
               {error}
             </Typography>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto  p-4">
               <table className="min-w-full border border-gray-200 bg-white">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -79,14 +84,13 @@ export default function PromotionManagement() {
                     <th className="p-4 border-b">Tên Sản Phẩm</th>
                     <th className="p-4 border-b">Hình Ảnh</th>
                     <th className="p-4 border-b">Khuyến Mãi (%)</th>
-                    {/* <th className="p-4 border-b">Hành Động</th> */}
                   </tr>
                 </thead>
                 <tbody>
-                  {promotions.length > 0 ? (
-                    promotions.map((promotion, index) => (
+                  {currentPromotions.length > 0 ? (
+                    currentPromotions.map((promotion, index) => (
                       <tr key={promotion.productCode} className="hover:bg-gray-50">
-                        <td className="p-4 border-b">{index + 1}</td>
+                        <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
                         <td className="p-4 border-b">{promotion.productCode}</td>
                         <td className="p-4 border-b">{promotion.productName}</td>
                         <td className="p-4 border-b">
@@ -97,26 +101,40 @@ export default function PromotionManagement() {
                           />
                         </td>
                         <td className="p-4 border-b">{promotion.discount}%</td>
-
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center p-4">
+                      <td colSpan="5" className="text-center p-4">
                         Không có khuyến mãi nào.
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
+              {/* Pagination */}
+              <div className="flex justify-center mt-4">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <button
+                    key={number + 1}
+                    onClick={() => handlePageChange(number + 1)}
+                    className={`px-3 py-1 mx-1 border rounded ${
+                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </Card>
+        {/* Add Promotion Modal */}
         <SearchModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddPromotion={handleAddPromotion}
-      />
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddPromotion={handleAddPromotion}
+        />
       </div>
     </>
   );

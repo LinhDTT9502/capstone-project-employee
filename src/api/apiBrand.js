@@ -17,25 +17,25 @@ export const fetchBrandDetailsByIdApi = (brandId) => {
 };
 
 // Add a new brand
-export const createBrandApi = (brandData, brandName, brandImage) => {
-  return axios.post(`${API_BASE_URL}/add-brand?BrandName=${brandName}`, brandData, {
-    params: {brandImage},
+export const createBrandApi = (formData) => {
+  return axios.post(`${API_BASE_URL}/add-brand`, formData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data", 
     },
   });
 };
 
+
 // Update a brand by ID
-export const updateBrandApi = (brandId, brandData) => {
-  return axios.post(`${API_BASE_URL}/update-brand/${brandId}`, brandData, {
+export const updateBrandApi = (brandId, formData) => {
+  return axios.post(`${API_BASE_URL}/update-brand/${brandId}`, formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-     "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
     },
   });
 };
+
 // Delete a brand by ID
 export const deleteBrandApi = (brandId) => {
   return axios.post(`${API_BASE_URL}/delete-brand/${brandId}`);

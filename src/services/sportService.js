@@ -10,7 +10,8 @@ import {
 export const fetchSports = async () => {
     try {
         const response = await getAllSports();
-        return response.data.data.$values; 
+        const filteredSports = response.data.data.$values.filter(sport => sport.status === true);
+        return filteredSports; 
     } catch (error) {
         console.error("Error fetching sports:", error);
         throw error;
