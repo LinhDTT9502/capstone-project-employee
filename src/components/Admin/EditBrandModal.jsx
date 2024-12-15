@@ -23,46 +23,32 @@ const EditBrandModal = ({ isOpen, onClose, onEditBrand, brand }) => {
     }
   };
 
-  const handleSubmit = async () => {
-    // Validation
-    if (!brandName.trim() || (!uploadFile && !currentImage)) {
-      setErrors({
-        brandName: !brandName.trim() ? "Tên thương hiệu là bắt buộc." : "",
-        brandImage: !uploadFile && !currentImage ? "Hình ảnh là bắt buộc." : "",
-      });
+  const handleSubmit = () => {
+    if (!brandName.trim()) {
+      setErrors({ brandName: "Tên thương hiệu là bắt buộc." });
       return;
     }
-
-    // Prepare FormData
+  
     const formData = new FormData();
-    formData.append("BrandName", brandName.trim()); // Match API field `BrandName`
+    formData.append("BrandName", brandName.trim());
+  
     if (uploadFile) {
-      formData.append("Image", uploadFile); // Add new uploaded file
+      formData.append("LogoImage", uploadFile);
     }
-
-    try {
-      // Call parent `onEditBrand` with brand ID and form data
-      await onEditBrand(brand.id, formData);
-
-      // Reset state and close modal
-      setBrandName("");
-      setUploadFile(null);
-      setCurrentImage("");
-      setErrors({});
-      onClose();
-    } catch (error) {
-      if (error.response && error.response.data.errors) {
-        const apiErrors = error.response.data.errors;
-        setErrors({
-          brandName: apiErrors.BrandName?.[0] || "",
-          brandImage: apiErrors.Image?.[0] || "",
-        });
-      } else {
-        console.error("Error updating brand:", error);
-      }
+  
+    console.log("FormData content: ", [...formData]);
+  
+    if (brand && brand.id) {
+      onEditBrand(brand.id, formData); // Use brand.id as the brandId
+    } else {
+      console.error("Brand ID is not available");
     }
+  
+    setErrors({});
+    onClose();
   };
-
+  
+  
   return (
     <Dialog open={isOpen} handler={onClose}>
       <div className="p-6 bg-white rounded shadow-lg">

@@ -5,6 +5,7 @@ const API_BASE_URL = 'https://capstone-project-703387227873.asia-southeast1.run.
 // Get all sports
 export const getAllSports = () => {
   return axios.get(`${API_BASE_URL}/list-sports`, {
+    params: { status: true } ,
     headers: {
       'accept': '*/*'
     }
@@ -40,7 +41,7 @@ export const editSport = (sportId, sportData) => {
 
 // Remove sport by ID
 export const removeSport = (sportId) => {
-  return axios.post(`${API_BASE_URL}/delete-sport?sportId=${sportId}`, {}, {
+  return axios.delete(`${API_BASE_URL}/delete-sport/${sportId}`, {}, {
     headers: {
       'accept': '*/*'
     }

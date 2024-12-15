@@ -23,19 +23,18 @@ const AddBrandModal = ({ isOpen, onClose, onAddBrand }) => {
       });
       return;
     }
-
+  
     const formData = new FormData();
-    formData.append("name", brandName.trim());
-    formData.append("image", uploadFile);
-
+    formData.append("BrandName", brandName.trim()); 
+    formData.append("LogoImage", uploadFile);
+    
     onAddBrand(formData);
-console.log(formData)
-    // Reset fields
     setBrandName("");
     setUploadFile(null);
     setErrors({});
     onClose();
   };
+  
 
   return (
     <Dialog open={isOpen} handler={onClose}>

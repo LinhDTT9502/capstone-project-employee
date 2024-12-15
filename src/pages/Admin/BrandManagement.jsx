@@ -20,49 +20,57 @@ const BrandManagement = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Fetch all brands
   const fetchBrands = async () => {
     try {
       setLoading(true);
       const response = await getAllBrands();
-      // console.log("API Response:", response); 
       setBrands(response?.$values || []);
+      setCurrentPage(1); // Reset pagination when fetching new data
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu thương hiệu.");
       toast.error("Không thể lấy dữ liệu thương hiệu!", { position: "top-right" });
-      setBrands([]); 
+      setBrands([]);
     } finally {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchBrands();
   }, []);
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBrands = brands.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(brands.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+
   // Add brand handler
-  const handleAddBrand = async (brandData, brandName, brandImage) => {
+  const handleAddBrand = async (formData) => {
     try {
-      await createBrand(brandData, brandName, brandImage);
-      
+      await createBrand(formData);
       fetchBrands();
       toast.success("Thêm thương hiệu thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Thêm thương hiệu thất bại!", { position: "top-right" });
-      console.error("Error adding brand:", error);
     }
   };
 
   // Edit brand handler
-  const handleEditBrand = async (brandId, updatedData) => {
+  const handleEditBrand = async (brandId, formData) => {
     try {
-      await updateBrand(brandId, updatedData);
+      await updateBrand(brandId, formData);
       fetchBrands();
       toast.success("Cập nhật thương hiệu thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Cập nhật thương hiệu thất bại!", { position: "top-right" });
-      console.error("Error updating brand:", error);
     }
   };
 
@@ -71,11 +79,10 @@ const BrandManagement = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
       try {
         await removeBrand(brandId);
-        setBrands((prev) => prev.filter((brand) => brand.id !== brandId));
+        fetchBrands();
         toast.success("Thương hiệu đã được xóa!", { position: "top-right" });
       } catch (error) {
         toast.error("Xóa thương hiệu thất bại!", { position: "top-right" });
-        console.error("Error deleting brand:", error);
       }
     }
   };
@@ -106,7 +113,7 @@ const BrandManagement = () => {
               {error}
             </Typography>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto p-4">
               <table className="min-w-full border border-gray-200 bg-white">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -117,9 +124,9 @@ const BrandManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {brands.map((brand, index) => (
+                  {currentBrands.map((brand, index) => (
                     <tr key={brand.id} className="hover:bg-gray-50">
-                      <td className="p-4 border-b">{index + 1}</td>
+                      <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
                       <td className="p-4 border-b">{brand.brandName}</td>
                       <td className="p-4 border-b">
                         <img
@@ -142,6 +149,20 @@ const BrandManagement = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Pagination */}
+              <div className="flex justify-center mt-4">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <button
+                    key={number + 1}
+                    onClick={() => handlePageChange(number + 1)}
+                    className={`px-3 py-1 mx-1 border rounded ${
+                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </Card>

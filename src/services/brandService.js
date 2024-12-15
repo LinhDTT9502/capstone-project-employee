@@ -24,16 +24,28 @@ export const getBrandDetails = async (brandId) => {
 };
 
 // Add a new brand
-export const createBrand = async (brandData, brandName, brandImage) => {
-  const response = await createBrandApi(brandData, brandName, brandImage);
-  return response.data;
+export const createBrand = async (formData) => {
+  try {
+    const response = await createBrandApi(formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding brand:", error);
+    throw error;
+  }
 };
 
+
 // Update a brand by ID
-export const updateBrand = async (brandId, brandData) => {
-  const response = await updateBrandApi(brandId, brandData);
-  return response.data;
+export const updateBrand = async (brandId, formData) => {
+  try {
+    const response = await updateBrandApi(brandId, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating brand:", error);
+    throw error;
+  }
 };
+
 
 // Delete a brand by ID
 export const removeBrand = async (brandId) => {

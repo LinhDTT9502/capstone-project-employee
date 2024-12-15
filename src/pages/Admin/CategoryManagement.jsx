@@ -3,7 +3,6 @@ import { Typography, Card, Spinner } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   fetchCategories,
-  fetchCategoryDetails,
   createCategory,
   updateCategoryById,
   deleteCategoryById,
@@ -21,15 +20,19 @@ const CategoryManagement = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Fetch all categories
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const fetchCategoryData = async () => {
     try {
       setLoading(true);
       const response = await fetchCategories();
-      setCategories(response.$values); // Adjust based on your API response structure
+      setCategories(response.$values || []);
+      setCurrentPage(1); 
     } catch (err) {
-      setError("Đã xảy ra lỗi khi lấy dữ liệu.");
+      setError("Đã xảy ra lỗi khi lấy dữ liệu danh mục.");
       toast.error("Không thể lấy dữ liệu danh mục!", { position: "top-right" });
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -39,7 +42,13 @@ const CategoryManagement = () => {
     fetchCategoryData();
   }, []);
 
-  // Add category handler
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+
   const handleAddCategory = async (categoryData) => {
     try {
       await createCategory(categoryData);
@@ -47,11 +56,9 @@ const CategoryManagement = () => {
       toast.success("Thêm danh mục thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Thêm danh mục thất bại!", { position: "top-right" });
-      console.error("Error adding category:", error);
     }
   };
 
-  // Edit category handler
   const handleEditCategory = async (categoryId, updatedData) => {
     try {
       await updateCategoryById(categoryId, updatedData);
@@ -59,7 +66,6 @@ const CategoryManagement = () => {
       toast.success("Cập nhật danh mục thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Cập nhật danh mục thất bại!", { position: "top-right" });
-      console.error("Error editing category:", error);
     }
   };
 
@@ -68,11 +74,10 @@ const CategoryManagement = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
       try {
         await deleteCategoryById(categoryId);
-        setCategories((prev) => prev.filter((category) => category.id !== categoryId));
+        fetchCategoryData();
         toast.success("Danh mục đã được xóa!", { position: "top-right" });
       } catch (error) {
         toast.error("Xóa danh mục thất bại!", { position: "top-right" });
-        console.error("Error deleting category:", error);
       }
     }
   };
@@ -103,7 +108,7 @@ const CategoryManagement = () => {
               {error}
             </Typography>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto p-4">
               <table className="min-w-full border border-gray-200 bg-white">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -112,14 +117,13 @@ const CategoryManagement = () => {
                     <th className="p-4 border-b">Tên Danh Mục</th>
                     <th className="p-4 border-b">Môn thể thao</th>
                     <th className="p-4 border-b">ID Môn thể thao</th>
-                    
                     <th className="p-4 border-b">Hành Động</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map((category, index) => (
+                  {currentCategories.map((category, index) => (
                     <tr key={category.id} className="hover:bg-gray-50">
-                      <td className="p-4 border-b">{index + 1}</td>
+                      <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
                       <td className="p-4 border-b">
                         <img
                           src={category.categoryImgPath}
@@ -130,7 +134,6 @@ const CategoryManagement = () => {
                       <td className="p-4 border-b">{category.categoryName}</td>
                       <td className="p-4 border-b">{category.sportName}</td>
                       <td className="p-4 border-b">{category.sportId}</td>
-                      
                       <td className="p-4 border-b">
                         <CategoryActions
                           category={category}
@@ -145,6 +148,20 @@ const CategoryManagement = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Pagination */}
+              <div className="flex justify-center mt-4">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <button
+                    key={number + 1}
+                    onClick={() => handlePageChange(number + 1)}
+                    className={`px-3 py-1 mx-1 border rounded ${
+                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </Card>

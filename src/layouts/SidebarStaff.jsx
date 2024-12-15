@@ -21,6 +21,7 @@ import {
   faHandshake,
   faBars,
   faReceipt,
+  faWarehouse,
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -78,7 +79,7 @@ export default function SidebarStaff() {
       <SidebarLink to="/admin/dashboard" icon={faGauge}>
         Tổng quan
       </SidebarLink>
-      <SidebarLink to="/admin/manage-user" icon={faUser}>
+      <SidebarLink to="/admin/manage-user2" icon={faUser}>
         Quản lý tài khoản
       </SidebarLink>
       <SidebarLink to="/admin/manage-staff" icon={faUserTie}>
@@ -104,6 +105,9 @@ export default function SidebarStaff() {
       </SidebarLink>
       <SidebarLink to="/admin/manage-promotion" icon={faReceipt}>
       Khuyến mãi sản phẩm
+      </SidebarLink>
+      <SidebarLink to="/admin/manage-warehouse" icon={faWarehouse}>
+      Quản lý kho
       </SidebarLink>
     </>
   );
