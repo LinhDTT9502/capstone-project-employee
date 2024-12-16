@@ -29,3 +29,13 @@ export const getProductSize = (productCode, color) => {
     }
   });
 };
+
+
+export const getProductByProductCode = (productCode, color, size, condition) => {
+  const url = `${API_BASE_URL}/get-product-by-product-code/${productCode}?color=${color}&size=${size}&condition=${condition}`;
+  return axios.get(url, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};

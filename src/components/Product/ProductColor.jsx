@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchProductColor } from "../../services/productService";
-import { fetchProductByProductCode } from "../../../../capstone-project/Frontend/src/services/productService";
+import { fetchProductByProductCode, fetchProductColor } from "../../services/productService";
 
 export function ProductColor({ productCode, selectedColor, setSelectedColor, onColorSelect }) {
   const [colors, setColors] = useState([]);

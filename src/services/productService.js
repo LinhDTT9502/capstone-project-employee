@@ -1,4 +1,4 @@
-import { getProductColor, getProductSize } from "../api/apiProduct";
+import { getProductByProductCode, getProductColor, getProductSize } from "../api/apiProduct";
 
 export const fetchProductColor = async (productCode) => {
   try {
@@ -16,6 +16,16 @@ export const fetchProductSize = async (productCode, color) => {
     return response.data.data.$values;
   } catch (error) {
     console.error(`Error fetching product with :`, error);
+    throw error;
+  }
+};
+
+export const fetchProductByProductCode = async (productCode, color, size, condition) => {
+  try {
+    const response = await getProductByProductCode(productCode, color, size, condition);
+    return response.data.$values;
+  } catch (error) {
+    console.error(`Error fetching product:`, error);
     throw error;
   }
 };
