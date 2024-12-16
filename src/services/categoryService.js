@@ -11,7 +11,9 @@ import {
   export const fetchCategories = async () => {
     try {
       const response = await getAllCategories();
-      return response.data.data;
+
+      const filteredCategory = response.data.data.$values.filter(category => category.status === true);
+        return filteredCategory;
     } catch (error) {
       console.error("Error fetching categories:", error);
       throw error;

@@ -28,21 +28,27 @@ const CategoryManagement = () => {
 
   // Fetch categories
   const fetchCategoryData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetchCategories();
-      setCategories(response.$values || []);
-      setFilteredCategories(response.$values || []); // Initialize filtered categories
-      setCurrentPage(1);
-    } catch (err) {
-      setError("Đã xảy ra lỗi khi lấy dữ liệu danh mục.");
-      toast.error("Không thể lấy dữ liệu danh mục!", { position: "top-right" });
-      setCategories([]);
-      setFilteredCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const response = await fetchCategories();
+
+    const activeCategories = response
+      .filter(category => category.status === true) 
+      .sort((a, b) => b.id - a.id); 
+
+    setCategories(activeCategories);
+    setFilteredCategories(activeCategories);
+    setCurrentPage(1);
+  } catch (err) {
+    setError("Đã xảy ra lỗi khi lấy dữ liệu danh mục.");
+    toast.error("Không thể lấy dữ liệu danh mục!", { position: "top-right" });
+    setCategories([]);
+    setFilteredCategories([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchCategoryData();
@@ -101,7 +107,18 @@ const CategoryManagement = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{zIndex: 99999 }}
+      />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">

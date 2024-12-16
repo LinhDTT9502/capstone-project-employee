@@ -17,10 +17,14 @@ const EditSportModal = ({ isOpen, onClose, onEditSport, sport }) => {
       alert("Tên môn thể thao không được để trống.");
       return;
     }
-    onEditSport(sport.id, { name: name.trim() });
-    setName("");
+    const payload = {
+      name: name.trim(),
+    };
+
+    onEditSport(sport.id, payload);
     onClose();
   };
+  
 
   return (
     <Dialog open={isOpen} handler={onClose}>

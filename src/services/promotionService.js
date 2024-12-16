@@ -1,6 +1,7 @@
 import {
     fetchAllPromotionsApi,
     createOrUpdatePromotionApi,
+    deletePromotionApi,
   } from "../api/apiPromotion";
   
   // Fetch all promotions
@@ -27,4 +28,15 @@ import {
       throw error;
     }
   };
+
+// Delete a promotion
+export const deletePromotion = async (productName) => {
+  try {
+    const response = await deletePromotionApi(productName);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting promotion:", error);
+    throw error;
+  }
+};
   

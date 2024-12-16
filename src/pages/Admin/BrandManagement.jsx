@@ -13,11 +13,11 @@ import EditBrandModal from "../../components/Admin/EditBrandModal.jsx";
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
-  const [filteredBrands, setFilteredBrands] = useState([]); // For search filtering
+  const [filteredBrands, setFilteredBrands] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -28,17 +28,25 @@ const BrandManagement = () => {
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      const response = await getAllBrands();
-      setBrands(response?.$values || []);
-      setFilteredBrands(response?.$values || []); // Initialize filtered brands
-      setCurrentPage(1); // Reset pagination when fetching new data
-    } catch (err) {
+
+      const response = await getAllBrands(); 
+
+      const activeBrands = response
+        .filter((brand) => brand.status)
+        .sort((a, b) => b.id - a.id);
+
+      setBrands(activeBrands);
+      setFilteredBrands(activeBrands);
+      setCurrentPage(1);
+    } catch (error) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu thương hiệu.");
-      toast.error("Không thể lấy dữ liệu thương hiệu!", { position: "top-right" });
-      setBrands([]);
+      toast.error("Không thể lấy dữ liệu thương hiệu!", {
+        position: "top-right",
+      });
+      setBrands([]); 
       setFilteredBrands([]);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -84,21 +92,34 @@ const BrandManagement = () => {
     }
   };
 
-  const handleDeleteBrand = async (brandId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
-      try {
-        await removeBrand(brandId);
-        fetchBrands();
-        toast.success("Thương hiệu đã được xóa!", { position: "top-right" });
-      } catch (error) {
-        toast.error("Xóa thương hiệu thất bại!", { position: "top-right" });
+    const handleDeleteBrand = async (brandId) => {
+      if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
+        try {
+          await removeBrand(brandId);
+          fetchBrands();
+          toast.success("Thương hiệu đã được xóa thành công!", {
+            position: "top-right",
+          });        } catch (error) {
+            toast.error("Xóa thương hiệu thất bại!", { position: "top-right" });
+          }
       }
-    }
-  };
+    };
+
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{zIndex: 99999 }}
+      />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">

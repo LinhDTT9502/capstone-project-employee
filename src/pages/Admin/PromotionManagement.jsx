@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Card, Spinner } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-import { getAllPromotions, createOrUpdatePromotion } from "../../services/promotionService";
+import {
+  getAllPromotions,
+  createOrUpdatePromotion,
+  deletePromotion,
+} from "../../services/promotionService";
 import SearchModal from "../../components/Admin/SearchModal.jsx";
+import PromotionActions from "../../components/Admin/PromotionActions.jsx";
+import EditPromotionModal from "../../components/Admin/EditPromotionModal.jsx";
 
 export default function PromotionManagement() {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +30,9 @@ export default function PromotionManagement() {
       setCurrentPage(1);
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy danh sách khuyến mãi.");
-      toast.error("Không thể lấy dữ liệu khuyến mãi!", { position: "top-right" });
+      toast.error("Không thể lấy dữ liệu khuyến mãi!", {
+        position: "top-right",
+      });
     } finally {
       setLoading(false);
     }
@@ -36,7 +46,38 @@ export default function PromotionManagement() {
     try {
       await createOrUpdatePromotion(productName, discount);
       fetchPromotions();
-      toast.success("Khuyến mãi được cập nhật thành công!", { position: "top-right" });
+      toast.success("Khuyến mãi được cập nhật thành công!", {
+        position: "top-right",
+      });
+    } catch (error) {
+      toast.error("Cập nhật khuyến mãi thất bại!", { position: "top-right" });
+    }
+  };
+
+  const handleEditPromotion = (promotion) => {
+    setSelectedPromotion(promotion);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeletePromotion = async (productName) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa khuyến mãi này không?")) {
+      try {
+        await deletePromotion(productName);
+        fetchPromotions();
+        toast.success("Xóa khuyến mãi thành công!", { position: "top-right" });
+      } catch (error) {
+        toast.error("Xóa khuyến mãi thất bại!", { position: "top-right" });
+      }
+    }
+  };
+
+  const handleSavePromotion = async (productName, discount) => {
+    try {
+      await createOrUpdatePromotion(productName, discount);
+      fetchPromotions();
+      toast.success("Khuyến mãi được cập nhật thành công!", {
+        position: "top-right",
+      });
     } catch (error) {
       toast.error("Cập nhật khuyến mãi thất bại!", { position: "top-right" });
     }
@@ -51,7 +92,18 @@ export default function PromotionManagement() {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ zIndex: 99999 }}
+      />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
@@ -84,15 +136,25 @@ export default function PromotionManagement() {
                     <th className="p-4 border-b">Tên Sản Phẩm</th>
                     <th className="p-4 border-b">Hình Ảnh</th>
                     <th className="p-4 border-b">Khuyến Mãi (%)</th>
+                    <th className="p-4 border-b">Hành Động</th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentPromotions.length > 0 ? (
                     currentPromotions.map((promotion, index) => (
-                      <tr key={promotion.productCode} className="hover:bg-gray-50">
-                        <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
-                        <td className="p-4 border-b">{promotion.productCode}</td>
-                        <td className="p-4 border-b">{promotion.productName}</td>
+                      <tr
+                        key={promotion.productName}
+                        className="hover:bg-gray-50"
+                      >
+                        <td className="p-4 border-b">
+                          {indexOfFirstItem + index + 1}
+                        </td>
+                        <td className="p-4 border-b">
+                          {promotion.productCode}
+                        </td>
+                        <td className="p-4 border-b">
+                          {promotion.productName}
+                        </td>
                         <td className="p-4 border-b">
                           <img
                             src={promotion.imgAvatarPath}
@@ -101,6 +163,13 @@ export default function PromotionManagement() {
                           />
                         </td>
                         <td className="p-4 border-b">{promotion.discount}%</td>
+                        <td className="p-4 border-b">
+                          <PromotionActions
+                            promotion={promotion}
+                            onEdit={handleEditPromotion}
+                            onDelete={handleDeletePromotion}
+                          />
+                        </td>
                       </tr>
                     ))
                   ) : (
@@ -119,7 +188,9 @@ export default function PromotionManagement() {
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                      currentPage === number + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
                     }`}
                   >
                     {number + 1}
@@ -136,6 +207,13 @@ export default function PromotionManagement() {
           onAddPromotion={handleAddPromotion}
         />
       </div>
+
+      <EditPromotionModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSavePromotion}
+        promotion={selectedPromotion}
+      />
     </>
   );
 }

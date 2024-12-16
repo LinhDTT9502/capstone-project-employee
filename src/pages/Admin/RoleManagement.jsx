@@ -22,8 +22,9 @@ const RoleManagement = () => {
     try {
       setLoading(true);
       const response = await fetchRoles();
-      setRoles(response);
-      setFilteredRoles(response); // Initialize filtered roles
+      const reversedRoles = response.slice().reverse(); 
+      setRoles(reversedRoles);
+      setFilteredRoles(reversedRoles);
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu.");
       toast.error("Không thể lấy dữ liệu vai trò!", { position: "top-right" });
@@ -31,6 +32,7 @@ const RoleManagement = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchRoleData();
@@ -88,7 +90,18 @@ const RoleManagement = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{zIndex: 99999 }}
+      />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
