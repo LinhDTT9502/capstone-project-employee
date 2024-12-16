@@ -24,7 +24,7 @@ import {
   faFlagCheckered,
   faArrowLeft,
   faEdit,
-  faSave
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 
 const ORDER_STEPS = [
@@ -54,9 +54,17 @@ const OrderDetail = () => {
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
-    { label: "Đã vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" },
+    {
+      label: "Đã vận chuyển",
+      value: 4,
+      color: "bg-purple-100 text-purple-800",
+    },
     { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" },
-    { label: "Đã hoàn thành", value: 11, color: "bg-orange-100 text-orange-800" },
+    {
+      label: "Đã hoàn thành",
+      value: 11,
+      color: "bg-orange-100 text-orange-800",
+    },
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -106,7 +114,6 @@ const OrderDetail = () => {
         setOrder((prevOrder) => ({ ...prevOrder, orderStatus: newStatus }));
         setUpdating(true);
 
-
         alert("Cập nhật trạng thái thành công");
       } else {
         alert("Failed to update order status");
@@ -138,22 +145,23 @@ const OrderDetail = () => {
   // Handle input changes
   const handleProductChange = (e, productId) => {
     const { name, value } = e.target;
-    console.log(name, value)
-
+    console.log(name, value);
 
     // Update formData by finding the product by its ID and modifying the specific field
     setFormData((prev) => {
-      const updatedOrderDetailVMs = prev.saleOrderDetailVMs.$values.map((product) => {
-        if (product.productId === productId) {
-          return {
-            ...product,
-            [name]: value, // Update the specific field for this product
-          };
-        }
-        console.log(product);
+      const updatedOrderDetailVMs = prev.saleOrderDetailVMs.$values.map(
+        (product) => {
+          if (product.productId === productId) {
+            return {
+              ...product,
+              [name]: value, // Update the specific field for this product
+            };
+          }
+          console.log(product);
 
-        return product; // Keep other products unchanged
-      });
+          return product; // Keep other products unchanged
+        }
+      );
 
       return {
         ...prev,
@@ -164,17 +172,15 @@ const OrderDetail = () => {
       };
     });
     console.log(formData);
-
   };
 
   const handleCustomerInfChange = (e) => {
     const { name, value } = e.target; // Get the name and value of the input
     setFormData((prevData) => ({
-      ...prevData,  // Spread the existing formData
-      [name]: value // Update only the field being edited
+      ...prevData, // Spread the existing formData
+      [name]: value, // Update only the field being edited
     }));
   };
-
 
   const handleCancel = () => {
     setEditingSection(null);
@@ -193,11 +199,10 @@ const OrderDetail = () => {
       formData.paymentStatus = 4;
     }
     if (formData.deliveryMethod === "Đến cửa hàng nhận") {
-      formData.deliveryMethod = "STORE_PICKUP"
+      formData.deliveryMethod = "STORE_PICKUP";
     } else if (formData.deliveryMethod === "Giao hàng tận nơi") {
-      formData.deliveryMethod = "HOME_DELIVERY"
+      formData.deliveryMethod = "HOME_DELIVERY";
     }
-
 
     // Prepare the payload in the structure the API expects
     const payload = {
@@ -215,7 +220,7 @@ const OrderDetail = () => {
       paymentMethodId: formData.paymentMethodId || null, // Assuming you may have a `paymentMethodId` field
       paymentStatus: formData.paymentStatus,
       note: formData.note || "", // Ensure note is always a string, even if empty
-      productInformations: formData.saleOrderDetailVMs.$values.map(item => ({
+      productInformations: formData.saleOrderDetailVMs.$values.map((item) => ({
         cartItemId: null, // You can set this dynamically if available
         productId: item.productId,
         productName: item.productName,
@@ -230,7 +235,7 @@ const OrderDetail = () => {
       saleCosts: {
         subTotal: formData.subTotal,
         tranSportFee: formData.tranSportFee || 0,
-        totalAmount: formData.totalAmount
+        totalAmount: formData.totalAmount,
       },
     };
 
@@ -259,8 +264,6 @@ const OrderDetail = () => {
     }
   };
 
-
-
   if (loading)
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
@@ -282,10 +285,11 @@ const OrderDetail = () => {
               </h2>
               <div className="flex gap-2">
                 <span
-                  className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
-                    (status) => status.label === order.orderStatus
-                  )?.color || "bg-gray-100 text-gray-800"
-                    }`}
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${
+                    statusOptions.find(
+                      (status) => status.label === order.orderStatus
+                    )?.color || "bg-gray-100 text-gray-800"
+                  }`}
                 >
                   {order.orderStatus}
                 </span>
@@ -314,40 +318,43 @@ const OrderDetail = () => {
                 <Step
                   key={index}
                   completed={index < getCurrentStepIndex(order.orderStatus)}
-                  className={`${index < getCurrentStepIndex(order.orderStatus)
-                    ? "bg-blue-500 text-green-600"
-                    : "bg-green-600 text-green-600"
-                    }`}
+                  className={`${
+                    index < getCurrentStepIndex(order.orderStatus)
+                      ? "bg-blue-500 text-green-600"
+                      : "bg-green-600 text-green-600"
+                  }`}
                 >
                   <div className="relative flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 flex items-center justify-center rounded-full ${index <= getCurrentStepIndex(order.orderStatus)
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-300 text-gray-600"
-                        }`}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full ${
+                        index <= getCurrentStepIndex(order.orderStatus)
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-300 text-gray-600"
+                      }`}
                     >
                       <FontAwesomeIcon
                         icon={
                           index === 0
                             ? faClock
                             : index === 1
-                              ? faCheckCircle
-                              : index === 2
-                                ? faMoneyBillWave
-                                : index === 3
-                                  ? faCogs
-                                  : index === 4
-                                    ? faTruck
-                                    : faFlagCheckered
+                            ? faCheckCircle
+                            : index === 2
+                            ? faMoneyBillWave
+                            : index === 3
+                            ? faCogs
+                            : index === 4
+                            ? faTruck
+                            : faFlagCheckered
                         }
                         className="text-lg"
                       />
                     </div>
                     <div
-                      className={`absolute top-12 text-xs font-medium whitespace-nowrap ${index <= getCurrentStepIndex(order.orderStatus)
-                        ? "text-green-600"
-                        : "text-gray-600"
-                        }`}
+                      className={`absolute top-12 text-xs font-medium whitespace-nowrap ${
+                        index <= getCurrentStepIndex(order.orderStatus)
+                          ? "text-green-600"
+                          : "text-gray-600"
+                      }`}
                     >
                       {status.label}
                     </div>
@@ -364,15 +371,16 @@ const OrderDetail = () => {
                 Sản phẩm đã mua
               </h3>
               {/* edit productInformations and saleCosts part */}
-              {editingSection === "productInformations" ? (<div>
-                <button onClick={handleCancel}>
-                  Hủy
-                </button>
-                <button onClick={handleSave} className="text-green-500 hover:text-green-700">
-                  <FontAwesomeIcon icon={faSave} /> Lưu
-                </button>
-              </div>
-
+              {editingSection === "productInformations" ? (
+                <div>
+                  <button onClick={handleCancel}>Hủy</button>
+                  <button
+                    onClick={handleSave}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <FontAwesomeIcon icon={faSave} /> Lưu
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => handleEditClick("productInformations")}
@@ -386,7 +394,6 @@ const OrderDetail = () => {
             <div className="bg-gray-50 rounded-lg p-4">
               <ul className="divide-y divide-gray-200">
                 {order.saleOrderDetailVMs.$values.map((item) => (
-
                   <li
                     key={item.productId}
                     className="flex items-center justify-between py-4"
@@ -402,37 +409,44 @@ const OrderDetail = () => {
                           {item.productName}
                         </p>
                         <p className="flex text-sm text-gray-500 gap-2">
-                          Số lượng: {editingSection === "productInformations" ? (
+                          Số lượng:{" "}
+                          {editingSection === "productInformations" ? (
                             <input
                               type="number"
                               name="quantity"
-                              value={formData.saleOrderDetailVMs.$values.find(item => item.productId === item.productId)?.quantity || ''}
-                              onChange={(e) => handleProductChange(e, item.productId)}
+                              value={
+                                formData.saleOrderDetailVMs.$values.find(
+                                  (item) => item.productId === item.productId
+                                )?.quantity || ""
+                              }
+                              onChange={(e) =>
+                                handleProductChange(e, item.productId)
+                              }
                               className="w-1/2 border-orange-500 border-2"
                             />
                           ) : (
-
                             item.quantity
-
                           )}
                         </p>
-
                         <p className="text-sm text-gray-500">
                           <b>Màu sắc: </b>
                           {editingSection === "productInformations" ? (
                             <input
                               type="text"
                               name="color"
-                              value={formData.saleOrderDetailVMs.$values.find(item => item.productId === item.productId)?.color || ''}
-                              onChange={(e) => handleProductChange(e, item.productId)}
+                              value={
+                                formData.saleOrderDetailVMs.$values.find(
+                                  (item) => item.productId === item.productId
+                                )?.color || ""
+                              }
+                              onChange={(e) =>
+                                handleProductChange(e, item.productId)
+                              }
                               className="w-1/2 border-orange-500 text-black border-2"
                             />
                           ) : (
-
                             item.color
-
                           )}
-
                         </p>
                         <p className="text-sm text-gray-500">
                           <b>Kích thước: </b>
@@ -440,16 +454,19 @@ const OrderDetail = () => {
                             <input
                               type="text"
                               name="size"
-                              value={formData.saleOrderDetailVMs.$values.find(item => item.productId === item.productId)?.size || ''}
-                              onChange={(e) => handleProductChange(e, item.productId)}
+                              value={
+                                formData.saleOrderDetailVMs.$values.find(
+                                  (item) => item.productId === item.productId
+                                )?.size || ""
+                              }
+                              onChange={(e) =>
+                                handleProductChange(e, item.productId)
+                              }
                               className="w-1/2 border-orange-500 border-2 text-black"
                             />
                           ) : (
-
                             item.size
-
                           )}
-
                         </p>
                         <p className="text-sm text-gray-500">
                           <b>Tình trạng: </b>
@@ -457,16 +474,20 @@ const OrderDetail = () => {
                             <input
                               type="number"
                               name="condition"
-                              value={formData.saleOrderDetailVMs.$values.find(item => item.productId === item.productId)?.condition || ''}
-                              onChange={(e) => handleProductChange(e, item.productId)}
+                              value={
+                                formData.saleOrderDetailVMs.$values.find(
+                                  (item) => item.productId === item.productId
+                                )?.condition || ""
+                              }
+                              onChange={(e) =>
+                                handleProductChange(e, item.productId)
+                              }
                               className="w-1/2 border-orange-500 border-2"
                             />
                           ) : (
-
                             item.condition
-
-                          )}%
-
+                          )}
+                          %
                         </p>{" "}
                       </div>
                     </div>
@@ -511,7 +532,8 @@ const OrderDetail = () => {
           </div>
 
           {order.orderStatus === "Chờ xử lý" &&
-            order.deliveryMethod !== "Đến cửa hàng nhận" && order.deliveryMethod !== "STORE_PICKUP" && (
+            order.deliveryMethod !== "Đến cửa hàng nhận" &&
+            order.deliveryMethod !== "STORE_PICKUP" && (
               <div className="mt-6 flex gap-3 justify-end">
                 <Button
                   onClick={handleReject}
@@ -557,15 +579,16 @@ const OrderDetail = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
               {/* edit customerInformation part */}
-              {editingSection === "customerInformation" ? (<div>
-                <button onClick={handleCancel}>
-                  Hủy
-                </button>
-                <button onClick={handleSave} className="text-green-500 hover:text-green-700">
-                  <FontAwesomeIcon icon={faSave} /> Lưu
-                </button>
-              </div>
-
+              {editingSection === "customerInformation" ? (
+                <div>
+                  <button onClick={handleCancel}>Hủy</button>
+                  <button
+                    onClick={handleSave}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <FontAwesomeIcon icon={faSave} /> Lưu
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => handleEditClick("customerInformation")}
@@ -578,17 +601,20 @@ const OrderDetail = () => {
             <div className="space-y-3">
               <div>
                 <p className="text-sm text-gray-500">Họ và tên</p>
-                <p className="font-medium"> {editingSection === "customerInformation" ? (
-                  <input
-                    type="text"
-                    name="fullName" // This should match the key in formData
-                    value={formData?.fullName || ''}
-                    onChange={(e) => handleCustomerInfChange(e)}
-                    className="w-full border-orange-500 text-black border-2"
-                  />
-                ) : (
-                  order.fullName
-                )}</p>
+                <p className="font-medium">
+                  {" "}
+                  {editingSection === "customerInformation" ? (
+                    <input
+                      type="text"
+                      name="fullName" // This should match the key in formData
+                      value={formData?.fullName || ""}
+                      onChange={(e) => handleCustomerInfChange(e)}
+                      className="w-full border-orange-500 text-black border-2"
+                    />
+                  ) : (
+                    order.fullName
+                  )}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Email</p>
@@ -597,7 +623,7 @@ const OrderDetail = () => {
                     <input
                       type="text"
                       name="email" // This should match the key in formData
-                      value={formData?.email || ''}
+                      value={formData?.email || ""}
                       onChange={(e) => handleCustomerInfChange(e)}
                       className="w-full border-orange-500 text-black border-2"
                     />
@@ -613,7 +639,7 @@ const OrderDetail = () => {
                     <input
                       type="text"
                       name="contactPhone" // This should match the key in formData
-                      value={formData?.contactPhone || ''}
+                      value={formData?.contactPhone || ""}
                       onChange={(e) => handleCustomerInfChange(e)}
                       className="w-full border-orange-500 text-black border-2"
                     />
@@ -629,14 +655,13 @@ const OrderDetail = () => {
                     <input
                       type="text"
                       name="address" // This should match the key in formData
-                      value={formData?.address || ''}
+                      value={formData?.address || ""}
                       onChange={(e) => handleCustomerInfChange(e)}
                       className="w-full border-orange-500 text-black border-2"
                     />
                   ) : (
                     order.address
                   )}
-
                 </p>
               </div>
             </div>
@@ -646,15 +671,16 @@ const OrderDetail = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Thông tin khác</h3>
               {/* edit addition infor */}
-              {editingSection === "additionInfor" ? (<div>
-                <button onClick={handleCancel}>
-                  Hủy
-                </button>
-                <button onClick={handleSave} className="text-green-500 hover:text-green-700">
-                  <FontAwesomeIcon icon={faSave} /> Lưu
-                </button>
-              </div>
-
+              {editingSection === "additionInfor" ? (
+                <div>
+                  <button onClick={handleCancel}>Hủy</button>
+                  <button
+                    onClick={handleSave}
+                    className="text-green-500 hover:text-green-700"
+                  >
+                    <FontAwesomeIcon icon={faSave} /> Lưu
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => handleEditClick("additionInfor")}
@@ -668,23 +694,22 @@ const OrderDetail = () => {
               <div>
                 <p className="text-sm text-gray-500">Phương thức giao hàng</p>
                 <p className="font-medium">
-
                   {editingSection === "additionInfor" ? (
                     <select
                       name="deliveryMethod" // This should match the key in formData
-                      value={formData?.deliveryMethod || ''}
+                      value={formData?.deliveryMethod || ""}
                       onChange={(e) => handleCustomerInfChange(e)}
                       className="w-full border-orange-500 text-black border-2"
                     >
                       <option value="STORE_PICKUP">Đến cửa hàng nhận</option>
                       <option value="HOME_DELIVERY">Giao hàng tận nơi</option>
                     </select>
+                  ) : order.deliveryMethod === "STORE_PICKUP" ? (
+                    "Đến cửa hàng nhận"
+                  ) : order.deliveryMethod === "HOME_DELIVERY" ? (
+                    "Giao hàng tận nơi"
                   ) : (
-                    order.deliveryMethod === "STORE_PICKUP"
-                      ? "Đến cửa hàng nhận"
-                      : order.deliveryMethod === "HOME_DELIVERY"
-                        ? "Giao hàng tận nơi"
-                        : order.deliveryMethod
+                    order.deliveryMethod
                   )}
                 </p>
               </div>
@@ -694,7 +719,9 @@ const OrderDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Phương thức thanh toán</p>
-                <p className="font-medium">{order.paymentMethod || "KH chưa thanh toán"}</p>
+                <p className="font-medium">
+                  {order.paymentMethod || "KH chưa thanh toán"}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Ngày đặt hàng</p>
@@ -706,17 +733,17 @@ const OrderDetail = () => {
                 <div>
                   <p className="text-sm text-gray-500">Ghi chú</p>
                   <p className="font-medium">
-                  {editingSection === "additionInfor" ? (
-                    <input
-                      type="text"
-                      name="note" // This should match the key in formData
-                      value={formData?.note || ''}
-                      onChange={(e) => handleCustomerInfChange(e)}
-                      className="w-full border-orange-500 text-black border-2"
-                    />
-                  ) : (
-                    order.note
-                  )}
+                    {editingSection === "additionInfor" ? (
+                      <input
+                        type="text"
+                        name="note" // This should match the key in formData
+                        value={formData?.note || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.note
+                    )}
                   </p>
                 </div>
               )}

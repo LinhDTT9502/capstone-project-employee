@@ -106,10 +106,10 @@ if (loading) return (
             <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Trạng thái thanh toán</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Trạng thái đơn hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
 
-            <th className="text-left p-4 font-semibold text-gray-600"></th>
+            <th className="text-left p-4 font-semibold text-gray-600">Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -145,11 +145,12 @@ if (loading) return (
               </td>
 
               <td className="p-4">
+              <div className='flex items-center gap-3'>
                 <Link to={`/staff/list-rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                <button  onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
+                </div>
               </td>
-              <td className="p-4">
-               <button  onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
-              </td>
+     
             </tr>
 
           ))}

@@ -3,6 +3,8 @@ import {
   getAllUser,
   deleteUser as apiDeleteUser,
   updateUser as apiUpdateUser,
+  getUserDetailsApi,
+  changeUserStatusApi,
 } from "../api/apiManageUser";
 
 export const fetchAllUsers = async () => {
@@ -41,6 +43,33 @@ export const editUser = async (id, data) => {
     return response.data;
   } catch (error) {
     console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
+// Get user details
+// Service function to get user details
+export const getUserDetails = async (userId) => {
+  try {
+    const response = await getUserDetailsApi(userId);
+    if (response.data.user?.isSuccess) {
+      return response.data.user.data; 
+    } else {
+      throw new Error(response.data.user?.message || "Failed to fetch user details.");
+    }
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    throw error
+  }
+};
+
+// Change user status
+export const changeUserStatus = async (userId, status) => {
+  try {
+    const response = await changeUserStatusApi(userId, status);
+    return response.data;
+  } catch (error) {
+    console.error("Error changing user status:", error);
     throw error;
   }
 };

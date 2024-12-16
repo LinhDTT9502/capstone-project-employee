@@ -105,10 +105,10 @@ const ListOrder = () => {
             <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Trạng thái thanh toán</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Trạng thái đơn hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Hành động</th>
 
-            <th className="text-left p-4 font-semibold text-gray-600"></th>
           </tr>
         </thead>
         <tbody>
@@ -144,11 +144,12 @@ const ListOrder = () => {
               </td>
 
               <td className="p-4">
+                <div className='flex items-center gap-3'>
                 <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
-              </td>
-              <td className="p-4">
                 <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
+                </div>
               </td>
+
             </tr>
 
           ))}
