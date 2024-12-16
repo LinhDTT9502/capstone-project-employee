@@ -1,19 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { fetchImportHistory } from "../../services/Admin/ImportService";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+import {
+  Card,
+  Typography,
+  Spinner,
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+} from "@material-tailwind/react";
+import {
+  fetchImportHistory,
+  fetchImportHistoryByBranch,
+  removeImportHistory,
+} from "../../services/Admin/ImportService";
 import { fetchBranchs } from "../../services/branchService";
+import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const ListImportHistory = () => {
   const [importList, setImportList] = useState([]);
   const [branches, setBranches] = useState([]);
-  const [newBranch, setNewBranch] = useState(null);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImport, setSelectedImport] = useState(null);
+
+  const itemsPerPage = 10;
 
   const fetchListImport = async () => {
     try {
+      setLoading(true);
       const data = await fetchImportHistory();
       setImportList(data);
     } catch (error) {
       console.error("Error fetching list:", error);
+      toast.error("Không thể lấy dữ liệu lịch sử nhập hàng!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -22,7 +47,8 @@ const ListImportHistory = () => {
       const data = await fetchBranchs();
       setBranches(data);
     } catch (error) {
-      console.error("Error fetching list:", error);
+      console.error("Error fetching branches:", error);
+      toast.error("Không thể lấy danh sách chi nhánh!");
     }
   };
 
@@ -31,77 +57,206 @@ const ListImportHistory = () => {
     getListBranch();
   }, []);
 
-  const handleBranchChange = (id) => {
-    setNewBranch(id);
-};
+  const handleBranchSelect = async (branchId) => {
+    setSelectedBranch(branchId);
+    setLoading(true);
+
+    try {
+      if (branchId) {
+        const data = await fetchImportHistoryByBranch(branchId);
+        setImportList(data);
+      } else {
+        const data = await fetchImportHistory();
+        setImportList(data);
+      }
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error fetching filtered list:", error);
+      toast.error("Không thể lấy dữ liệu cho chi nhánh này!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewDetails = (importItem) => {
+    setSelectedImport(importItem);
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (importId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa mục này không?")) {
+      try {
+        await removeImportHistory(importId);
+        toast.success("Xóa thành công!");
+        if (selectedBranch) {
+          const updatedList = await fetchImportHistoryByBranch(selectedBranch);
+          setImportList(updatedList);
+        } else {
+          fetchListImport();
+        }
+      } catch (error) {
+        toast.error("Xóa thất bại!");
+      }
+    }
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = importList.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(importList.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="container mx-auto p-4">
-      <Card>
-        <CardBody>
-          <Typography variant="h4" color="blue-gray" className="mb-4">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        pauseOnHover
+      />
+      <Card className="shadow-lg">
+        <div className="p-4 flex justify-between items-center">
+          <Typography variant="h4" color="blue-gray">
             Lịch sử nhập hàng
           </Typography>
-          <p> Chi nhánh 2Sport:</p>
-            <div className="flex gap-2 max-w-full overflow-x-auto">
+        </div>
 
-                              {branches.map((branch) => (
-                                  <button
-                                      key={branch.id}
-                                      className={`cursor-pointer ${newBranch === branch.id ? "border-2 border-sky-500 bg-sky-500 text-white font-bold p-2 rounded" : "border-2 border-sky-500  text-sky-500 font-bold p-2 rounded"}`}
-                                      onClick={() => handleBranchChange(branch.id)}
-                                  >{branch.branchName.split("2Sport ").pop()}</button>
-                              ))}
-                          </div>
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full border-collapse border border-gray-200">
+        {/* Filter Tabs */}
+        <div className="flex space-x-4 border-b p-2">
+          <button
+            onClick={() => handleBranchSelect(null)}
+            className={`px-4 py-2 ${
+              selectedBranch === null ? "bg-blue-500 text-white" : "bg-gray-200"
+            } rounded`}
+          >
+            Tất Cả
+          </button>
+          {branches.map((branch) => (
+            <button
+              key={branch.id}
+              onClick={() => handleBranchSelect(branch.id)}
+              className={`px-4 py-2 ${
+                selectedBranch === branch.id
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200"
+              } rounded`}
+            >
+              {branch.branchName.split("2Sport ").pop()}
+            </button>
+          ))}
+        </div>
+
+        {/* Table Data */}
+        {loading ? (
+          <div className="flex justify-center p-4">
+            <Spinner className="h-10 w-10" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto p-4">
+            <table className="min-w-full border border-gray-200 bg-white">
               <thead>
-                <tr className="bg-blue-gray-50">
-                  <th className="border border-gray-200 px-4 py-2 text-left font-semibold">
-                    #
-                  </th>
-                  <th className="border border-gray-200 px-4 py-2 text-left font-semibold">
-                    Product Name
-                  </th>
-                  {/* <th className="border border-gray-200 px-4 py-2 text-left font-semibold">
-                    Supplier
-                  </th> */}
-                  <th className="border border-gray-200 px-4 py-2 text-left font-semibold">
-                    Import Date
-                  </th>
-                  <th className="border border-gray-200 px-4 py-2 text-left font-semibold">
-                    Quantity
-                  </th>
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-4 border-b">#</th>
+                  <th className="p-4 border-b">Tên Sản Phẩm</th>
+                  <th className="p-4 border-b">Ngày Nhập</th>
+                  <th className="p-4 border-b">Số Lượng</th>
+                  <th className="p-4 border-b">Hành động</th>
                 </tr>
               </thead>
               <tbody>
-                {importList.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-100 transition-colors"
-                  >
-                    <td className="border border-gray-200 px-4 py-2">
-                      {index + 1}
+                {currentItems.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="p-4 border-b">
+                      {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="border border-gray-200 px-4 py-2">
-                      {item.productName}
-                    </td>
-                    {/* <td className="border border-gray-200 px-4 py-2">
-                      {item.supplierName || "Không rõ"}
-                    </td> */}
-                    <td className="border border-gray-200 px-4 py-2">
+                    <td className="p-4 border-b">{item.productName}</td>
+                    <td className="p-4 border-b">
                       {new Date(item.importDate).toLocaleString()}
                     </td>
-                    <td className="border border-gray-200 px-4 py-2">
-                      {item.quantity}
+                    <td className="p-4 border-b">{item.quantity}</td>
+                    <td className="p-4 border-b"><div className="flex space-x-2">
+                      <Button
+                        size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-4 py-2"
+                        onClick={() => handleViewDetails(item)}
+                      >
+                        <FontAwesomeIcon icon={faEye} className="text-sm" />
+                      </Button>
+                      
+                      <Button
+                          size="md"
+                          color="red"
+                          variant="text"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="text-sm	" />
+                        </Button></div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination */}
+            <div className="flex justify-center mt-4">
+              {[...Array(totalPages).keys()].map((number) => (
+                <button
+                  key={number + 1}
+                  onClick={() => handlePageChange(number + 1)}
+                  className={`px-3 py-1 mx-1 border rounded ${
+                    currentPage === number + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {number + 1}
+                </button>
+              ))}
+            </div>
           </div>
-        </CardBody>
+        )}
       </Card>
+
+      {/* Modal for Import Details */}
+      <Dialog open={modalOpen} handler={() => setModalOpen(false)} size="xl">
+        <DialogHeader className="text-2xl font-bold text-gray-800 border-b pb-4">
+          Chi Tiết Nhập Hàng
+        </DialogHeader>
+        <DialogBody className="p-6">
+          {selectedImport && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-3 rounded-md">
+                <p className="text-sm font-medium text-gray-500">
+                  Tên Sản Phẩm
+                </p>
+                <p className="mt-1 text-sm text-gray-900">
+                  {selectedImport.productName}
+                </p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-md">
+                <p className="text-sm font-medium text-gray-500">Ngày Nhập</p>
+                <p className="mt-1 text-sm text-gray-900">
+                  {new Date(selectedImport.importDate).toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-md">
+                <p className="text-sm font-medium text-gray-500">Số Lượng</p>
+                <p className="mt-1 text-sm text-gray-900">
+                  {selectedImport.quantity}
+                </p>
+              </div>
+              {/* Add more details as needed */}
+            </div>
+          )}
+        </DialogBody>
+      </Dialog>
     </div>
   );
 };

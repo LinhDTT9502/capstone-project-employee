@@ -32,7 +32,7 @@ export const addSport = (sportData) => {
 
 // Edit sport by ID
 export const editSport = (sportId, sportData) => {
-  return axios.post(`${API_BASE_URL}/edit-sport/${sportId}`, sportData, {
+  return axios.put(`${API_BASE_URL}/update-sport/${sportId}`, sportData, {
     headers: {
       'Content-Type': 'application/json'
     }

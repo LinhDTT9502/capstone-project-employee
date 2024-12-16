@@ -9,3 +9,21 @@ export const getImportHistory = () => {
     }
   });
 };
+
+// Fetch all import histories by branchId
+export const getImportHistoryByBranch = (branchId) => {
+  return axios.get(`${API_BASE_URL}/list-all-import-histories-by-branchId/${branchId}`, {
+    headers: {
+      accept: "*/*",
+    },
+  });
+};
+
+// Delete an import history by ID
+export const deleteImportHistory = (importHistoryId) => {
+  return axios.delete(`${API_BASE_URL}/delete-import-history/${importHistoryId}`, {
+    headers: {
+      accept: "*/*",
+    },
+  });
+};

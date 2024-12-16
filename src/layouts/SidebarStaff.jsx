@@ -51,15 +51,15 @@ export default function SidebarStaff() {
   const SidebarLink = ({ to, icon, children }) => (
     <Link
       to={to}
-      className={`flex items-center p-2 text-gray-700 hover:bg-indigo-100 rounded-lg transition-all duration-300 ease-in-out group
-                  ${activeItem === to ? "bg-indigo-100 text-indigo-800" : ""}`}
+      className={`flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-300 ease-in-out group
+                  ${activeItem === to ? "bg-orange-100 text-orange-600" : ""}`}
       onClick={() => setActiveItem(to)}
     >
       <FontAwesomeIcon
         icon={icon}
-        className={`w-5 h-5 mr-3 text-indigo-600 group-hover:scale-110 transition-transform duration-300 
-                    ${isSidebarCollapsed ? "mr-0" : ""}
-                    ${activeItem === to ? "text-indigo-800" : ""}`}
+        className={`w-5 h-5 mr-3 text-gray-700 hover:bg-gray-100 group-hover:scale-110 transition-transform duration-300 
+                    ${isSidebarCollapsed ? "mr-0 " : ""}
+                    ${activeItem === to ? "text-orange-600" : ""}`}
       />
       <span
         className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 
@@ -210,22 +210,12 @@ export default function SidebarStaff() {
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2
-            className={`text-2xl font-semibold text-indigo-800 transition-all duration-300 ${
+            className={`text-2xl font-semibold  transition-all duration-300 ${
               isSidebarCollapsed ? "opacity-0 w-0" : "opacity-100"
             }`}
           >
             Dashboard
           </h2>
-
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-indigo-100 transition-colors duration-300"
-          >
-            <FontAwesomeIcon
-              icon={faBars}
-              className="w-5 h-5 text-indigo-600"
-            />
-          </button>
 
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">

@@ -8,10 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 
 const SportManagement = () => {
   const [sports, setSports] = useState([]);
-  const [filteredSports, setFilteredSports] = useState([]); // State for search results
+  const [filteredSports, setFilteredSports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -26,9 +26,9 @@ const SportManagement = () => {
     try {
       setLoading(true);
       const response = await fetchSports();
-      setSports(response); // Assuming response is a list of sports
-      setFilteredSports(response); // Initialize filtered sports
-      setCurrentPage(1); // Reset to first page
+      setSports(response);
+      setFilteredSports(response); 
+      setCurrentPage(1); 
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu.");
       toast.error("Không thể lấy dữ liệu môn thể thao!", { position: "top-right" });
@@ -48,7 +48,7 @@ const SportManagement = () => {
       sport.name?.toLowerCase().includes(lowerCaseSearchTerm)
     );
     setFilteredSports(filtered);
-    setCurrentPage(1); // Reset pagination when search changes
+    setCurrentPage(1); 
   }, [searchTerm, sports]);
 
   // Pagination logic
@@ -80,6 +80,7 @@ const SportManagement = () => {
       toast.error("Cập nhật môn thể thao thất bại!", { position: "top-right" });
     }
   };
+  
 
   // Delete sport handler
   const handleDeleteSport = async (sportId) => {
@@ -96,7 +97,18 @@ const SportManagement = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{zIndex: 99999 }}
+      />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
@@ -190,11 +202,11 @@ const SportManagement = () => {
         {/* Edit Sport Modal */}
         {isEditModalOpen && selectedSport && (
           <EditSportModal
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            onEditSport={handleEditSport}
-            sport={selectedSport}
-          />
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onEditSport={handleEditSport}
+          sport={selectedSport}
+        />
         )}
       </div>
     </>

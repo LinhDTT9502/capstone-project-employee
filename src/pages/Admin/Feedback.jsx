@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Button, Typography, Card, Spinner, Dialog, Input } from "@material-tailwind/react";
-import { fetchAllFeedbacks, removeFeedback, fetchFeedbackById } from "../../services/feedbackService";
+import {
+  Button,
+  Typography,
+  Card,
+  Spinner,
+  Dialog,
+  Input,
+} from "@material-tailwind/react";
+import {
+  fetchAllFeedbacks,
+  removeFeedback,
+  fetchFeedbackById,
+} from "../../services/feedbackService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const ListAllFeedback = () => {
   const [feedbackData, setFeedbackData] = useState([]);
@@ -16,8 +29,9 @@ const ListAllFeedback = () => {
       setLoading(true);
       const response = await fetchAllFeedbacks();
       if (response) {
-        setFeedbackData(response);
-        setFilteredFeedbacks(response); // Initialize filtered feedbacks
+        const reversedFeedbacks = response.slice().reverse(); 
+        setFeedbackData(reversedFeedbacks);
+        setFilteredFeedbacks(reversedFeedbacks);
       } else {
         setError("Không thể lấy dữ liệu");
       }
@@ -27,6 +41,7 @@ const ListAllFeedback = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchFeedbackData();
@@ -48,8 +63,12 @@ const ListAllFeedback = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa phản hồi này không?")) {
       try {
         await removeFeedback(id);
-        setFeedbackData((prevData) => prevData.filter((feedback) => feedback.id !== id));
-        setFilteredFeedbacks((prevData) => prevData.filter((feedback) => feedback.id !== id));
+        setFeedbackData((prevData) =>
+          prevData.filter((feedback) => feedback.id !== id)
+        );
+        setFilteredFeedbacks((prevData) =>
+          prevData.filter((feedback) => feedback.id !== id)
+        );
       } catch (error) {
         console.error("Error deleting feedback:", error);
       }
@@ -78,7 +97,6 @@ const ListAllFeedback = () => {
           <Typography variant="h4" color="blue-gray">
             Danh sách phản hồi ({filteredFeedbacks.length})
           </Typography>
-
         </div>
         <div className="p-4">
           <input
@@ -115,13 +133,27 @@ const ListAllFeedback = () => {
                     <td className="p-4 border-b">{index + 1}</td>
                     <td className="p-4 border-b">{feedback.fullName}</td>
                     <td className="p-4 border-b">{feedback.email}</td>
-                    <td className="p-4 border-b truncate max-w-xs">{feedback.content}</td>
-                    <td className="p-4 border-b flex gap-2">
-                      <Button size="sm" color="blue" onClick={() => handleViewFeedback(feedback.id)}>
-                        Xem chi tiết
+                    <td className="p-4 border-b truncate max-w-xs">
+                      {feedback.content}
+                    </td>
+                    <td className="p-4 border-b space-x-2 flex gap-2">
+                      <Button
+                        size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-4 py-2"
+                        onClick={() => handleViewFeedback(feedback.id)}
+                      >
+                        <FontAwesomeIcon icon={faEye} className="text-sm	" />
                       </Button>
-                      <Button size="sm" color="red" onClick={() => handleDeleteFeedback(feedback.id)}>
-                        Xóa
+                      <Button
+                        size="md"
+                        color="red"
+                        variant="text"
+                        className="flex items-center gap-2 px-4 py-2"
+                        onClick={() => handleDeleteFeedback(feedback.id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="text-sm	" />
                       </Button>
                     </td>
                   </tr>
@@ -148,7 +180,8 @@ const ListAllFeedback = () => {
               Số điện thoại: {selectedFeedback.phoneNumber || "N/A"}
             </Typography>
             <Typography variant="h6" className="mb-2">
-              Ngày tạo: {new Date(selectedFeedback.createdAt).toLocaleDateString()}
+              Ngày tạo:{" "}
+              {new Date(selectedFeedback.createdAt).toLocaleDateString()}
             </Typography>
             <Typography variant="h6" className="mb-2">
               Nội dung:

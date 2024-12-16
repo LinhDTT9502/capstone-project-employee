@@ -27,18 +27,29 @@ const ManageUser2 = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const roleMapping = {
+    1: "Admin",
+    2: "Manager",
+    3: "Staff",
+    4: "Customer",
+    5: "Owner",
+    6: "Coordinator",
+    7: "Content Staff",
+  };
   // Fetch all users
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const response = await fetchAllUsers();
-      setUsers(response);
-      setFilteredUsers(response); // Initialize filteredUsers
+      const reversedUsers = response.slice().reverse(); 
+      setUsers(reversedUsers); 
+      setFilteredUsers(reversedUsers);
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu người dùng.");
-      toast.error("Không thể lấy dữ liệu người dùng!", {
-        position: "top-right",
-      });
+      toast.error("Không thể lấy dữ liệu người dùng!");
     } finally {
       setLoading(false);
     }
@@ -57,7 +68,19 @@ const ManageUser2 = () => {
         user.userName?.toLowerCase().includes(lowerCaseTerm)
     );
     setFilteredUsers(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   }, [searchTerm, users]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   // Add user handler
   const handleAddUser = async (formData) => {
@@ -151,7 +174,19 @@ const ManageUser2 = () => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{zIndex: 99999 }}
+      />
+
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
@@ -185,7 +220,7 @@ const ManageUser2 = () => {
               {error}
             </Typography>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto p-4">
               <table className="min-w-full border border-gray-200 bg-white">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -199,13 +234,15 @@ const ManageUser2 = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user, index) => (
+                  {currentItems.map((user, index) => (
                     <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="p-4 border-b">{index + 1}</td>
+                      <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
                       <td className="p-4 border-b">{user.userName}</td>
                       <td className="p-4 border-b">{user.fullName}</td>
                       <td className="p-4 border-b">{user.email}</td>
-                      <td className="p-4 border-b">{user.roleId}</td>
+                      <td className="p-4 border-b">
+        {roleMapping[user.roleId] || "Không xác định"}
+      </td>
                       <td className="p-4 border-b">
                         <UserActions
                           user={user}
@@ -228,6 +265,23 @@ const ManageUser2 = () => {
                   ))}
                 </tbody>
               </table>
+
+              {/* Pagination */}
+              <div className="flex justify-center mt-4 ">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <button
+                    key={number + 1}
+                    onClick={() => handlePageChange(number + 1)}
+                    className={`px-3 py-1 mx-1 border rounded ${
+                      currentPage === number + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </Card>
@@ -265,3 +319,4 @@ const ManageUser2 = () => {
 };
 
 export default ManageUser2;
+
