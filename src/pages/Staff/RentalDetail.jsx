@@ -27,8 +27,11 @@ import {
   faMoneyBillWave,
   faSave,
   faTruck,
+  faArrowLeft
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ProductColor } from "../../components/Product/ProductColor";
+import { ProductSize } from "../../components/Product/ProductSize";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -50,17 +53,17 @@ const RentalDetail = () => {
   const [isApproved, setIsApproved] = useState(false);
   const token = localStorage.getItem("token");
   const [editingSection, setEditingSection] = useState(null);
+  const [formData, setFormData] = useState({});
 
-  const [newStatus, setNewStatus] = useState(null); // State for selected status
+  const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
-  const isStaffOrAdmin =
-    user && (user.role === "Order Coordinator" || user.role === "Admin");
+
   const statusOptions = [
     { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
     { label: "Đã xác nhận đơn", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" }, // PROCESSING
-    { label: "Đã giao hàng", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
+    { label: "Đã giao cho đơn vị vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
     { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" }, // DELIVERED
     { label: "Bị từ chối", value: 6, color: "bg-red-200 text-red-700" }, // DECLINED
     {
@@ -111,10 +114,15 @@ const RentalDetail = () => {
       const response = await axios.get(
         `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
       );
-      console.log(response);
 
       if (response.data.isSuccess) {
         setOrder(response.data.data);
+        setFormData(response.data.data)
+        console.log(response.data.data);
+
+        if (response.data.data.deliveryMethod === "Đến cửa hàng nhận" || response.data.data.orderStatus !== "Chờ xử lý") {
+          setIsApproved(true)
+        }
       } else {
         setError("Failed to retrieve order details");
       }
@@ -157,11 +165,12 @@ const RentalDetail = () => {
 
   const handleStatusChange = async () => {
     if (newStatus === null || updating) return;
+    const statusLabel = statusOptions.find(option => option.value === newStatus)?.label;
 
     setUpdating(true);
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status?orderId=${rentalId}&status=${newStatus}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status/${rentalId}?orderStatus=${newStatus}`,
         {},
         {
           headers: {
@@ -170,13 +179,15 @@ const RentalDetail = () => {
         }
       );
       if (response.data.isSuccess) {
-        setOrder({ ...order, orderStatus: newStatus }); // Update order status locally
+        setOrder({ ...order, orderStatus: statusLabel });
+        
         alert("Order status updated successfully");
       } else {
         alert("Failed to update order status");
       }
     } catch (error) {
-      alert("Error updating order status");
+      alert(error.response.data.message);
+
     } finally {
       setUpdating(false);
     }
@@ -194,6 +205,141 @@ const RentalDetail = () => {
     navigate(-1);
     // console.log(response);
   };
+
+  const handleEditClick = (section) => {
+    setEditingSection(section);
+  };
+
+  const handleCustomerInfChange = (e) => {
+    const { name, value } = e.target; // Get the name and value of the input
+    setFormData((prevData) => ({
+      ...prevData, // Spread the existing formData
+      [name]: value, // Update only the field being edited
+    }));
+  };
+
+  const handleCancel = () => {
+    setEditingSection(null);
+  };
+
+  const handleProductChange = (e, productId) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+
+    // Update formData by finding the product by its ID and modifying the specific field
+    setFormData((prev) => {
+      const updatedOrderDetailVMs = prev.childOrders.$values.map(
+        (product) => {
+          if (product.productId === productId) {
+            return {
+              ...product,
+              [name]: value, // Update the specific field for this product
+            };
+          }
+          console.log(product);
+
+          return product; // Keep other products unchanged
+        }
+      );
+
+      return {
+        ...prev,
+        childOrders: {
+          ...prev.childOrders,
+          $values: updatedOrderDetailVMs,
+        },
+      };
+    });
+    console.log(formData);
+  };
+
+  // Submit updates to the API
+  const handleSave = async () => {
+    // Check and update paymentStatus based on its current value
+    if (formData.paymentStatus === "Đang chờ thanh toán") {
+      formData.paymentStatus = 1;
+    } else if (formData.paymentStatus === "Đã thanh toán") {
+      formData.paymentStatus = 2;
+    } else if (formData.paymentStatus === "Đã đặt cọc") {
+      formData.paymentStatus = 3;
+    } else if (formData.paymentStatus === "Đã hủy") {
+      formData.paymentStatus = 4;
+    }
+    if (formData.deliveryMethod === "Đến cửa hàng nhận") {
+      formData.deliveryMethod = "STORE_PICKUP";
+    } else if (formData.deliveryMethod === "Giao hàng tận nơi") {
+      formData.deliveryMethod = "HOME_DELIVERY";
+    }
+
+    // Prepare the payload in the structure the API expects
+    const payload = {
+      customerInformation: {
+        userId: formData.userId, // Assuming `id` is the userId
+        email: formData.email,
+        fullName: formData.fullName,
+        gender: formData.gender,
+        contactPhone: formData.contactPhone,
+        address: formData.address,
+      },
+      paymentMethodID: formData.paymentMethodId || null,
+      deliveryMethod: formData.deliveryMethod,
+      paymentStatus: formData.paymentStatus,
+      note: formData.note || "",
+      parentSubTotal: formData.subTotal,
+      parentTranSportFee: formData.tranSportFee,
+      parentTotalAmount:formData.totalAmount,
+      branchId: formData.branchId,
+      productInformations: formData.childOrders.$values.map((item) => ({
+        cartItemId: null, // You can set this dynamically if available
+        productId: item.productId,
+        productName: item.productName,
+        productCode: item.productCode || "BAYORA88SS", // Handle null values
+        size: item.size || "", // Handle null values
+        color: item.color || "", // Handle null values
+        condition: item.condition,
+        rentPrice: item.rentPrice,
+        imgAvatarPath: item.imgAvatarPath,
+        quantity: item.quantity,
+        rentalDates: {
+          dateOfReceipt: item.dateOfReceipt,
+          rentalStartDate: item.rentalStartDate,
+          rentalEndDate: item.rentalEndDate,
+          rentalDays: item.rentalDays
+        },
+        rentalCosts: {
+          subTotal: item.subTotal,
+          tranSportFee: item.tranSportFee || 0,
+          totalAmount: item.totalAmount,
+        },
+      })),
+    };
+console.log(payload);
+
+    try {
+      const response = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
+        payload, // Use the transformed payload
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      if (response) {
+        console.log(response);
+        
+        alert("Cập nhật đơn hàng thành công");
+        setOrder(formData);
+        setEditingSection(null); // Exit edit mode
+      } else {
+        alert("Failed to update order");
+      }
+    } catch (error) {
+      alert("Error updating order");
+    }
+  };
+
 
   if (loading)
     return (
@@ -218,38 +364,24 @@ const RentalDetail = () => {
 
                 <div className="flex items-center space-x-4">
                   <span
-                    className={`px-3 py-1 text-sm font-medium rounded-full ${
-                      statusOptions.find(
-                        (status) => status.label === order.orderStatus
-                      )?.color || "bg-gray-100 text-gray-800"
-                    }`}
+                    className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
+                      (status) => status.label === order.orderStatus
+                    )?.color || "bg-gray-100 text-gray-800"
+                      }`}
                   >
                     {order.orderStatus}
                   </span>
-                  {isApproved && (
-                    <>
-                      <select
-                        onChange={(e) => setNewStatus(e.target.value)}
-                        value={newStatus || order.orderStatus}
-                        className="w-36 px-2 py-1 border rounded"
-                      >
-                        <option>{order.orderStatus}</option>
-                        {statusOptions.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-
-                      <Button
-                        onClick={handleStatusChange}
-                        disabled={updating}
-                        color="blue"
-                      >
-                        {updating ? "Đang cập nhật..." : "Cập nhật"}
-                      </Button>
-                    </>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outlined"
+                      color="blue"
+                      className="flex items-center gap-2"
+                      onClick={() => navigate(-1)}
+                    >
+                      <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
+                      Quay lại
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -264,43 +396,40 @@ const RentalDetail = () => {
                   <Step
                     key={index}
                     completed={index < getCurrentStepIndex(order.orderStatus)}
-                    className={`${
-                      index < getCurrentStepIndex(order.orderStatus)
-                        ? "bg-blue-500 text-green-600"
-                        : "bg-green-600 text-green-600"
-                    }`}
+                    className={`${index < getCurrentStepIndex(order.orderStatus)
+                      ? "bg-blue-500 text-green-600"
+                      : "bg-green-600 text-green-600"
+                      }`}
                   >
                     <div className="relative flex flex-col items-center">
                       <div
-                        className={`w-10 h-10 flex items-center justify-center rounded-full ${
-                          index <= getCurrentStepIndex(order.orderStatus)
-                            ? "bg-green-500 text-white"
-                            : "bg-gray-300 text-gray-600"
-                        }`}
+                        className={`w-10 h-10 flex items-center justify-center rounded-full ${index <= getCurrentStepIndex(order.orderStatus)
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-300 text-gray-600"
+                          }`}
                       >
                         <FontAwesomeIcon
                           icon={
                             index === 0
                               ? faClock
                               : index === 1
-                              ? faCheckCircle
-                              : index === 2
-                              ? faMoneyBillWave
-                              : index === 3
-                              ? faCogs
-                              : index === 4
-                              ? faTruck
-                              : faFlagCheckered
+                                ? faCheckCircle
+                                : index === 2
+                                  ? faMoneyBillWave
+                                  : index === 3
+                                    ? faCogs
+                                    : index === 4
+                                      ? faTruck
+                                      : faFlagCheckered
                           }
                           className="text-lg"
                         />
                       </div>
                       <div
-                        className={`absolute top-12 text-xs font-medium whitespace-nowrap ${
-                          index <= getCurrentStepIndex(order.orderStatus)
-                            ? "text-green-600"
-                            : "text-gray-600"
-                        }`}
+                        className={`absolute top-12 text-xs font-medium whitespace-nowrap ${index <= getCurrentStepIndex(order.orderStatus)
+                          ? "text-green-600"
+                          : "text-gray-600"
+                          }`}
                       >
                         {status.label}
                       </div>
@@ -319,12 +448,12 @@ const RentalDetail = () => {
                 {editingSection === "productInformations" ? (
                   <div>
                     <button
-                    // onClick={handleCancel}
+                      onClick={handleCancel}
                     >
                       Hủy
                     </button>
                     <button
-                      // onClick={handleSave}
+                      onClick={handleSave}
                       className="text-green-500 hover:text-green-700"
                     >
                       <FontAwesomeIcon icon={faSave} /> Lưu
@@ -332,7 +461,7 @@ const RentalDetail = () => {
                   </div>
                 ) : (
                   <button
-                    // onClick={() => handleEditClick("productInformations")}
+                    onClick={() => handleEditClick("productInformations")}
                     className="text-gray-500 hover:text-black"
                   >
                     <FontAwesomeIcon icon={faEdit} />
@@ -359,83 +488,72 @@ const RentalDetail = () => {
                             </p>
                             <p className="flex text-sm text-gray-500 gap-2">
                               Số lượng: {child.quantity}
-                              {/* {editingSection === "productInformations" ? (
-                            <input
-                              type="number"
-                              name="quantity"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.quantity || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2"
-                            />
-                          ) : (
-                            item.quantity
-                          )} */}
                             </p>
                             <p className="text-sm text-gray-500">
-                              <b>Màu sắc: </b> {child.color}
-                              {/* {editingSection === "productInformations" ? (
-                            <input
-                              type="text"
-                              name="color"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.color || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 text-black border-2"
-                            />
-                          ) : (
-                            item.color
-                          )} */}
+                              <b>Màu sắc: </b>
+                              {editingSection === "productInformations" ? (
+                                <ProductColor
+                                  productCode={child.productCode}
+                                  selectedColor={
+                                    formData.childOrders.$values.find(
+                                      (valueItem) => valueItem.productId === child.productId
+                                    )?.color || ""
+                                  }
+                                  setSelectedColor={(newColor) => {
+                                    handleProductChange(
+                                      {
+                                        target: {
+                                          name: "color",
+                                          value: newColor
+                                        }
+                                      },
+                                      child.productId
+                                    );
+                                  }}
+                                  onColorSelect={(imgAvatarPath) => {
+                                    handleProductChange(
+                                      {
+                                        target: {
+                                          name: "imgAvatarPath",
+                                          value: imgAvatarPath
+                                        }
+                                      },
+                                      child.productId
+                                    );
+                                  }}
+                                />
+                              ) : (
+                                child.color
+                              )}
                             </p>
                             <p className="text-sm text-gray-500">
-                              <b>Kích thước: </b> {child.size}
-                              {/* {editingSection === "productInformations" ? (
-                            <input
-                              type="text"
-                              name="size"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.size || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2 text-black"
-                            />
-                          ) : (
-                            item.size
-                          )} */}
+                              <b>Kích thước: </b>
+                              {editingSection === "productInformations" ? (
+                                <ProductSize
+                                  productCode={child.productCode}
+                                  color={child.color}
+                                  selectedSize={formData.childOrders.$values.find(
+                                    (valueItem) => valueItem.productId === child.productId
+                                  )?.size || ""}
+                                  setSelectedSize={(newSize) => {
+                                    handleProductChange(
+                                      {
+                                        target: {
+                                          name: "size",
+                                          value: newSize
+                                        }
+                                      },
+                                      child.productId
+                                    );
+                                  }}
+                                />
+                              ) : (
+                                child.size
+                              )}
                             </p>
                             <p className="text-sm text-gray-500">
                               <b>Tình trạng: </b> {child.condition}
-                              {/* {editingSection === "productInformations" ? (
-                            <input
-                              type="number"
-                              name="condition"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.condition || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2"
-                            />
-                          ) : (
-                            item.condition
-                          )} */}
+
                               %
                             </p>{" "}
                             <p className="mt-2">
@@ -509,223 +627,253 @@ const RentalDetail = () => {
 
             {/* Order Summary */}
             <div className="p-4 rounded-lg bg-gray-50">
-            <div className="flex justify-between py-2">
-            <p className="text-gray-600">Tổng phụ</p>
-            <p className="font-medium text-gray-900">
-            {subTotal.toLocaleString()} ₫</p>
+              <div className="flex justify-between py-2">
+                <p className="text-gray-600">Tổng phụ</p>
+                <p className="font-medium text-gray-900">
+                  {subTotal.toLocaleString()} ₫</p>
               </div>
               <div className="flex justify-between py-2">
-              <p className="text-gray-600">Phí vận chuyển</p>
+                <p className="text-gray-600">Phí vận chuyển</p>
                 <p className="font-semibold text-green-600">Free</p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
-              <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(order.totalAmount)}
+                <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(order.totalAmount)}
                 </p>
               </div>
             </div>
             {order.orderStatus === "Chờ xử lý" &&
               order.deliveryMethod !== "Đến cửa hàng nhận" && (
                 <div className="mt-6 flex gap-3 justify-end">
-                                <Button
-                                  onClick={handleReject}
-                                  className="bg-red-500 hover:bg-red-600"
-                                >
-                                  Từ chối
-                                </Button>
-                                <Button
-                                  onClick={handleApprove}
-                                  className="bg-green-500 hover:bg-green-600"
-                                >
-                                  Chấp thuận
-                                </Button>
-                              </div>
+                  <Button
+                    onClick={handleReject}
+                    className="bg-red-500 hover:bg-red-600"
+                  >
+                    Từ chối
+                  </Button>
+                  <Button
+                    onClick={handleApprove}
+                    className="bg-green-500 hover:bg-green-600"
+                  >
+                    Chấp thuận
+                  </Button>
+                </div>
               )}
           </div>
         </div>
         <div className="w-full md:w-1/3 p-4">
-        <div className="sticky top-4">
-        {/* Right Side - Customer Info & Summary */}
-         <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
-                      {/* edit customerInformation part */}
-                      {editingSection === "customerInformation" ? (
-                        <div>
-                          <button onClick={handleCancel}>Hủy</button>
-                          <button
-                            onClick={handleSave}
-                            className="text-green-500 hover:text-green-700"
-                          >
-                            <FontAwesomeIcon icon={faSave} /> Lưu
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleEditClick("customerInformation")}
-                          className="text-gray-500 hover:text-black"
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
-                      )}
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-gray-500">Họ và tên</p>
-                        <p className="font-medium">
-                          {" "}
-                          {editingSection === "customerInformation" ? (
-                            <input
-                              type="text"
-                              name="fullName" // This should match the key in formData
-                              value={formData?.fullName || ""}
-                              onChange={(e) => handleCustomerInfChange(e)}
-                              className="w-full border-orange-500 text-black border-2"
-                            />
-                          ) : (
-                            order.fullName
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p className="font-medium">
-                          {editingSection === "customerInformation" ? (
-                            <input
-                              type="text"
-                              name="email" // This should match the key in formData
-                              value={formData?.email || ""}
-                              onChange={(e) => handleCustomerInfChange(e)}
-                              className="w-full border-orange-500 text-black border-2"
-                            />
-                          ) : (
-                            order.email
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Số điện thoại</p>
-                        <p className="font-medium">
-                          {editingSection === "customerInformation" ? (
-                            <input
-                              type="text"
-                              name="contactPhone" // This should match the key in formData
-                              value={formData?.contactPhone || ""}
-                              onChange={(e) => handleCustomerInfChange(e)}
-                              className="w-full border-orange-500 text-black border-2"
-                            />
-                          ) : (
-                            order.contactPhone
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Địa chỉ</p>
-                        <p className="font-medium">
-                          {editingSection === "customerInformation" ? (
-                            <input
-                              type="text"
-                              name="address" // This should match the key in formData
-                              value={formData?.address || ""}
-                              onChange={(e) => handleCustomerInfChange(e)}
-                              className="w-full border-orange-500 text-black border-2"
-                            />
-                          ) : (
-                            order.address
-                          )}
-                        </p>
-                      </div>
-                    </div>
+          <div className="sticky top-4">
+            {/* Right Side - Customer Info & Summary */}
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+              {isApproved && (
+                <>
+                  <select
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    value={newStatus || order.orderStatus}
+                    className="w-36 px-2 py-1 border rounded"
+                  >
+                    <option>{order.orderStatus}</option>
+                    {statusOptions.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <Button
+                    onClick={handleStatusChange}
+                    disabled={updating}
+                    color="blue"
+                  >
+                    {updating ? "Đang cập nhật..." : "Cập nhật"}
+                  </Button>
+                </>
+              )}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
+                {/* edit customerInformation part */}
+                {editingSection === "customerInformation" ? (
+                  <div>
+                    <button onClick={handleCancel}>Hủy</button>
+                    <button
+                      onClick={handleSave}
+                      className="text-green-500 hover:text-green-700"
+                    >
+                      <FontAwesomeIcon icon={faSave} /> Lưu
+                    </button>
                   </div>
-        
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold">Thông tin khác</h3>
-                      {/* edit addition infor */}
+                ) : (
+                  <button
+                    onClick={() => handleEditClick("customerInformation")}
+                    className="text-gray-500 hover:text-black"
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-gray-500">Họ và tên</p>
+                  <p className="font-medium">
+                    {" "}
+                    {editingSection === "customerInformation" ? (
+                      <input
+                        type="text"
+                        name="fullName" // This should match the key in formData
+                        value={formData?.fullName || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.fullName
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-medium">
+                    {editingSection === "customerInformation" ? (
+                      <input
+                        type="text"
+                        name="email" // This should match the key in formData
+                        value={formData?.email || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.email
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Số điện thoại</p>
+                  <p className="font-medium">
+                    {editingSection === "customerInformation" ? (
+                      <input
+                        type="text"
+                        name="contactPhone" // This should match the key in formData
+                        value={formData?.contactPhone || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.contactPhone
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Địa chỉ</p>
+                  <p className="font-medium">
+                    {editingSection === "customerInformation" ? (
+                      <input
+                        type="text"
+                        name="address" // This should match the key in formData
+                        value={formData?.address || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.address
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Thông tin khác</h3>
+                {/* edit addition infor */}
+                {editingSection === "additionInfor" ? (
+                  <div>
+                    <button onClick={handleCancel}>Hủy</button>
+                    <button
+                      onClick={handleSave}
+                      className="text-green-500 hover:text-green-700"
+                    > 
+                      <FontAwesomeIcon icon={faSave} /> Lưu
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleEditClick("additionInfor")}
+                    className="text-gray-500 hover:text-black"
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-gray-500">Phương thức giao hàng</p>
+                  <p className="font-medium">
+                    {editingSection === "additionInfor" ? (
+                      <select
+                        name="deliveryMethod" // This should match the key in formData
+                        value={formData?.deliveryMethod || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      >
+                        <option value="STORE_PICKUP">Đến cửa hàng nhận</option>
+                        <option value="HOME_DELIVERY">Giao hàng tận nơi</option>
+                      </select>
+                    ) : order.deliveryMethod === "STORE_PICKUP" ? (
+                      "Đến cửa hàng nhận"
+                    ) : order.deliveryMethod === "HOME_DELIVERY" ? (
+                      "Giao hàng tận nơi"
+                    ) : (
+                      order.deliveryMethod
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Chi nhánh</p>
+                  <p className="font-medium">{order.branchId}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phương thức thanh toán</p>
+                  <p className="font-medium">
+                    {order.paymentMethod || "KH chưa thanh toán"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Trạng thái thanh toán</p>
+                  <p className="font-medium">
+                    {order.depositStatus || "KH chưa thanh toán"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Ngày đặt hàng</p>
+                  <p className="font-medium">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+               
+                  <div>
+                    <p className="text-sm text-gray-500">Ghi chú</p>
+                    <p className="font-medium">
                       {editingSection === "additionInfor" ? (
-                        <div>
-                          <button onClick={handleCancel}>Hủy</button>
-                          <button
-                            onClick={handleSave}
-                            className="text-green-500 hover:text-green-700"
-                          >
-                            <FontAwesomeIcon icon={faSave} /> Lưu
-                          </button>
-                        </div>
+                        <input
+                          type="text"
+                          name="note" // This should match the key in formData
+                          value={formData?.note || ""}
+                          onChange={(e) => handleCustomerInfChange(e)}
+                          className="w-full border-orange-500 text-black border-2"
+                        />
                       ) : (
-                        <button
-                          onClick={() => handleEditClick("additionInfor")}
-                          className="text-gray-500 hover:text-black"
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </button>
+                        order.note? order.note : "Không có ghi chú"
                       )}
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-gray-500">Phương thức giao hàng</p>
-                        <p className="font-medium">
-                          {editingSection === "additionInfor" ? (
-                            <select
-                              name="deliveryMethod" // This should match the key in formData
-                              value={formData?.deliveryMethod || ""}
-                              onChange={(e) => handleCustomerInfChange(e)}
-                              className="w-full border-orange-500 text-black border-2"
-                            >
-                              <option value="STORE_PICKUP">Đến cửa hàng nhận</option>
-                              <option value="HOME_DELIVERY">Giao hàng tận nơi</option>
-                            </select>
-                          ) : order.deliveryMethod === "STORE_PICKUP" ? (
-                            "Đến cửa hàng nhận"
-                          ) : order.deliveryMethod === "HOME_DELIVERY" ? (
-                            "Giao hàng tận nơi"
-                          ) : (
-                            order.deliveryMethod
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Chi nhánh</p>
-                        <p className="font-medium">{order.branchId}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Phương thức thanh toán</p>
-                        <p className="font-medium">
-                          {order.paymentMethod || "KH chưa thanh toán"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Ngày đặt hàng</p>
-                        <p className="font-medium">
-                          {new Date(order.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      {order.note && (
-                        <div>
-                          <p className="text-sm text-gray-500">Ghi chú</p>
-                          <p className="font-medium">
-                            {editingSection === "additionInfor" ? (
-                              <input
-                                type="text"
-                                name="note" // This should match the key in formData
-                                value={formData?.note || ""}
-                                onChange={(e) => handleCustomerInfChange(e)}
-                                className="w-full border-orange-500 text-black border-2"
-                              />
-                            ) : (
-                              order.note
-                            )}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    </p>
                   </div>
-                  </div>
-        
+                
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </>

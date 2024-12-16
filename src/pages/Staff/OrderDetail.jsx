@@ -26,6 +26,8 @@ import {
   faEdit,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
+import { ProductColor } from "../../components/Product/ProductColor";
+import { ProductSize } from "../../components/Product/ProductSize";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -81,6 +83,8 @@ const OrderDetail = () => {
         if (response.data.isSuccess) {
           setOrder(response.data.data);
           setFormData(response.data.data);
+          console.log(response.data.data);
+
         } else {
           setError("Failed to retrieve order details");
         }
@@ -154,12 +158,13 @@ const OrderDetail = () => {
           if (product.productId === productId) {
             return {
               ...product,
-              [name]: value, // Update the specific field for this product
+              [name]: value,
+             
             };
           }
           console.log(product);
 
-          return product; // Keep other products unchanged
+          return product;
         }
       );
 
@@ -285,11 +290,10 @@ const OrderDetail = () => {
               </h2>
               <div className="flex gap-2">
                 <span
-                  className={`px-3 py-1 text-sm font-medium rounded-full ${
-                    statusOptions.find(
-                      (status) => status.label === order.orderStatus
-                    )?.color || "bg-gray-100 text-gray-800"
-                  }`}
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
+                    (status) => status.label === order.orderStatus
+                  )?.color || "bg-gray-100 text-gray-800"
+                    }`}
                 >
                   {order.orderStatus}
                 </span>
@@ -318,43 +322,40 @@ const OrderDetail = () => {
                 <Step
                   key={index}
                   completed={index < getCurrentStepIndex(order.orderStatus)}
-                  className={`${
-                    index < getCurrentStepIndex(order.orderStatus)
-                      ? "bg-blue-500 text-green-600"
-                      : "bg-green-600 text-green-600"
-                  }`}
+                  className={`${index < getCurrentStepIndex(order.orderStatus)
+                    ? "bg-blue-500 text-green-600"
+                    : "bg-green-600 text-green-600"
+                    }`}
                 >
                   <div className="relative flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 flex items-center justify-center rounded-full ${
-                        index <= getCurrentStepIndex(order.orderStatus)
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-300 text-gray-600"
-                      }`}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full ${index <= getCurrentStepIndex(order.orderStatus)
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-300 text-gray-600"
+                        }`}
                     >
                       <FontAwesomeIcon
                         icon={
                           index === 0
                             ? faClock
                             : index === 1
-                            ? faCheckCircle
-                            : index === 2
-                            ? faMoneyBillWave
-                            : index === 3
-                            ? faCogs
-                            : index === 4
-                            ? faTruck
-                            : faFlagCheckered
+                              ? faCheckCircle
+                              : index === 2
+                                ? faMoneyBillWave
+                                : index === 3
+                                  ? faCogs
+                                  : index === 4
+                                    ? faTruck
+                                    : faFlagCheckered
                         }
                         className="text-lg"
                       />
                     </div>
                     <div
-                      className={`absolute top-12 text-xs font-medium whitespace-nowrap ${
-                        index <= getCurrentStepIndex(order.orderStatus)
-                          ? "text-green-600"
-                          : "text-gray-600"
-                      }`}
+                      className={`absolute top-12 text-xs font-medium whitespace-nowrap ${index <= getCurrentStepIndex(order.orderStatus)
+                        ? "text-green-600"
+                        : "text-gray-600"
+                        }`}
                     >
                       {status.label}
                     </div>
@@ -410,40 +411,44 @@ const OrderDetail = () => {
                         </p>
                         <p className="flex text-sm text-gray-500 gap-2">
                           Số lượng:{" "}
-                          {editingSection === "productInformations" ? (
-                            <input
-                              type="number"
-                              name="quantity"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.quantity || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2"
-                            />
-                          ) : (
-                            item.quantity
-                          )}
+
+                          {item.quantity}
+
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm flex text-gray-500">
                           <b>Màu sắc: </b>
                           {editingSection === "productInformations" ? (
-                            <input
-                              type="text"
-                              name="color"
-                              value={
+                            <ProductColor
+                              productCode={item.productCode}
+                              selectedColor={
                                 formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
+                                  (valueItem) => valueItem.productId === item.productId
                                 )?.color || ""
                               }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 text-black border-2"
+                              setSelectedColor={(newColor) => {
+                                handleProductChange(
+                                  { 
+                                    target: { 
+                                      name: "color", 
+                                      value: newColor 
+                                    } 
+                                  },
+                                  item.productId
+                                );
+                              }}
+                              onColorSelect={(imgAvatarPath) => {
+                                handleProductChange(
+                                  { 
+                                    target: { 
+                                      name: "imgAvatarPath", 
+                                      value: imgAvatarPath 
+                                    } 
+                                  },
+                                  item.productId
+                                );
+                              }}
                             />
+                          
                           ) : (
                             item.color
                           )}
@@ -451,42 +456,33 @@ const OrderDetail = () => {
                         <p className="text-sm text-gray-500">
                           <b>Kích thước: </b>
                           {editingSection === "productInformations" ? (
-                            <input
-                              type="text"
-                              name="size"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.size || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2 text-black"
-                            />
+
+                          <ProductSize
+                           productCode={item.productCode}
+                           color={item.color}
+                           selectedSize={ formData.saleOrderDetailVMs.$values.find(
+                            (valueItem) => valueItem.productId === item.productId
+                          )?.size || ""}
+                           setSelectedSize={(newSize) => {
+                            handleProductChange(
+                              { 
+                                target: { 
+                                  name: "size", 
+                                  value: newSize
+                                } 
+                              },
+                              item.productId
+                            );
+                          }}
+                          />
+                           
                           ) : (
                             item.size
                           )}
                         </p>
                         <p className="text-sm text-gray-500">
                           <b>Tình trạng: </b>
-                          {editingSection === "productInformations" ? (
-                            <input
-                              type="number"
-                              name="condition"
-                              value={
-                                formData.saleOrderDetailVMs.$values.find(
-                                  (item) => item.productId === item.productId
-                                )?.condition || ""
-                              }
-                              onChange={(e) =>
-                                handleProductChange(e, item.productId)
-                              }
-                              className="w-1/2 border-orange-500 border-2"
-                            />
-                          ) : (
-                            item.condition
-                          )}
+                          {item.condition}
                           %
                         </p>{" "}
                       </div>
@@ -513,7 +509,7 @@ const OrderDetail = () => {
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
-                }).format(order.totalAmount)}
+                }).format(order.subTotal)}
               </p>
             </div>
             <div className="flex justify-between py-2">
