@@ -165,7 +165,7 @@ const ListImportHistory = () => {
                   <th className="p-4 border-b">Tên Sản Phẩm</th>
                   <th className="p-4 border-b">Ngày Nhập</th>
                   <th className="p-4 border-b">Số Lượng</th>
-                  <th className="p-4 border-b">Hành động</th>
+                  <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
@@ -226,36 +226,76 @@ const ListImportHistory = () => {
 
       {/* Modal for Import Details */}
       <Dialog open={modalOpen} handler={() => setModalOpen(false)} size="xl">
-        <DialogHeader className="text-2xl font-bold text-gray-800 border-b pb-4">
+      <DialogHeader className="text-2xl font-bold text-gray-800 border-b pb-4">
           Chi Tiết Nhập Hàng
         </DialogHeader>
         <DialogBody className="p-6">
           {selectedImport && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm font-medium text-gray-500">
-                  Tên Sản Phẩm
-                </p>
-                <p className="mt-1 text-sm text-gray-900">
-                  {selectedImport.productName}
-                </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-gray-100 p-4 rounded-lg shadow lg:col-span-3">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Hành Động</h3>
+                <p className="text-lg text-gray-900">{selectedImport.action}</p>
               </div>
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm font-medium text-gray-500">Ngày Nhập</p>
-                <p className="mt-1 text-sm text-gray-900">
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Mã Nhập Hàng</h3>
+                <p className="text-lg text-gray-900">{selectedImport.id}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Tên Sản Phẩm</h3>
+                <p className="text-lg text-gray-900">{selectedImport.productName}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Mã Sản Phẩm</h3>
+                <p className="text-lg text-gray-900">{selectedImport.productCode}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Ngày Nhập</h3>
+                <p className="text-lg text-gray-900">
                   {new Date(selectedImport.importDate).toLocaleString()}
                 </p>
               </div>
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm font-medium text-gray-500">Số Lượng</p>
-                <p className="mt-1 text-sm text-gray-900">
-                  {selectedImport.quantity}
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Người Quản Lý</h3>
+                <p className="text-lg text-gray-900">{selectedImport.managerName}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Mã Người Quản Lý</h3>
+                <p className="text-lg text-gray-900">{selectedImport.managerId}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá</h3>
+                <p className="text-lg text-gray-900">
+                  {selectedImport.price.toLocaleString()} VNĐ
                 </p>
               </div>
-              {/* Add more details as needed */}
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá Thuê</h3>
+                <p className="text-lg text-gray-900">
+                  {selectedImport.rentPrice.toLocaleString()} VNĐ
+                </p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Màu Sắc</h3>
+                <p className="text-lg text-gray-900">{selectedImport.color}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Kích Thước</h3>
+                <p className="text-lg text-gray-900">{selectedImport.size}</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Tình Trạng</h3>
+                <p className="text-lg text-gray-900">{selectedImport.condition}%</p>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-lg shadow">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Số Lượng</h3>
+                <p className="text-lg text-gray-900">{selectedImport.quantity}</p>
+              </div>
+              
             </div>
           )}
         </DialogBody>
+
       </Dialog>
     </div>
   );

@@ -146,7 +146,7 @@ const PendingRentalList = () => {
             <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Trạng thái thanh toán</th>
             <th className="text-left p-4 font-semibold text-gray-600">Trạng thái đơn hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Hành động</th>
+            <th className="text-left p-4 font-semibold text-gray-600"></th>
           </tr>
         </thead>
         <tbody>

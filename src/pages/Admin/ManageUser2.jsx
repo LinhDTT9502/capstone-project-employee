@@ -229,7 +229,7 @@ const ManageUser2 = () => {
                     <th className="p-4 border-b">Họ và Tên</th>
                     <th className="p-4 border-b">Email</th>
                     <th className="p-4 border-b">Vai Trò</th>
-                    <th className="p-4 border-b">Hành Động</th>
+                    <th className="p-4 border-b"></th>
                     <th className="p-4 border-b">Trạng thái</th>
                   </tr>
                 </thead>

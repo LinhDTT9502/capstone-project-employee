@@ -41,6 +41,8 @@ function SignIn() {
                 navigate("/coordinator/assign-orders");
             } else if (decoded.role === "Staff") {
                 navigate("/staff/list-orders");
+            } else if (decoded.role === "Owner") {
+                navigate("/owner/dashboard");
             } else if (decoded.role === "Manager") {
                 navigate("/manager/list-staffs");
             } else if (decoded.role === 'Content Staff') {

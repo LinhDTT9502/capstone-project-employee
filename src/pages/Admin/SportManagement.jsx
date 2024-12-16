@@ -149,7 +149,7 @@ const SportManagement = () => {
                   <tr className="bg-gray-100 text-left">
                     <th className="p-4 border-b">#</th>
                     <th className="p-4 border-b">Tên Môn Thể Thao</th>
-                    <th className="p-4 border-b">Hành động</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>

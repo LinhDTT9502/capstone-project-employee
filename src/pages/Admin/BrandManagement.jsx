@@ -161,7 +161,7 @@ const BrandManagement = () => {
                     <th className="p-4 border-b">#</th>
                     <th className="p-4 border-b">Tên Thương Hiệu</th>
                     <th className="p-4 border-b">Hình Ảnh</th>
-                    <th className="p-4 border-b">Hành Động</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>
