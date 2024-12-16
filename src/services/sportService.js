@@ -9,14 +9,17 @@ import {
 // Fetch all sports
 export const fetchSports = async () => {
     try {
-        const response = await getAllSports();
-        const filteredSports = response.data.data.$values.filter(sport => sport.status === true);
-        return filteredSports; 
+      const response = await getAllSports();
+      const filteredSports = response.data.data.$values
+        .filter((sport) => sport.status === true)
+        .sort((a, b) => b.id - a.id);
+      return filteredSports;
     } catch (error) {
-        console.error("Error fetching sports:", error);
-        throw error;
+      console.error("Error fetching sports:", error);
+      throw error;
     }
-};
+  };
+  
 
 // Fetch sport details by ID
 export const fetchSportDetails = async (sportId) => {

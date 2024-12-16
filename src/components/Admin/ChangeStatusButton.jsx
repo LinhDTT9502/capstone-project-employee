@@ -8,7 +8,7 @@ const ChangeStatusButton = ({ userId, isActive, onChangeStatus }) => {
       : "Bạn có chắc chắn muốn kích hoạt người dùng này không?";
 
     if (window.confirm(confirmationMessage)) {
-      onChangeStatus(userId, !isActive); // Toggle status
+      onChangeStatus(userId, !isActive);
     }
   };
 

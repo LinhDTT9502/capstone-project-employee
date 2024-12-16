@@ -13,9 +13,17 @@ export const fetchAllPromotionsApi = () => {
 
 // Create or update a promotion
 export const createOrUpdatePromotionApi = (productName, percentDiscount) => {
-  return axios.post(`${API_BASE_URL}/create-and-update-promotion/${productName}`, null, {
+  return axios.put(`${API_BASE_URL}/create-and-update-promotion/${productName}`, null, {
     params: {
       percentDiscount,
+    },
+  });
+};
+
+export const deletePromotionApi = (productName) => {
+  return axios.delete(`${API_BASE_URL}/delete-promotion?productName=${productName}`, {
+    headers: {
+      "accept": "*/*",
     },
   });
 };

@@ -7,15 +7,22 @@ import {
 } from "../api/apiBrand";
 
 // Fetch all brands
+// Fetch all brands
 export const getAllBrands = async () => {
-    try {
-      const response = await fetchAllBrandsApi();
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching brand:", error);
-      throw error;
-    }
-  };
+  try {
+    const response = await fetchAllBrandsApi();
+
+    const filteredBrands = response.data.data.$values.filter(
+      (brand) => brand.status === true
+    );
+
+    return filteredBrands;
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+    throw error;
+  }
+};
+
 
 // Fetch brand details by ID
 export const getBrandDetails = async (brandId) => {
