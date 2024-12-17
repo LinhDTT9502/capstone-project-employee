@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input, Button } from "@material-tailwind/react";
 import { fetchSports, createSport, updateSport, deleteSport } from "../../services/sportService";
 import SportActions from "../../components/Admin/SportActions.jsx";
 import AddSportModal from "../../components/Admin/AddSportModal.jsx";
 import EditSportModal from "../../components/Admin/EditSportModal.jsx";
 import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const SportManagement = () => {
   const [sports, setSports] = useState([]);
@@ -112,15 +114,17 @@ const SportManagement = () => {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý Môn Thể Thao ({filteredSports.length})
+            <Typography variant="h4" 
+             className="p-4 text-center"
+            >
+              Quản lý <span className="text-orange-500">[Môn Thể Thao]</span> ({filteredSports.length})
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button
               onClick={() => setIsAddModalOpen(true)}
             >
+              <FontAwesomeIcon icon={faPlus} />{" "}
               Tạo mới
-            </button>
+            </Button>
           </div>
 
           {/* Search Bar */}
@@ -149,7 +153,7 @@ const SportManagement = () => {
                   <tr className="bg-gray-100 text-left">
                     <th className="p-4 border-b">#</th>
                     <th className="p-4 border-b">Tên Môn Thể Thao</th>
-                    <th className="p-4 border-b">Hành động</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -179,7 +183,7 @@ const SportManagement = () => {
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
                     }`}
                   >
                     {number + 1}

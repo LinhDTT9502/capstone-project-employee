@@ -98,8 +98,8 @@ const Warehouse = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar pauseOnHover />
       <Card className="shadow-lg">
         <div className="p-4 flex justify-between items-center">
-          <Typography variant="h4" color="blue-gray">
-            Quản lý Kho Hàng ({warehouses.length})
+          <Typography variant="h4"  className="p-4 text-center">
+            Quản lý <span className="text-orange-500">[Kho hàng]</span> ({warehouses.length})
           </Typography>
         </div>
 
@@ -108,7 +108,7 @@ const Warehouse = () => {
           <button
             onClick={() => handleBranchSelect(null)}
             className={`px-4 py-2 ${
-              selectedBranch === null ? "bg-blue-500 text-white" : "bg-gray-200"
+              selectedBranch === null ? "bg-orange-500 text-white" : "bg-gray-200"
             } rounded`}
           >
             Tất Cả
@@ -118,7 +118,7 @@ const Warehouse = () => {
               key={branch.id}
               onClick={() => handleBranchSelect(branch.id)}
               className={`px-4 py-2 ${
-                selectedBranch === branch.id ? "bg-blue-500 text-white" : "bg-gray-200"
+                selectedBranch === branch.id ? "bg-orange-500 text-white" : "bg-gray-200"
               } rounded`}
             >
               {branch.branchName}
@@ -141,7 +141,7 @@ const Warehouse = () => {
                   <th className="p-4 border-b">Chi Nhánh</th>
                   <th className="p-4 border-b">Tổng Số Lượng</th>
                   <th className="p-4 border-b">Số Lượng Có Sẵn</th>
-                  <th className="p-4 border-b">Hành động</th>
+                  <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
@@ -175,7 +175,7 @@ const Warehouse = () => {
                   key={number + 1}
                   onClick={() => handlePageChange(number + 1)}
                   className={`px-3 py-1 mx-1 border rounded ${
-                    currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                    currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
                   }`}
                 >
                   {number + 1}

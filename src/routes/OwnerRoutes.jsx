@@ -14,9 +14,10 @@ import SportManagement from '../pages/Admin/SportManagement';
 import PromotionManagement from '../pages/Admin/PromotionManagement';
 import ListImportHistory from '../pages/Admin/ListImportHistory';
 import Warehouse from '../pages/Admin/Warehouse';
+import ProductImportForm from '../pages/Admin/ProductImportForm';
 
 
-const AdminRoutes = () => {
+const OwnerRoutes = () => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   useEffect(() => {
@@ -27,20 +28,12 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/manage-user" element={<ManageUser2 />} />
-      <Route path="/manage-staff" element={<ListAllStaff />} />
-      <Route path="/manage-staff/:staffId" element={<StaffDetail />} />
-      <Route path="/manage-managers" element={<ListAllManagers />} />
       <Route path="/import-history" element={<ListImportHistory />} />
       <Route path="/manage-feedback" element={<Feedback />} />
-      <Route path="/manage-brand" element={<BrandManagement />} />
-      <Route path="/manage-category" element={<CategoryManagement />} />
-      <Route path="/manage-role" element={<RoleManagement />} />
-      <Route path="/manage-sport" element={<SportManagement />} />
-      <Route path="/manage-promotion" element={<PromotionManagement />} />
-      <Route path="/manage-warehouse" element={<Warehouse />} />z
+      <Route path="/manage-warehouse" element={<Warehouse />} />
+      <Route path="/test" element={<ProductImportForm />} />
     </Routes>
   );
 };
 
-export default AdminRoutes;
+export default OwnerRoutes;

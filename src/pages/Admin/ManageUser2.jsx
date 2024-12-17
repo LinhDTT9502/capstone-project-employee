@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input, Button } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+
 import {
   fetchAllUsers,
   createUser,
@@ -44,8 +47,8 @@ const ManageUser2 = () => {
     try {
       setLoading(true);
       const response = await fetchAllUsers();
-      const reversedUsers = response.slice().reverse(); 
-      setUsers(reversedUsers); 
+      const reversedUsers = response.slice().reverse();
+      setUsers(reversedUsers);
       setFilteredUsers(reversedUsers);
     } catch (err) {
       setError("Đã xảy ra lỗi khi lấy dữ liệu người dùng.");
@@ -129,12 +132,12 @@ const ManageUser2 = () => {
 
   // Change status handler
   const handleChangeStatus = async (userId, newStatus) => {
-    if (
-      !window.confirm(
-        "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
-      )
-    )
-      return;
+    // if (
+    //   !window.confirm(
+    //     "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
+    //   )
+    // )
+    //   return;
 
     try {
       const response = await changeUserStatus(userId, newStatus);
@@ -184,21 +187,21 @@ const ManageUser2 = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{zIndex: 99999 }}
+        style={{ zIndex: 99999 }}
       />
 
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý Người Dùng ({filteredUsers.length})
+            <Typography variant="h4" color="blue-gray" className="p-4 text-center">
+            Quản lý <span className="text-orange-500">[Tài Khoản]</span> ({filteredUsers.length})
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button 
               onClick={() => setIsAddModalOpen(true)}
             >
-              Thêm Người Dùng
-            </button>
+              <FontAwesomeIcon icon={faPlus} />{" "}
+              TẠO MỚI
+            </Button>
           </div>
 
           <div className="p-4">
@@ -225,12 +228,12 @@ const ManageUser2 = () => {
                 <thead>
                   <tr className="bg-gray-100 text-left">
                     <th className="p-4 border-b">#</th>
-                    <th className="p-4 border-b">Tên Đăng Nhập</th>
-                    <th className="p-4 border-b">Họ và Tên</th>
+                    <th className="p-4 border-b">Tên đăng nhập</th>
+                    <th className="p-4 border-b">Họ và tên</th>
                     <th className="p-4 border-b">Email</th>
-                    <th className="p-4 border-b">Vai Trò</th>
-                    <th className="p-4 border-b">Hành Động</th>
+                    <th className="p-4 border-b">Vai trò</th>
                     <th className="p-4 border-b">Trạng thái</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -241,8 +244,15 @@ const ManageUser2 = () => {
                       <td className="p-4 border-b">{user.fullName}</td>
                       <td className="p-4 border-b">{user.email}</td>
                       <td className="p-4 border-b">
-        {roleMapping[user.roleId] || "Không xác định"}
-      </td>
+                        {roleMapping[user.roleId] || "Không xác định"}
+                      </td>
+                      <td className="p-4 border-b">
+                        <ChangeStatusButton
+                          userId={user.id}
+                          isActive={user.isActived}
+                          onChangeStatus={handleChangeStatus}
+                       />
+                      </td>
                       <td className="p-4 border-b">
                         <UserActions
                           user={user}
@@ -254,13 +264,7 @@ const ManageUser2 = () => {
                           onView={() => handleViewUser(user.id)}
                         />
                       </td>
-                      <td className="p-4 border-b">
-                        <ChangeStatusButton
-                          userId={user.id}
-                          isActive={user.isActived}
-                          onChangeStatus={handleChangeStatus}
-                        />
-                      </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -272,11 +276,10 @@ const ManageUser2 = () => {
                   <button
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
-                    className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1
-                        ? "bg-blue-500 text-white"
+                    className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1
+                        ? "bg-black text-white"
                         : "bg-gray-200"
-                    }`}
+                      }`}
                   >
                     {number + 1}
                   </button>
