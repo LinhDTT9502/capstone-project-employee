@@ -83,10 +83,10 @@ export default function SidebarStaff() {
         Quản lý tài khoản
       </SidebarLink>
       <SidebarLink to="/admin/manage-staff" icon={faUserTie}>
-        Nhân viên
+        Danh sách Nhân Viên
       </SidebarLink>
       <SidebarLink to="/admin/manage-managers" icon={faUserTie}>
-        Quản lý
+        Danh sách Quản lý
       </SidebarLink>
       <SidebarLink to="/admin/manage-feedback" icon={faComments}>
         Danh sách phản hồi
@@ -98,19 +98,19 @@ export default function SidebarStaff() {
         Quản lý vai trò
       </SidebarLink>
       <SidebarLink to="/admin/manage-sport" icon={faBaseball}>
-        Quản lý mục thể thao
+        Quản lý thể thao
       </SidebarLink>
       <SidebarLink to="/admin/manage-category" icon={faTableCellsLarge}>
-        Quản lý mục phân loại
+        Quản lý danh mục
       </SidebarLink>
       <SidebarLink to="/admin/manage-brand" icon={faRankingStar}>
-        Quản lý mục thương hiệu
+        Quản lý thương hiệu
       </SidebarLink>
       <SidebarLink to="/admin/manage-promotion" icon={faReceipt}>
         Khuyến mãi sản phẩm
       </SidebarLink>
       <SidebarLink to="/admin/manage-warehouse" icon={faWarehouse}>
-        Quản lý kho
+        Xem kho
       </SidebarLink>
     </>
   );

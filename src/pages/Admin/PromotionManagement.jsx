@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Spinner } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Button } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   getAllPromotions,
@@ -9,6 +9,8 @@ import {
 import SearchModal from "../../components/Admin/SearchModal.jsx";
 import PromotionActions from "../../components/Admin/PromotionActions.jsx";
 import EditPromotionModal from "../../components/Admin/EditPromotionModal.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function PromotionManagement() {
   const [promotions, setPromotions] = useState([]);
@@ -107,15 +109,15 @@ export default function PromotionManagement() {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý Khuyến Mãi
+            <Typography variant="h4"  className="p-4 text-center">
+                Quản lý <span className="text-orange-500">[Khuyến Mãi]</span>
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button
               onClick={() => setIsModalOpen(true)}
             >
-              Thêm Khuyến Mãi
-            </button>
+             <FontAwesomeIcon icon={faPlus} />{" "}
+                                         Tạo mới
+            </Button>
           </div>
 
           {loading ? (
@@ -159,7 +161,7 @@ export default function PromotionManagement() {
                           <img
                             src={promotion.imgAvatarPath}
                             alt={promotion.productName}
-                            className="h-10 w-10 object-cover rounded"
+                            className="h-20 w-20 object-cover rounded"
                           />
                         </td>
                         <td className="p-4 border-b">{promotion.discount}%</td>
@@ -189,7 +191,7 @@ export default function PromotionManagement() {
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${
                       currentPage === number + 1
-                        ? "bg-blue-500 text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-200"
                     }`}
                   >

@@ -121,8 +121,11 @@ const ListImportHistory = () => {
       />
       <Card className="shadow-lg">
         <div className="p-4 flex justify-between items-center">
-          <Typography variant="h4" color="blue-gray">
-            Lịch sử nhập hàng
+          <Typography variant="h4"
+           color="blue-gray"
+           className="p-4 text-center"
+           >
+            Quản lý <span className="text-orange-500">[Lịch Sử Nhập Hàng]</span>
           </Typography>
         </div>
 
@@ -131,7 +134,7 @@ const ListImportHistory = () => {
           <button
             onClick={() => handleBranchSelect(null)}
             className={`px-4 py-2 ${
-              selectedBranch === null ? "bg-blue-500 text-white" : "bg-gray-200"
+              selectedBranch === null ? "bg-orange-500 text-white" : "bg-gray-200"
             } rounded`}
           >
             Tất Cả
@@ -142,7 +145,7 @@ const ListImportHistory = () => {
               onClick={() => handleBranchSelect(branch.id)}
               className={`px-4 py-2 ${
                 selectedBranch === branch.id
-                  ? "bg-blue-500 text-white"
+                  ? "bg-orange-500 text-white"
                   : "bg-gray-200"
               } rounded`}
             >
@@ -162,9 +165,9 @@ const ListImportHistory = () => {
               <thead>
                 <tr className="bg-gray-100 text-left">
                   <th className="p-4 border-b">#</th>
-                  <th className="p-4 border-b">Tên Sản Phẩm</th>
-                  <th className="p-4 border-b">Ngày Nhập</th>
-                  <th className="p-4 border-b">Số Lượng</th>
+                  <th className="p-4 border-b">Tên sản phẩm</th>
+                  <th className="p-4 border-b">Ngày nhập</th>
+                  <th className="p-4 border-b">Số lượng</th>
                   <th className="p-4 border-b"></th>
                 </tr>
               </thead>
@@ -184,7 +187,7 @@ const ListImportHistory = () => {
                         size="md"
                         color="blue"
                         variant="text"
-                        className="flex items-center gap-2 px-4 py-2"
+                        className="flex items-center gap-2 px-2 py-2"
                         onClick={() => handleViewDetails(item)}
                       >
                         <FontAwesomeIcon icon={faEye} className="text-sm" />
@@ -195,6 +198,8 @@ const ListImportHistory = () => {
                           color="red"
                           variant="text"
                           onClick={() => handleDelete(item.id)}
+                          className="flex items-center gap-2 px-2 py-2"
+
                         >
                           <FontAwesomeIcon icon={faTrash} className="text-sm	" />
                         </Button></div>
@@ -212,7 +217,7 @@ const ListImportHistory = () => {
                   onClick={() => handlePageChange(number + 1)}
                   className={`px-3 py-1 mx-1 border rounded ${
                     currentPage === number + 1
-                      ? "bg-blue-500 text-white"
+                      ? "bg-black text-white"
                       : "bg-gray-200"
                   }`}
                 >
@@ -264,15 +269,15 @@ const ListImportHistory = () => {
                 <p className="text-lg text-gray-900">{selectedImport.managerId}</p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá</h3>
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá Bán</h3>
                 <p className="text-lg text-gray-900">
-                  {selectedImport.price.toLocaleString()} VNĐ
+                  {selectedImport.price.toLocaleString("Vi-vn")}₫
                 </p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá Thuê</h3>
                 <p className="text-lg text-gray-900">
-                  {selectedImport.rentPrice.toLocaleString()} VNĐ
+                  {selectedImport.rentPrice.toLocaleString("Vi-vn")}₫
                 </p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">
@@ -288,7 +293,7 @@ const ListImportHistory = () => {
                 <p className="text-lg text-gray-900">{selectedImport.condition}%</p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 className="text-sm font-semibold text-gray-600 mb-2">Số Lượng</h3>
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Số Lượng Nhập</h3>
                 <p className="text-lg text-gray-900">{selectedImport.quantity}</p>
               </div>
               

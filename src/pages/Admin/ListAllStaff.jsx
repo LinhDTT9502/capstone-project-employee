@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Switch } from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   Card,
   Typography,
@@ -71,10 +74,13 @@ const ListAllStaff = () => {
     <div className="container mx-auto p-4">
       <Card className="shadow-lg">
         <div className="flex justify-between items-center p-4">
-          <Typography variant="h4" color="blue-gray" className="text-center">
-            Danh sách nhân viên ({filteredStaffData.length})
+          <Typography variant="h4" color="blue-gray" className="p-4 text-center">
+            Danh sách <span className="text-orange-500">[Nhân Viên]</span> ({filteredStaffData.length})
           </Typography>
-          <Button onClick={handleCreateStaff}>Tạo mới</Button>
+          <Button onClick={handleCreateStaff}>
+            <FontAwesomeIcon icon={faPlus} />{" "}
+            Tạo mới
+            </Button>
         </div>
 
         {/* Search Input */}
@@ -103,17 +109,21 @@ const ListAllStaff = () => {
               <thead>
                 <tr className="bg-gray-100 text-left">
                   <th className="p-4 border-b">#</th>
-                  <th className="p-4 border-b">Tên</th>
+                  <th className="p-4 border-b">Tên nhân viên</th>
                   <th className="p-4 border-b">Email</th>
+                  <th className="p-4 border-b">Chi nhánh</th>
                   <th className="p-4 border-b">Chức vụ</th>
-                  <th className="p-4 border-b">Số điện thoại</th>
                   <th className="p-4 border-b">Ngày bắt đầu</th>
                   <th className="p-4 border-b">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredStaffData.map((staff, index) => (
+                
                   <tr key={staff.staffId} className="hover:bg-gray-50">
+
+                      {console.log(staff)}
+
                     <td className="p-4 border-b">{index + 1}</td>
                     <td
                       className="p-4 border-b font-bold cursor-pointer hover:underline"
@@ -124,19 +134,24 @@ const ListAllStaff = () => {
                       {staff.userVM.fullName}
                     </td>
                     <td className="p-4 border-b">{staff.userVM.email}</td>
+                    <td className="p-4 border-b">{staff.branchName}</td>
                     <td className="p-4 border-b">{staff.position}</td>
-                    <td className="p-4 border-b">{staff.userVM.phoneNumber}</td>
                     <td className="p-4 border-b">
                       {new Date(staff.startDate).toLocaleDateString()}
                     </td>
                     <td className="p-4 border-b">
-                      {staff.isActive ? (
-                        <span className="text-green-600 font-semibold">
-                          Hoạt động
-                        </span>
+                    <Switch
+                              color="green"
+                              checked={staff.isActive}
+                            />
+                      {/* {staff.isActive ? (
+                        // <span className="text-green-600 font-semibold">
+                        //   Hoạt động
+                        // </span>
+                    
                       ) : (
                         <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
-                      )}
+                      )} */}
                     </td>
                   </tr>
                 ))}
