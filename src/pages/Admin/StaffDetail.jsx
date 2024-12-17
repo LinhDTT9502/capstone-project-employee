@@ -76,7 +76,11 @@ const StaffDetail = () => {
           <div>
             <Typography variant="h6">Start Date:</Typography>
             <Typography>
-              {new Date(staffDetail.startDate).toLocaleDateString()}
+              {new Date(staffDetail.startDate).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })}
             </Typography>
           </div>
           <div>

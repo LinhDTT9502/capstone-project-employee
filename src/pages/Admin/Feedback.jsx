@@ -29,7 +29,7 @@ const ListAllFeedback = () => {
       setLoading(true);
       const response = await fetchAllFeedbacks();
       if (response) {
-        const reversedFeedbacks = response.slice().reverse(); 
+        const reversedFeedbacks = response.slice().reverse();
         setFeedbackData(reversedFeedbacks);
         setFilteredFeedbacks(reversedFeedbacks);
       } else {
@@ -41,7 +41,7 @@ const ListAllFeedback = () => {
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     fetchFeedbackData();
@@ -181,7 +181,11 @@ const ListAllFeedback = () => {
             </Typography> */}
             <Typography variant="h6" className="mb-2">
               Ngày tạo:{" "}
-              {new Date(selectedFeedback.createdAt).toLocaleDateString()}
+              {new Date(selectedFeedback.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })}
             </Typography>
             <Typography variant="h6" className="mb-2">
               Nội dung:

@@ -25,7 +25,7 @@ const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
       };
 
       fetchOrderDetail();
-    } else if (open && orderCode){
+    } else if (open && orderCode) {
       const fetchOrderDetail = async () => {
         try {
           const response = await getOrderbyCode(orderCode);
@@ -59,7 +59,11 @@ const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
             <p><strong>Email:</strong> {orderDetails.email}</p>
             <p><strong>Chi nhánh:</strong> {orderDetails.branchName}</p>
             <p><strong>Trạng thái đơn hàng:</strong> {orderDetails.orderStatus}</p>
-            <p><strong>Ngày tạo:</strong> {new Date(orderDetails.createdAt).toLocaleDateString()}</p>
+            <p><strong>Ngày tạo:</strong> {new Date(orderDetails.createdAt).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })}</p>
             <p><strong>Phương thức giao hàng:</strong> {orderDetails.deliveryMethod}</p>
             <p><strong>Tình trạng thanh toán:</strong> {orderDetails.paymentStatus}</p>
             <p><strong>Phương thức thanh toán:</strong> {orderDetails.paymentMethod || "Không xác định"}</p>

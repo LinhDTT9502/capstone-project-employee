@@ -267,15 +267,15 @@ export default function ManageUser() {
         {" "}
         <h2 className="text-2xl font-bold mx-10 mt-4">Quản lý tài khoản</h2>
         <div className="flex justify-end items-center">
-            <Button
-              color="blue"
-              className="flex items-center mx-10 gap-2 mt-4"
-              onClick={() => setModalOpen(true)}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-              Tạo tài khoản
-            </Button>
-          </div>
+          <Button
+            color="blue"
+            className="flex items-center mx-10 gap-2 mt-4"
+            onClick={() => setModalOpen(true)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            Tạo tài khoản
+          </Button>
+        </div>
       </div>
 
       <hr className=" flex justify-between items-center mx-10 my-4" />
@@ -474,7 +474,11 @@ export default function ManageUser() {
               {
                 label: "Birthdate",
                 value: viewUserData?.birthDate
-                  ? new Date(viewUserData.birthDate).toLocaleDateString()
+                  ? new Date(viewUserData.birthDate).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
                   : "Unknown",
               },
               { label: "Role", value: getRoleName(viewUserData?.roleId) },

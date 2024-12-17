@@ -98,7 +98,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
 
   return (
     <Dialog open={open} handler={onClose}>
-      <DialogHeader>Order Detail: {orderCode}</DialogHeader>
+      <DialogHeader>Chi tiết đơn hàng - <span className="ml-1 text-orange-500 font-bold">#{orderCode}</span></DialogHeader>
       <DialogBody divider className="max-h-[70vh] overflow-y-auto">
         {loading ? (
           <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
@@ -118,7 +118,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
               <strong>Email:</strong> {customerInfo.email}
             </p>
             <p>
-              <strong>Phương thức nhận hàng:</strong>{" "}
+              <strong>Hình thức nhận hàng:</strong>{" "}
               {customerInfo.deliveryMethod}
             </p>
             <p>
@@ -127,7 +127,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
             <p>
               <strong>Địa chỉ :</strong> {customerInfo.address}
             </p>
-            <h4 className="mt-4 mb-2">Sản phẩm:</h4>
+            <h4 className="mt-4 mb-2 font-bold">Sản phẩm:</h4>
             <ul>
               {childOrders.map((order) => (
                 <li key={order.id} className="mb-2">
@@ -140,26 +140,44 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                     <div>
-                      <p>
+                      <p className="text-orange-500">
                         <strong>
                           {order.productName || "Unknown Product"}
                         </strong>
                       </p>
                       <p>
+                        {console.log(order)}
                         {order.color} - {order.size} - {order.condition}%
                       </p>
                       <p>
-                        <span>Thời gian thuê:</span>{" "}
-                        {new Date(order.rentalStartDate).toLocaleDateString()} -{" "}
-                        {new Date(order.rentalEndDate).toLocaleDateString()}
+                        <span className="font-bold">Thời gian thuê:</span>{" "}
+                        <span>
+                          {new Date(order.rentalStartDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })} -{" "}
+                          {new Date(order.rentalEndDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })}
+                        </span>
+
                       </p>
                       <p>
-                        Giá thuê:{" "}
-                        {order.rentPrice
-                          ? order.rentPrice.toLocaleString()
-                          : "N/A"}
+                        <span className="font-bold">Giá thuê:{" "}</span>
+                        <span className="italic">
+                          {order.rentPrice
+                            ? order.rentPrice.toLocaleString('vi-VN')
+                            : "N/A"}₫
+                        </span>
                       </p>
-                      <p>Tạm tính: {order.subTotal.toLocaleString()}</p>
+                      <p>
+                        <span className="font-bold">Tạm tính: </span>
+                        <span className="italic">{order.subTotal.toLocaleString('vi-VN')}₫</span>
+
+                      </p>
                     </div>
                   </div>
                 </li>

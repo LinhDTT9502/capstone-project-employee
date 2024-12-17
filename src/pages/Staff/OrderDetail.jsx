@@ -159,7 +159,7 @@ const OrderDetail = () => {
             return {
               ...product,
               [name]: value,
-             
+
             };
           }
           console.log(product);
@@ -427,28 +427,28 @@ const OrderDetail = () => {
                               }
                               setSelectedColor={(newColor) => {
                                 handleProductChange(
-                                  { 
-                                    target: { 
-                                      name: "color", 
-                                      value: newColor 
-                                    } 
+                                  {
+                                    target: {
+                                      name: "color",
+                                      value: newColor
+                                    }
                                   },
                                   item.productId
                                 );
                               }}
                               onColorSelect={(imgAvatarPath) => {
                                 handleProductChange(
-                                  { 
-                                    target: { 
-                                      name: "imgAvatarPath", 
-                                      value: imgAvatarPath 
-                                    } 
+                                  {
+                                    target: {
+                                      name: "imgAvatarPath",
+                                      value: imgAvatarPath
+                                    }
                                   },
                                   item.productId
                                 );
                               }}
                             />
-                          
+
                           ) : (
                             item.color
                           )}
@@ -457,25 +457,25 @@ const OrderDetail = () => {
                           <b>Kích thước: </b>
                           {editingSection === "productInformations" ? (
 
-                          <ProductSize
-                           productCode={item.productCode}
-                           color={item.color}
-                           selectedSize={ formData.saleOrderDetailVMs.$values.find(
-                            (valueItem) => valueItem.productId === item.productId
-                          )?.size || ""}
-                           setSelectedSize={(newSize) => {
-                            handleProductChange(
-                              { 
-                                target: { 
-                                  name: "size", 
-                                  value: newSize
-                                } 
-                              },
-                              item.productId
-                            );
-                          }}
-                          />
-                           
+                            <ProductSize
+                              productCode={item.productCode}
+                              color={item.color}
+                              selectedSize={formData.saleOrderDetailVMs.$values.find(
+                                (valueItem) => valueItem.productId === item.productId
+                              )?.size || ""}
+                              setSelectedSize={(newSize) => {
+                                handleProductChange(
+                                  {
+                                    target: {
+                                      name: "size",
+                                      value: newSize
+                                    }
+                                  },
+                                  item.productId
+                                );
+                              }}
+                            />
+
                           ) : (
                             item.size
                           )}
@@ -722,7 +722,11 @@ const OrderDetail = () => {
               <div>
                 <p className="text-sm text-gray-500">Ngày đặt hàng</p>
                 <p className="font-medium">
-                  {new Date(order.createdAt).toLocaleDateString()}
+                  {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })}
                 </p>
               </div>
               {order.note && (

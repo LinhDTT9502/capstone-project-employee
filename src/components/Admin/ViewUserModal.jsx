@@ -24,7 +24,13 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
     { label: "Số điện thoại", value: user.phoneNumber },
     { label: "Xác thực SĐT", value: user.phoneNumberConfirmed ? "Đã xác thực" : "Chưa xác thực" },
     { label: "Giới tính", value: user.gender },
-    { label: "Ngày sinh", value: user.dob ? new Date(user.dob).toLocaleDateString() : "Không có" },
+    {
+      label: "Ngày sinh", value: user.dob ? new Date(user.dob).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }) : "Không có"
+    },
     { label: "Địa chỉ", value: user.address || "Không có" },
     { label: "Vai trò", value: roleMapping[user.roleId] || "Không xác định" }, // Sử dụng roleMapping
     { label: "Trạng thái", value: user.isActived ? "Hoạt động" : "Vô hiệu hóa" },
@@ -41,11 +47,11 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Avatar và tên người dùng */}
           <div className="flex-shrink-0 flex flex-col items-center">
-          <img
-  src={user.imgAvatarPath || "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o="}
-  alt="Avatar"
-  className="h-40 w-40 rounded-full object-cover shadow-lg border-4 border-white"
-/>
+            <img
+              src={user.imgAvatarPath || "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o="}
+              alt="Avatar"
+              className="h-40 w-40 rounded-full object-cover shadow-lg border-4 border-white"
+            />
 
 
             <Typography variant="h6" className="mt-4 text-blue-gray-800">

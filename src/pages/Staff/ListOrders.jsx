@@ -70,7 +70,7 @@ const ListOrder = () => {
       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
       <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
     </div>
-  );  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
+  ); if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -122,7 +122,11 @@ const ListOrder = () => {
                   <span className="text-sm text-gray-500">{order.email}</span>
                 </div>
               </td>
-              <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
+              <td className="p-4">{new Date(order.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })}</td>
               {/* <td className="p-4">{order.deliveryMethod}</td> */}
               <td className="p-4">
                 <span
@@ -145,8 +149,8 @@ const ListOrder = () => {
 
               <td className="p-4">
                 <div className='flex items-center gap-3'>
-                <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
-                <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
+                  <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                  <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
                 </div>
               </td>
 

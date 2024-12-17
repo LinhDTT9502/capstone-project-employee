@@ -116,7 +116,11 @@ const ListAllManagers = () => {
                       {manager.userVM.phoneNumber}
                     </td>
                     <td className="p-4 border-b">
-                      {new Date(manager.startDate).toLocaleDateString()}
+                      {new Date(manager.startDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
                     </td>
                     <td className="p-4 border-b">
                       {manager.isActive ? (

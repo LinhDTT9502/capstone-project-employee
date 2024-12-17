@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getProfile } from '../../services/profileService';
-import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from "@material-tailwind/react"; 
+import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
 
@@ -30,7 +30,7 @@ const Profile = ({ open, onClose }) => {
       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
       <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
     </div>
-  );  if (error) return <div>{error}</div>;
+  ); if (error) return <div>{error}</div>;
 
   return (
     <Dialog
@@ -48,10 +48,22 @@ const Profile = ({ open, onClose }) => {
           <p><strong>Email:</strong> {profile.email}</p>
           <p><strong>Phone:</strong> {profile.phone}</p>
           <p><strong>Address:</strong> {profile.address}</p>
-          <p><strong>Date of Birth:</strong> {new Date(profile.dob).toLocaleDateString()}</p>
+          <p><strong>Date of Birth:</strong> {new Date(profile.dob).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })}</p>
           <p><strong>Gender:</strong> {profile.gender}</p>
-          <p><strong>Created Date:</strong> {new Date(profile.createdDate).toLocaleDateString()}</p>
-          <p><strong>Last Update:</strong> {new Date(profile.lastUpdate).toLocaleDateString()}</p>
+          <p><strong>Created Date:</strong> {new Date(profile.createdDate).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })}</p>
+          <p><strong>Last Update:</strong> {new Date(profile.lastUpdate).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })}</p>
         </div>
       </DialogBody>
       <DialogFooter>

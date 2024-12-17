@@ -1,4 +1,4 @@
-import { getProductByProductCode, getProductColor, getProductSize } from "../api/apiProduct";
+import { getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize } from "../api/apiProduct";
 
 export const fetchProductColor = async (productCode) => {
   try {
@@ -23,6 +23,16 @@ export const fetchProductSize = async (productCode, color) => {
 export const fetchProductByProductCode = async (productCode, color, size, condition) => {
   try {
     const response = await getProductByProductCode(productCode, color, size, condition);
+    return response.data.$values;
+  } catch (error) {
+    console.error(`Error fetching product:`, error);
+    throw error;
+  }
+};
+
+export const fetchAProductByProductCode = async (productCode) => {
+  try {
+    const response = await getProductByProductCodeAPI(productCode);
     return response.data.$values;
   } catch (error) {
     console.error(`Error fetching product:`, error);

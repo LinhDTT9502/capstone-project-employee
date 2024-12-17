@@ -127,7 +127,11 @@ const ListAllStaff = () => {
                     <td className="p-4 border-b">{staff.position}</td>
                     <td className="p-4 border-b">{staff.userVM.phoneNumber}</td>
                     <td className="p-4 border-b">
-                      {new Date(staff.startDate).toLocaleDateString()}
+                      {new Date(staff.startDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
                     </td>
                     <td className="p-4 border-b">
                       {staff.isActive ? (

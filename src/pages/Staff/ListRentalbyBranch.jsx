@@ -29,7 +29,7 @@ const ListRentalbyBranch = () => {
       const data = await getRentalbyBranch(user.BranchId);
       setOrders(data);
       console.log(data);
-      
+
     } catch (error) {
       console.error('Error fetching orders:', error);
       setError('Failed to fetch orders');
@@ -39,7 +39,7 @@ const ListRentalbyBranch = () => {
   };
 
   useEffect(() => {
-    
+
 
     fetchOrders();
   }, []);
@@ -48,30 +48,30 @@ const ListRentalbyBranch = () => {
     // Confirm before proceeding with removal
     const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');
     if (!confirmDelete) {
-        return; // Exit if user cancels
+      return; // Exit if user cancels
     }
 
     try {
-        console.log(orderId);
+      console.log(orderId);
 
-        const data = await removeRental(orderId); 
-        if (data.isSuccess) {
-            alert('Bạn đã xóa đơn hàng thành công!');
-            fetchOrders();
-        } else {
-            console.error('Không thể xóa đơn hàng:', data.message);
-        }
+      const data = await removeRental(orderId);
+      if (data.isSuccess) {
+        alert('Bạn đã xóa đơn hàng thành công!');
+        fetchOrders();
+      } else {
+        console.error('Không thể xóa đơn hàng:', data.message);
+      }
     } catch (error) {
-        console.error('Lỗi khi xóa đơn hàng:', error);
+      console.error('Lỗi khi xóa đơn hàng:', error);
     }
-};
+  };
 
-if (loading) return (
-  <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
-    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-    <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
-  </div>
-);  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
+  if (loading) return (
+    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+      <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+    </div>
+  ); if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -123,13 +123,17 @@ if (loading) return (
                   <span className="text-sm text-gray-500">{order.email}</span>
                 </div>
               </td>
-              <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
+              <td className="p-4">{new Date(order.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })}</td>
               <td className="p-4">{order.deliveryMethod}</td>
               <td className="p-4">
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'IsCanceled' ? 'bg-red-100 text-red-600' :
-                      order.paymentStatus === 'IsPaid' ? 'bg-green-100 text-green-600' :
-                        'bg-blue-100 text-blue-600'
+                    order.paymentStatus === 'IsPaid' ? 'bg-green-100 text-green-600' :
+                      'bg-blue-100 text-blue-600'
                     }`}
                 >
                   {order.paymentStatus}
@@ -145,12 +149,12 @@ if (loading) return (
               </td>
 
               <td className="p-4">
-              <div className='flex items-center gap-3'>
-                <Link to={`/staff/list-rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
-                <button  onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
+                <div className='flex items-center gap-3'>
+                  <Link to={`/staff/list-rentals/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                  <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
                 </div>
               </td>
-     
+
             </tr>
 
           ))}

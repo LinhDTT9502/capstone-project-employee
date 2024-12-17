@@ -35,11 +35,11 @@ const PendingRentalList = () => {
       try {
         const data = await getRentalbyStatus(1);
         console.log(data);
-        
+
         const pendingOrders = data.filter(order => order.branchId === null && order.parentOrderCode === null);
         setOrders(pendingOrders);
         console.log(orders);
-        
+
       } catch (error) {
         console.error('Error fetching orders:', error);
         setError('Failed to fetch orders');
@@ -91,7 +91,7 @@ const PendingRentalList = () => {
       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
       <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
     </div>
-  );  if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
+  ); if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -100,8 +100,8 @@ const PendingRentalList = () => {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Search for order"
-            className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
+            placeholder="Tìm kiếm đơn hàng..."
+            className="border border-gray-300 rounded-lg p-2 w-1/2 focus:outline-none focus:border-blue-400"
           />
           <select
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400"
@@ -160,7 +160,11 @@ const PendingRentalList = () => {
                   <span className="text-sm text-gray-500">{order.email}</span>
                 </div>
               </td>
-              <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
+              <td className="p-4">{new Date(order.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })}</td>
               <td className="p-4">
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'Đang chờ thanh toán' ? 'bg-yellow-100 text-yellow-600' :

@@ -145,7 +145,7 @@ export default function RecentOrder() {
                                         color="blue-gray"
                                         className="font-normal leading-none opacity-70"
                                     >
-                                      date
+                                        date
                                     </Typography>
                                 </th>
                                 <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
@@ -163,7 +163,7 @@ export default function RecentOrder() {
                                         color="blue-gray"
                                         className="font-normal leading-none opacity-70"
                                     >
-                                       status
+                                        status
                                     </Typography>
                                 </th>
                                 <th className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
@@ -222,7 +222,11 @@ export default function RecentOrder() {
                                                     color="blue-gray"
                                                     className="font-normal"
                                                 >
-                                                    {new Date(order.createDate).toLocaleDateString()}
+                                                    {new Date(order.createDate).toLocaleDateString('en-GB', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                    })}
                                                 </Typography>
                                             </td>
                                             <td className={classes}>
@@ -317,7 +321,7 @@ export default function RecentOrder() {
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
                     >
-                       prev
+                        prev
                     </IconButton>
                     <Typography variant="small">
                         page {currentPage} of{" "}
@@ -327,7 +331,7 @@ export default function RecentOrder() {
                         onClick={handleNextPage}
                         disabled={currentPage * ordersPerPage >= orders.length}
                     >
-                       next
+                        next
                     </IconButton>
                 </div>
             </Card>

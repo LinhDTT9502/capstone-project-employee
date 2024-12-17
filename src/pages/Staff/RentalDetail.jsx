@@ -180,7 +180,7 @@ const RentalDetail = () => {
       );
       if (response.data.isSuccess) {
         setOrder({ ...order, orderStatus: statusLabel });
-        
+
         alert("Order status updated successfully");
       } else {
         alert("Failed to update order status");
@@ -287,7 +287,7 @@ const RentalDetail = () => {
       note: formData.note || "",
       parentSubTotal: formData.subTotal,
       parentTranSportFee: formData.tranSportFee,
-      parentTotalAmount:formData.totalAmount,
+      parentTotalAmount: formData.totalAmount,
       branchId: formData.branchId,
       productInformations: formData.childOrders.$values.map((item) => ({
         cartItemId: null, // You can set this dynamically if available
@@ -313,7 +313,7 @@ const RentalDetail = () => {
         },
       })),
     };
-console.log(payload);
+    console.log(payload);
 
     try {
       const response = await axios.put(
@@ -328,7 +328,7 @@ console.log(payload);
 
       if (response) {
         console.log(response);
-        
+
         alert("Cập nhật đơn hàng thành công");
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
@@ -562,11 +562,19 @@ console.log(payload);
                               </span>{" "}
                               {new Date(
                                 child.rentalStartDate
-                              ).toLocaleDateString()}{" "}
+                              ).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })}{" "}
                               -{" "}
                               {new Date(
                                 child.rentalEndDate
-                              ).toLocaleDateString()}
+                              ).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })}
                             </p>
                             <p>
                               <span className="font-semibold">Tổng cộng:</span>{" "}
@@ -609,8 +617,16 @@ console.log(payload);
                             <span className="font-semibold">
                               Rental Period:
                             </span>{" "}
-                            {new Date(rentalStartDate).toLocaleDateString()} -{" "}
-                            {new Date(rentalEndDate).toLocaleDateString()}
+                            {new Date(rentalStartDate).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })} -{" "}
+                            {new Date(rentalEndDate).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })}
                           </p>
                           <p>
                             <span className="font-semibold">Total:</span>{" "}
@@ -794,7 +810,7 @@ console.log(payload);
                     <button
                       onClick={handleSave}
                       className="text-green-500 hover:text-green-700"
-                    > 
+                    >
                       <FontAwesomeIcon icon={faSave} /> Lưu
                     </button>
                   </div>
@@ -849,27 +865,31 @@ console.log(payload);
                 <div>
                   <p className="text-sm text-gray-500">Ngày đặt hàng</p>
                   <p className="font-medium">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
                   </p>
                 </div>
-               
-                  <div>
-                    <p className="text-sm text-gray-500">Ghi chú</p>
-                    <p className="font-medium">
-                      {editingSection === "additionInfor" ? (
-                        <input
-                          type="text"
-                          name="note" // This should match the key in formData
-                          value={formData?.note || ""}
-                          onChange={(e) => handleCustomerInfChange(e)}
-                          className="w-full border-orange-500 text-black border-2"
-                        />
-                      ) : (
-                        order.note? order.note : "Không có ghi chú"
-                      )}
-                    </p>
-                  </div>
-                
+
+                <div>
+                  <p className="text-sm text-gray-500">Ghi chú</p>
+                  <p className="font-medium">
+                    {editingSection === "additionInfor" ? (
+                      <input
+                        type="text"
+                        name="note" // This should match the key in formData
+                        value={formData?.note || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.note ? order.note : "Không có ghi chú"
+                    )}
+                  </p>
+                </div>
+
               </div>
             </div>
           </div>

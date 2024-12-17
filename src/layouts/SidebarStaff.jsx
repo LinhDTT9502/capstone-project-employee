@@ -22,6 +22,7 @@ import {
   faBars,
   faReceipt,
   faWarehouse,
+  faComment
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -29,7 +30,7 @@ export default function SidebarStaff() {
   const user = useSelector(selectUser);
   const [isOpen, setIsOpen] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState("");
+  const [activeItem, setActiveItem] = useState("/coordinator/assign-orders");
   const location = useLocation();
 
   useEffect(() => {
@@ -51,33 +52,30 @@ export default function SidebarStaff() {
   const SidebarLink = ({ to, icon, children }) => (
     <Link
       to={to}
+      onClick={() => setActiveItem(to)} // Updates activeItem
       className={`flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-300 ease-in-out group
-                  ${activeItem === to ? "bg-orange-100 text-orange-600" : ""}`}
-      onClick={() => setActiveItem(to)}
+                ${activeItem === to ? "bg-orange-100 text-orange-600" : ""}`}
     >
       <FontAwesomeIcon
         icon={icon}
         className={`w-5 h-5 mr-3 text-gray-700 hover:bg-gray-100 group-hover:scale-110 transition-transform duration-300 
-                    ${isSidebarCollapsed ? "mr-0 " : ""}
-                    ${activeItem === to ? "text-orange-600" : ""}`}
+                  ${isSidebarCollapsed ? "mr-0" : ""}
+                  ${activeItem === to ? "text-orange-600" : ""}`}
       />
       <span
         className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 
-                        ${
-                          isSidebarCollapsed
-                            ? "w-0 opacity-0"
-                            : "w-auto opacity-100"
-                        }`}
+                      ${isSidebarCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"}`}
       >
         {children}
       </span>
     </Link>
   );
 
+
   const renderAdminLinks = () => (
     <>
       <SidebarLink to="/admin/dashboard" icon={faGauge}>
-      Bảng điều khiển
+        Bảng điều khiển
       </SidebarLink>
       <SidebarLink to="/admin/manage-user" icon={faUser}>
         Quản lý tài khoản
@@ -136,6 +134,7 @@ export default function SidebarStaff() {
     </>
   );
 
+
   const renderCoordinatorLinks = () => (
     <div className="mb-2">
       <button
@@ -143,43 +142,39 @@ export default function SidebarStaff() {
         aria-expanded={isOpen}
         aria-controls="coordinator-menu"
         className={`flex items-center w-full p-2 text-gray-700 hover:bg-indigo-100 rounded-lg transition-all duration-300 ease-in-out group
-              ${
-                activeItem.startsWith("/coordinator")
-                  ? "bg-indigo-100 text-indigo-800"
-                  : ""
-              }`}
+          ${activeItem.startsWith("/coordinator/assign-orders") ||
+            activeItem.startsWith("/coordinator/assign-rentals")
+            ? "bg-indigo-100 text-indigo-800"
+            : ""
+          }`}
       >
         <FontAwesomeIcon
           icon={faClipboardList}
           className={`w-5 h-5 mr-3 text-indigo-600 group-hover:scale-110 transition-transform duration-300 
-                      ${isSidebarCollapsed ? "mr-0" : ""}
-                      ${
-                        activeItem.startsWith("/coordinator")
-                          ? "text-indigo-800"
-                          : ""
-                      }`}
+            ${isSidebarCollapsed ? "mr-0" : ""} 
+            ${activeItem.startsWith("/coordinator/assign-orders") ||
+              activeItem.startsWith("/coordinator/assign-rentals")
+              ? "text-indigo-800"
+              : ""
+            }`}
         />
         <span
           className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 
-                          ${
-                            isSidebarCollapsed
-                              ? "w-0 opacity-0"
-                              : "w-auto opacity-100"
-                          }`}
+            ${isSidebarCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"}`}
         >
           Chỉ Định Chi Nhánh
         </span>
         <FontAwesomeIcon
           icon={isOpen ? faChevronUp : faChevronDown}
           className={`ml-auto w-4 h-4 transition-transform duration-300 
-                      ${isOpen ? "rotate-180" : ""} 
-                      ${isSidebarCollapsed ? "hidden" : ""}`}
+            ${isOpen ? "rotate-180" : ""} 
+            ${isSidebarCollapsed ? "hidden" : ""}`}
         />
       </button>
       <div
         id="coordinator-menu"
         className={`ml-6 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out 
-                ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
+          ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
       >
         <SidebarLink to="/coordinator/assign-orders" icon={faBoxOpen}>
           Đơn bán
@@ -188,8 +183,12 @@ export default function SidebarStaff() {
           Đơn cho thuê
         </SidebarLink>
       </div>
+      <SidebarLink to="/coordinator/manage-comments" icon={faComment}>
+        Quản lý bình luận
+      </SidebarLink>
     </div>
   );
+
 
   const renderStaffLinks = () => (
     <>
@@ -227,16 +226,14 @@ export default function SidebarStaff() {
 
   return (
     <aside
-      className={`bg-white h-screen transition-all duration-300 ease-in-out ${
-        isSidebarCollapsed ? "w-16" : "w-80"
-      }`}
+      className={`bg-white h-screen transition-all duration-300 ease-in-out ${isSidebarCollapsed ? "w-16" : "w-80"
+        }`}
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2
-            className={`text-2xl font-semibold  transition-all duration-300 ${
-              isSidebarCollapsed ? "opacity-0 w-0" : "opacity-100"
-            }`}
+            className={`text-2xl font-semibold  transition-all duration-300 ${isSidebarCollapsed ? "opacity-0 w-0" : "opacity-100"
+              }`}
           >
             Bảng điều khiển
           </h2>
