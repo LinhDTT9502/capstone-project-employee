@@ -136,7 +136,7 @@ export default function PromotionManagement() {
                     <th className="p-4 border-b">Tên Sản Phẩm</th>
                     <th className="p-4 border-b">Hình Ảnh</th>
                     <th className="p-4 border-b">Khuyến Mãi (%)</th>
-                    <th className="p-4 border-b">Hành Động</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>

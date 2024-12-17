@@ -328,7 +328,7 @@ export default function ManageUser() {
                           }
                         />
                       </th>
-                      {["Tên đăng nhập", "Email", "Vai trò", "Hành động", "Trạng thái"].map(
+                      {["Tên đăng nhập", "Email", "Vai trò", "", "Trạng thái"].map(
                         (header) => (
                           <th
                             key={header}

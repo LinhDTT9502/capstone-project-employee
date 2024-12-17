@@ -109,7 +109,7 @@ if (loading) return (
             <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
             <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
 
-            <th className="text-left p-4 font-semibold text-gray-600">Hành động</th>
+            <th className="text-left p-4 font-semibold text-gray-600"></th>
           </tr>
         </thead>
         <tbody>

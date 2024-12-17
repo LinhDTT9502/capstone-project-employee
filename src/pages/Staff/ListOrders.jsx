@@ -104,10 +104,10 @@ const ListOrder = () => {
             <th className="text-left p-4 font-semibold text-gray-600">Mã đơn hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
             <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th>
+            {/* <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th> */}
             <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
             <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Hành động</th>
+            <th className="text-left p-4 font-semibold text-gray-600"></th>
 
           </tr>
         </thead>
@@ -123,7 +123,7 @@ const ListOrder = () => {
                 </div>
               </td>
               <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
-              <td className="p-4">{order.deliveryMethod}</td>
+              {/* <td className="p-4">{order.deliveryMethod}</td> */}
               <td className="p-4">
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${order.paymentStatus === 'IsCanceled' ? 'bg-red-100 text-red-600' :

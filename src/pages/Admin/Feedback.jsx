@@ -124,7 +124,7 @@ const ListAllFeedback = () => {
                   <th className="p-4 border-b">Tên</th>
                   <th className="p-4 border-b">Email</th>
                   <th className="p-4 border-b">Nội dung</th>
-                  <th className="p-4 border-b">Hành động</th>
+                  <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
@@ -176,9 +176,9 @@ const ListAllFeedback = () => {
             <Typography variant="h6" className="mb-2">
               Email: {selectedFeedback.email || "N/A"}
             </Typography>
-            <Typography variant="h6" className="mb-2">
+            {/* <Typography variant="h6" className="mb-2">
               Số điện thoại: {selectedFeedback.phoneNumber || "N/A"}
-            </Typography>
+            </Typography> */}
             <Typography variant="h6" className="mb-2">
               Ngày tạo:{" "}
               {new Date(selectedFeedback.createdAt).toLocaleDateString()}

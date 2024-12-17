@@ -77,7 +77,7 @@ export default function SidebarStaff() {
   const renderAdminLinks = () => (
     <>
       <SidebarLink to="/admin/dashboard" icon={faGauge}>
-        Tổng quan
+      Bảng điều khiển
       </SidebarLink>
       <SidebarLink to="/admin/manage-user" icon={faUser}>
         Quản lý tài khoản
@@ -89,41 +89,66 @@ export default function SidebarStaff() {
         Quản lý
       </SidebarLink>
       <SidebarLink to="/admin/manage-feedback" icon={faComments}>
-      Danh sách phản hồi
+        Danh sách phản hồi
       </SidebarLink>
       <SidebarLink to="/admin/import-history" icon={faComments}>
-      Lịch sử nhập hàng
+        Lịch sử nhập hàng
       </SidebarLink>
       <SidebarLink to="/admin/manage-role" icon={faUsers}>
-      Quản lý vai trò
+        Quản lý vai trò
       </SidebarLink>
       <SidebarLink to="/admin/manage-sport" icon={faBaseball}>
-      Quản lý mục thể thao
+        Quản lý mục thể thao
       </SidebarLink>
       <SidebarLink to="/admin/manage-category" icon={faTableCellsLarge}>
-      Quản lý mục phân loại
+        Quản lý mục phân loại
       </SidebarLink>
       <SidebarLink to="/admin/manage-brand" icon={faRankingStar}>
-      Quản lý mục thương hiệu
+        Quản lý mục thương hiệu
       </SidebarLink>
       <SidebarLink to="/admin/manage-promotion" icon={faReceipt}>
-      Khuyến mãi sản phẩm
+        Khuyến mãi sản phẩm
       </SidebarLink>
       <SidebarLink to="/admin/manage-warehouse" icon={faWarehouse}>
-      Quản lý kho
+        Quản lý kho
+      </SidebarLink>
+    </>
+  );
+
+  const renderOwnerLinks = () => (
+    <>
+      <SidebarLink to="/owner/dashboard" icon={faGauge}>
+        Tổng quan
+      </SidebarLink>
+      <SidebarLink to="/owner/manage-feedback" icon={faComments}>
+        Danh sách phản hồi
+      </SidebarLink>
+      <SidebarLink to="/owner/import-history" icon={faComments}>
+        Lịch sử nhập hàng
+      </SidebarLink>
+
+      <SidebarLink to="/owner/manage-warehouse" icon={faWarehouse}>
+        Quản lý kho
+      </SidebarLink>
+      <SidebarLink to="/owner/test" icon={faWarehouse}>
+        Quản lý kho
       </SidebarLink>
     </>
   );
 
   const renderCoordinatorLinks = () => (
     <div className="mb-2">
-<button
-  onClick={handleToggle}
-  aria-expanded={isOpen}
-  aria-controls="coordinator-menu"
-  className={`flex items-center w-full p-2 text-gray-700 hover:bg-indigo-100 rounded-lg transition-all duration-300 ease-in-out group
-              ${activeItem.startsWith("/coordinator") ? "bg-indigo-100 text-indigo-800" : ""}`}
->
+      <button
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        aria-controls="coordinator-menu"
+        className={`flex items-center w-full p-2 text-gray-700 hover:bg-indigo-100 rounded-lg transition-all duration-300 ease-in-out group
+              ${
+                activeItem.startsWith("/coordinator")
+                  ? "bg-indigo-100 text-indigo-800"
+                  : ""
+              }`}
+      >
         <FontAwesomeIcon
           icon={faClipboardList}
           className={`w-5 h-5 mr-3 text-indigo-600 group-hover:scale-110 transition-transform duration-300 
@@ -152,10 +177,10 @@ export default function SidebarStaff() {
         />
       </button>
       <div
-  id="coordinator-menu"
-  className={`ml-6 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out 
+        id="coordinator-menu"
+        className={`ml-6 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out 
                 ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
->
+      >
         <SidebarLink to="/coordinator/assign-orders" icon={faBoxOpen}>
           Đơn bán
         </SidebarLink>
@@ -165,7 +190,6 @@ export default function SidebarStaff() {
       </div>
     </div>
   );
-
 
   const renderStaffLinks = () => (
     <>
@@ -214,13 +238,13 @@ export default function SidebarStaff() {
               isSidebarCollapsed ? "opacity-0 w-0" : "opacity-100"
             }`}
           >
-            Dashboard
+            Bảng điều khiển
           </h2>
-
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           <div className="space-y-2">
             {user.role === "Admin" && renderAdminLinks()}
+            {user.role === "Owner" && renderOwnerLinks()}
             {user.role === "Order Coordinator" && renderCoordinatorLinks()}
             {user.role === "Staff" && renderStaffLinks()}
             {user.role === "Content Staff" && renderContentStaffLinks()}

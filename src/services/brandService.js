@@ -7,7 +7,6 @@ import {
 } from "../api/apiBrand";
 
 // Fetch all brands
-// Fetch all brands
 export const getAllBrands = async () => {
   try {
     const response = await fetchAllBrandsApi();

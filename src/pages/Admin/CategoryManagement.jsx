@@ -162,7 +162,7 @@ const CategoryManagement = () => {
                     <th className="p-4 border-b">Tên Danh Mục</th>
                     <th className="p-4 border-b">Môn thể thao</th>
                     <th className="p-4 border-b">ID Môn thể thao</th>
-                    <th className="p-4 border-b">Hành Động</th>
+                    <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
                 <tbody>
