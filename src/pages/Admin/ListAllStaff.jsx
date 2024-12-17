@@ -11,6 +11,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import CreateStaffModal from "./CreateStaffModal";
+import { fetchAllStaff } from "../../services/Staff/StaffService";
 
 const ListAllStaff = () => {
   const [staffData, setStaffData] = useState([]);
@@ -23,17 +24,12 @@ const ListAllStaff = () => {
 
   const fetchStaffData = async () => {
     try {
-      const response = await fetch(
-        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Staff/get-all-staffs",
-        {
-          headers: { accept: "*/*" },
-        }
-      );
-      const result = await response.json();
+      const result = await fetchAllStaff();
+      console.log(result);
 
-      if (result.isSuccess) {
-        setStaffData(result.data.$values);
-        setFilteredStaffData(result.data.$values); // Initialize filtered data
+      if (result) {
+        setStaffData(result);
+        setFilteredStaffData(result);
       } else {
         setError("Failed to fetch data");
       }
@@ -137,7 +133,11 @@ const ListAllStaff = () => {
                     <td className="p-4 border-b">{staff.branchName}</td>
                     <td className="p-4 border-b">{staff.position}</td>
                     <td className="p-4 border-b">
-                      {new Date(staff.startDate).toLocaleDateString()}
+                      {new Date(staff.startDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
                     </td>
                     <td className="p-4 border-b">
                     <Switch

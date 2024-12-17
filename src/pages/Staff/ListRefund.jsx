@@ -47,7 +47,7 @@ const ListRefund = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [reload,status, orderType]);
+    }, [reload, status, orderType]);
 
     const handleStatusChange = (newStatus) => {
         setStatus(newStatus);
@@ -181,7 +181,11 @@ const ListRefund = () => {
                                             </span>
                                         </td>
                                         <td className="py-2 px-4 border">
-                                            {new Date(order.createdAt).toLocaleDateString()}
+                                            {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                            })}
                                         </td>
                                         <td className="p-2 border flex space-x-4 justify-center">
                                             <button

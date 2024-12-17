@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Chip, Typography } from "@material-tailwind/react";
-import { fetchListExtension } from "../../services/Staff/RentalService";
+import { approveExtension, fetchListExtension } from "../../services/Staff/RentalService";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/authSlice";
 
@@ -8,6 +8,7 @@ const ListExtension = () => {
     const [extensionRequests, setExtensionRequests] = useState([]);
     const [extensionStatus, setExtensionStatus] = useState(1);
     const user = useSelector(selectUser)
+    const [reload, setReload] = useState(false);
 
     // Chip filter options
     const statusChips = [
@@ -34,7 +35,12 @@ const ListExtension = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [extensionStatus]);
+    }, [extensionStatus, reload]);
+
+    const handleApprove = async (rentalOrderCode) => {
+        const response = await approveExtension(rentalOrderCode);
+        setReload((prev) => !prev);
+      };
 
     return (
         <div className="p-6 space-y-4">
@@ -102,7 +108,9 @@ const ListExtension = () => {
                                     <td className="px-6 py-4 text-sm text-gray-900">{request.extensionStatus}</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
                                     <div className="flex items-center gap-4">
-                                        <button className="bg-green-500 text-white p-2 rounded">approve</button>
+                                        <button 
+                                        onClick={(e) => handleApprove(request.rentalOrderCode)}
+                                        className="bg-green-500 text-white p-2 rounded">approve</button>
                                         <button className="bg-red-500 text-white p-2 rounded">reject</button>
                                         </div>
                                     </td>

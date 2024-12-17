@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getProfile } from '../../services/profileService';
-import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from "@material-tailwind/react"; 
+import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from "@material-tailwind/react";
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
 
