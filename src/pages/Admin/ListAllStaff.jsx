@@ -8,6 +8,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import CreateStaffModal from "./CreateStaffModal";
+import { fetchAllStaff } from "../../services/Staff/StaffService";
 
 const ListAllStaff = () => {
   const [staffData, setStaffData] = useState([]);
@@ -20,17 +21,12 @@ const ListAllStaff = () => {
 
   const fetchStaffData = async () => {
     try {
-      const response = await fetch(
-        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Staff/get-all-staffs",
-        {
-          headers: { accept: "*/*" },
-        }
-      );
-      const result = await response.json();
+      const result = await fetchAllStaff();
+      console.log(result);
 
-      if (result.isSuccess) {
-        setStaffData(result.data.$values);
-        setFilteredStaffData(result.data.$values); // Initialize filtered data
+      if (result) {
+        setStaffData(result);
+        setFilteredStaffData(result);
       } else {
         setError("Failed to fetch data");
       }

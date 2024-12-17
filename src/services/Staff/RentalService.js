@@ -1,4 +1,4 @@
-import { approveRentalAPI, getListExtension, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, getRentalsListAPI, rejectRentalAPI, removeRentalAPI } from "../../api/Staff/apiRental";
+import { approveExtensionAPI, approveRentalAPI, getListExtension, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, getRentalsListAPI, rejectRentalAPI, removeRentalAPI } from "../../api/Staff/apiRental";
 
 export const getRentalsList = async () => {
   try {
@@ -76,6 +76,16 @@ export const fetchListExtension = async (extensionStatus, branchId) => {
     return response.data; 
   } catch (error) {
     console.error('Error :', error);
+    throw error;
+  }
+};
+
+export const approveExtension = async (rentalOrderCode) => {
+  try {
+    const response = await approveExtensionAPI(rentalOrderCode);
+    return response.data.data; 
+  } catch (error) {
+    console.error('Error approve:', error);
     throw error;
   }
 };

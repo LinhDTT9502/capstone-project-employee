@@ -32,6 +32,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
+import TransportFee from "./TransportFee";
+import RentalTransportFee from "./RentalTransportFee";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -57,6 +59,21 @@ const RentalDetail = () => {
 
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [transportFees, setTransportFees] = useState({});
+  const [transportFee, setTransportFee] = useState(null)
+  // Step 1: Extract all fee values
+  const feeValues = Object.values(transportFees);
+
+  // Step 2: Calculate the total fee
+  const totalFees = feeValues.reduce((acc, fee) => acc + fee, 0);
+
+
+  const updateTransportFee = (childId, fee) => {
+    setTransportFees((prevFees) => ({
+      ...prevFees,
+      [childId]: fee,
+    }));
+  };
 
   const statusOptions = [
     { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
@@ -180,7 +197,7 @@ const RentalDetail = () => {
       );
       if (response.data.isSuccess) {
         setOrder({ ...order, orderStatus: statusLabel });
-        
+
         alert("Order status updated successfully");
       } else {
         alert("Failed to update order status");
@@ -287,7 +304,7 @@ const RentalDetail = () => {
       note: formData.note || "",
       parentSubTotal: formData.subTotal,
       parentTranSportFee: formData.tranSportFee,
-      parentTotalAmount:formData.totalAmount,
+      parentTotalAmount: formData.totalAmount,
       branchId: formData.branchId,
       productInformations: formData.childOrders.$values.map((item) => ({
         cartItemId: null, // You can set this dynamically if available
@@ -313,7 +330,7 @@ const RentalDetail = () => {
         },
       })),
     };
-console.log(payload);
+    console.log(payload);
 
     try {
       const response = await axios.put(
@@ -328,7 +345,7 @@ console.log(payload);
 
       if (response) {
         console.log(response);
-        
+
         alert("Cập nhật đơn hàng thành công");
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
@@ -569,21 +586,24 @@ console.log(payload);
                               ).toLocaleDateString()}
                             </p>
                             <p>
+                              <TransportFee
+                                address={child.address}
+                                product={order.childOrders.$values}
+                                branchId={child.branchId}
+                                setTransportFee={(fee) => updateTransportFee(child.id, fee)}
+                              />
                               <span className="font-semibold">Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
-                                {new Intl.NumberFormat("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }).format(child.totalAmount)}
+                                {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
+                                  "vi-VN"
+                                )}
+                                ₫
                               </p>
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-medium text-gray-900">
-                              {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(child.rentPrice)}
+                              {child.rentPrice.toLocaleString('vi-VN')}₫
                             </p>
                           </div>
                         </div>
@@ -612,10 +632,6 @@ console.log(payload);
                             {new Date(rentalStartDate).toLocaleDateString()} -{" "}
                             {new Date(rentalEndDate).toLocaleDateString()}
                           </p>
-                          <p>
-                            <span className="font-semibold">Total:</span>{" "}
-                            {totalAmount || "N/A"} ₫
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -628,21 +644,27 @@ console.log(payload);
             {/* Order Summary */}
             <div className="p-4 rounded-lg bg-gray-50">
               <div className="flex justify-between py-2">
-                <p className="text-gray-600">Tổng phụ</p>
+                <p className="text-gray-600">Tạm tính</p>
                 <p className="font-medium text-gray-900">
                   {subTotal.toLocaleString()} ₫</p>
               </div>
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
-                <p className="font-semibold text-green-600">Free</p>
+                <p className="font-semibold text-orange-600">
+                {children.length > 0 ? (totalFees.toLocaleString('vi-VN')) : (<RentalTransportFee
+                    address={order.address}
+                    product={order}
+                    branchId={order.branchId}
+                    setTransportFee={setTransportFee}
+                  />
+                  )}
+                  ₫</p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }).format(order.totalAmount)}
+                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))}₫
+
                 </p>
               </div>
             </div>
@@ -794,7 +816,7 @@ console.log(payload);
                     <button
                       onClick={handleSave}
                       className="text-green-500 hover:text-green-700"
-                    > 
+                    >
                       <FontAwesomeIcon icon={faSave} /> Lưu
                     </button>
                   </div>
@@ -852,24 +874,24 @@ console.log(payload);
                     {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-               
-                  <div>
-                    <p className="text-sm text-gray-500">Ghi chú</p>
-                    <p className="font-medium">
-                      {editingSection === "additionInfor" ? (
-                        <input
-                          type="text"
-                          name="note" // This should match the key in formData
-                          value={formData?.note || ""}
-                          onChange={(e) => handleCustomerInfChange(e)}
-                          className="w-full border-orange-500 text-black border-2"
-                        />
-                      ) : (
-                        order.note? order.note : "Không có ghi chú"
-                      )}
-                    </p>
-                  </div>
-                
+
+                <div>
+                  <p className="text-sm text-gray-500">Ghi chú</p>
+                  <p className="font-medium">
+                    {editingSection === "additionInfor" ? (
+                      <input
+                        type="text"
+                        name="note" // This should match the key in formData
+                        value={formData?.note || ""}
+                        onChange={(e) => handleCustomerInfChange(e)}
+                        className="w-full border-orange-500 text-black border-2"
+                      />
+                    ) : (
+                      order.note ? order.note : "Không có ghi chú"
+                    )}
+                  </p>
+                </div>
+
               </div>
             </div>
           </div>

@@ -2,142 +2,190 @@ import React, { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import axios from 'axios';
 import { Button, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
+import { useRef } from 'react';
 
 const RichTextEditor = () => {
-  const [images, setImages] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [callback, setCallback] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
-  console.log(images);
+  const [images, setImages] = useState([]); // Image list
+  const [isOpen, setIsOpen] = useState(false); // Modal visibility
+  const [callback, setCallback] = useState(null); // File picker callback
+  const [selectedImage, setSelectedImage] = useState(''); // Selected image URL
+  const editorRef = useRef(null);
 
-  // Fetch images from API and cache them
+  // Fetch images when opening the modal
   const fetchImages = async () => {
-    if (images.length > 0) return; // Avoid fetching if images are already loaded
     try {
       const response = await axios.get(
-        'https://capstone-project-703387227873.asia-southeast1.run.app/api/ImageVideo/get-all-images-in-text-editor'
+        'https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/list-images'
       );
-      setImages(response.data?.$values || []);
+      const fetchedImages = response.data.$values || [];
+      console.log("API Response:", fetchedImages);
+
+      // Defensive filtering: Ensure all URLs are valid strings
+      const validImages = fetchedImages.filter((url) => typeof url === 'string' && url.trim() !== '');
+      setImages(validImages);
     } catch (error) {
       console.error('Error fetching images:', error);
     }
   };
 
-  useEffect(() => {
-    fetchImages();
-  }, []);
-
   const openModal = (cb) => {
     fetchImages();
-    setCallback(cb); // Store the callback for selecting the image
+    setCallback(cb);
     setIsOpen(true);
   };
 
   const closeModal = () => {
-    if (callback && typeof callback === 'function') {
-      callback(selectedImage); // Call the callback only if it's a valid function
+    if (callback && selectedImage) {
+      console.log("Inserting Image:", selectedImage);
+      callback(selectedImage, { alt: 'Selected Image' });
     }
     setIsOpen(false);
+    setSelectedImage('');
   };
-  
 
   const selectImage = (url) => {
-  
-      setSelectedImage(url);
-
+    console.log("Selected Image:", url);
+    setSelectedImage(url);
   };
 
-  // Handle image uploads
-  const handleFileUpload = async (blobInfo, progress) => {
+  // Image upload handler
+  const handleFileUpload = async (blobInfo) => {
     const formData = new FormData();
     formData.append('file', blobInfo.blob());
 
     try {
       const response = await axios.post(
-        'https://capstone-project-703387227873.asia-southeast1.run.app/api/ImageVideo/upload-image-in-text-editor',
+        'https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/upload-an-image',
         formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      const imageUrl = response.data?.$values?.[0] || '';
-
-      if (typeof imageUrl === 'string') {
-        return imageUrl; // Return the image URL as a string
-      } else {
-        throw new Error('Invalid image URL');
-      }
+      return response.data.url;
     } catch (error) {
       console.error('Image upload failed:', error);
       throw error;
     }
   };
 
+  const logContent = () => {
+    if (editorRef.current) {
+      const content = editorRef.current.getContent();
+      console.log('Editor Content:', content);
+    }
+  };
+
   return (
-    <>
+    <>  <button
+      onClick={logContent}
+      style={{
+        marginTop: '10px',
+        padding: '10px 20px',
+        backgroundColor: '#007BFF',
+        color: '#FFF',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+      }}
+    >
+      Log Editor Content
+    </button>
+      {/* TinyMCE Editor */}
       <Editor
         apiKey="u74lje0qicu4h6bnpu49iv1jx1p4e5gcx647nobevxo6kbmn"
+        onInit={(evt, editor) => (editorRef.current = editor)}
         init={{
-          height: 500,
-          menubar: false,
+          height: 600,
+          menubar: true,
+          language_url: '/src/sources/vi/langs/vi.js',
+          language: 'vi',
           plugins: 'image code',
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | image | code',
+          content_style: `
+  body { font-family:Helvetica,Arial,sans-serif; font-size:16px }
+  .myclass { border: 0.1rem solid green; border-radius: 0.8rem; padding: 0.2rem; }
+  .non-editable { border-color: red; }
+  `,
+          noneditable_class: 'non-editable',
           images_upload_handler: handleFileUpload,
-          file_picker_callback: (callback, value, meta) => {
-            console.log(selectedImage);
-            
-           if (meta.filetype == 'file') {
-      callback('mypage.html', { text: 'My text' });
-    }
+          // file_picker_callback: (cb, value, meta) => {
+          //   if (meta.filetype === 'image') {
+          //     cb('myimage.jpg', { alt: 'My alt text' });
+          //   }
+          // },
+          file_picker_callback: (cb, value, meta) => {
+            if (meta.filetype === 'image') {
+              // Step 1: Fetch the images from API
+              fetch('https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/list-images') // Replace with your API URL
+                .then((response) => response.json())
+                .then((data) => {
+                  // Assuming API returns an array of image URLs
+                  const images = data.$values;
+                  console.log(images);
 
-    // Provide image and alt text for the image dialog
-    if (meta.filetype == 'image') {
-      callback('myimage.jpg', { alt: 'My alt text' });
-    }
 
-    // Provide alternative source and posted for the media dialog
-    if (meta.filetype == 'media') {
-      callback('movie.mp4', { source2: 'alt.ogg', poster: 'image.jpg' });
-    }
-          },    
+                  // Step 2: Open a modal or create a simple UI
+                  let modalContent = '<div style="display: flex; flex-wrap: wrap;">';
+                  images.forEach((imageUrl) => {
+                    modalContent += `
+                      <img src="${imageUrl}" 
+                           alt="Image" 
+                           style="width: 100px; height: 100px; margin: 10px; cursor: pointer;" 
+                           onclick="selectImage('${imageUrl}')" />
+                    `;
+                  });
+                  modalContent += '</div>';
+
+                  // Create a modal dynamically
+                  const modal = document.createElement('div');
+                  modal.id = 'image-modal';
+                  modal.style.position = 'fixed';
+                  modal.style.top = '0';
+                  modal.style.left = '0';
+                  modal.style.width = '100%';
+                  modal.style.height = '100%';
+                  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                  modal.style.display = 'flex';
+                  modal.style.justifyContent = 'center';
+                  modal.style.alignItems = 'center';
+                  modal.style.zIndex = '9999';
+                  modal.innerHTML = `
+                    <div style="background: white; padding: 20px; border-radius: 8px; max-width: 80%; overflow-y: auto;">
+                      <h3>Chọn ảnh</h3>
+                      ${modalContent}
+                      <button onclick="closeModal()" style="margin-top: 20px;">Đóng</button>
+                    </div>
+                  `;
+                  document.body.appendChild(modal);
+
+                  // Step 3: Define selection logic
+                  window.selectImage = (url) => {
+                    cb(url, { alt: 'Selected Image' });
+                    closeModal();
+                  };
+
+                  // Close modal function
+                  window.closeModal = () => {
+                    document.body.removeChild(modal);
+                  };
+                })
+                .catch((error) => {
+                  console.error('Error fetching images:', error);
+                });
+            }
+          },
         }}
+        initialValue={`
+          <h3 class="non-editable">Tiêu đề</h3>
+          <div class="myclass editable">Nhập tiêu đề</div>
+          <hr>
+          <div class="myclass editable">Nhập phụ đề</div>
+  
+          <hr>
+  
+          &nbsp;
+  
+        `}
       />
-      <Button onClick={() => openModal(null)} variant="gradient">
-        Open Modal
-      </Button>
 
-      <Dialog open={isOpen} handler={closeModal}>
-        <DialogHeader>Select an Image</DialogHeader>
-        <DialogBody className='max-h-[70vh] overflow-y-auto'>
-          {/* Show selected image if available */}
-          {selectedImage && (
-            <div className="mb-4">
-              <img src={selectedImage} alt="Selected" className="w-48 h-auto object-contain" />
-            </div>
-          )}
-          {/* Image grid */}
-          <div className="grid grid-cols-2 gap-4 p-4">
-            {images.map((image, index) => (
-              <div key={index} className="p-2">
-                <img
-                  src={image}
-                  alt={`Image ${index}`}
-                  className="w-44 h-auto cursor-pointer"
-                  onClick={() => selectImage(image)} // Select image when clicked
-                />
-              </div>
-            ))}
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="text" color="red" onClick={closeModal} className="mr-1">
-            Close
-          </Button>
-          <Button variant="gradient" color="green" onClick={closeModal}>
-            Confirm
-          </Button>
-        </DialogFooter>
-      </Dialog>
     </>
   );
 };
