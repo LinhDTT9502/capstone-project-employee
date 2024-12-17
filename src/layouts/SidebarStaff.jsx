@@ -205,6 +205,9 @@ export default function SidebarStaff() {
       <SidebarLink to="/staff/list-extension" icon={faHandshake}>
         Yêu cầu gia hạn đơn thuê
       </SidebarLink>
+      <SidebarLink to="/staff/invoice" icon={faHandshake}>
+        In hóa đơn
+      </SidebarLink>
     </>
   );
 

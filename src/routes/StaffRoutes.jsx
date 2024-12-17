@@ -7,6 +7,7 @@ import ListRentalbyBranch from '../pages/Staff/ListRentalbyBranch';
 import { useNavigate } from "react-router-dom";
 import ListRefund from '../pages/Staff/ListRefund';
 import ListExtension from '../pages/Staff/ListExtension';
+import Invoice from '../pages/Staff/Invoice';
 
 const StaffRoutes = () => {
   const token = localStorage.getItem('token');
@@ -24,6 +25,7 @@ const StaffRoutes = () => {
       <Route path="/list-rentals/:rentalId" element={<RentalDetail />} />'
       <Route path="/list-refund" element={<ListRefund />} />
       <Route path="/list-extension" element={<ListExtension />} />
+      <Route path="/invoice" element={<Invoice />} />
     </Routes>
   );
 };
