@@ -94,8 +94,11 @@ const ListAllFeedback = () => {
     <div className="container mx-auto p-4">
       <Card className="shadow-lg">
         <div className="flex justify-between items-center p-4">
-          <Typography variant="h4" color="blue-gray">
-            Danh sách phản hồi ({filteredFeedbacks.length})
+          <Typography variant="h4"
+           color="blue-gray"
+           className="p-4 text-center"
+           > 
+            Quản lý <span className="text-orange-500">[Phản Hồi]</span> ({filteredFeedbacks.length})
           </Typography>
         </div>
         <div className="p-4">
@@ -141,7 +144,7 @@ const ListAllFeedback = () => {
                         size="md"
                         color="blue"
                         variant="text"
-                        className="flex items-center gap-2 px-4 py-2"
+                        className="flex items-center gap-2 px-2 py-2"
                         onClick={() => handleViewFeedback(feedback.id)}
                       >
                         <FontAwesomeIcon icon={faEye} className="text-sm	" />
@@ -150,7 +153,7 @@ const ListAllFeedback = () => {
                         size="md"
                         color="red"
                         variant="text"
-                        className="flex items-center gap-2 px-4 py-2"
+                        className="flex items-center gap-2 px-2 py-2"
                         onClick={() => handleDeleteFeedback(feedback.id)}
                       >
                         <FontAwesomeIcon icon={faTrash} className="text-sm	" />

@@ -15,7 +15,7 @@ const ContentStaffRoutes = () => {
   return (
     <Routes>
       <Route path="/blogs" element={<Blog />} />
-      <Route path="/test" element={<RichTextEditor />} />
+      <Route path="/test" element={<RichTextEditor />} />z
     </Routes>
   );
 };

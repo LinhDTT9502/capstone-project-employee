@@ -5,8 +5,10 @@ import {
   Typography,
   Spinner,
   Button,
-  Input,
+  Switch,
 } from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
 
@@ -55,23 +57,24 @@ const ListAllManagers = () => {
   return (
     <div className="container mx-auto p-4">
       <Card className="shadow-lg">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center p-4">
           <Typography
             variant="h4"
             color="blue-gray"
             className="p-4 text-center"
           >
-            Danh sách Quản lý ({filteredManagers.length})
+            Danh sách <span className="text-orange-500">[Quản Lý]</span> ({filteredManagers.length})
           </Typography>
-          <Button onClick={() => setIsModalOpen(true)}>Tạo mới</Button>
+          <Button onClick={() => setIsModalOpen(true)}>
+          <FontAwesomeIcon icon={faPlus} />{" "}
+            Tạo mới
+            </Button>
         </div>
-
-        {/* Search Input */}
 
         <div className="p-4">
           <input
             type="text"
-            placeholder="Tìm kiếm Quản lý..."
+            placeholder="Tìm kiếm theo tên hoặc email..."
             className="w-full p-2 border border-gray-300 rounded"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -92,9 +95,9 @@ const ListAllManagers = () => {
               <thead>
                 <tr className="bg-gray-100 text-left">
                   <th className="p-4 border-b">#</th>
-                  <th className="p-4 border-b">Tên</th>
+                  <th className="p-4 border-b">Tên quản lý</th>
                   <th className="p-4 border-b">Email</th>
-                  <th className="p-4 border-b">Số điện thoại</th>
+                  <th className="p-4 border-b">Chi nhánh</th>
                   <th className="p-4 border-b">Ngày bắt đầu</th>
                   <th className="p-4 border-b">Trạng thái</th>
                 </tr>
@@ -112,9 +115,7 @@ const ListAllManagers = () => {
                       {manager.userVM.fullName}
                     </td>
                     <td className="p-4 border-b">{manager.userVM.email}</td>
-                    <td className="p-4 border-b">
-                      {manager.userVM.phoneNumber}
-                    </td>
+                    <td className="p-4 border-b">{manager.branchName}</td>
                     <td className="p-4 border-b">
                       {new Date(manager.startDate).toLocaleDateString('en-GB', {
                         day: '2-digit',
@@ -123,13 +124,17 @@ const ListAllManagers = () => {
                       })}
                     </td>
                     <td className="p-4 border-b">
-                      {manager.isActive ? (
+                      <Switch
+                        color="green"
+                        checked={manager.isActive}
+                      />
+                      {/* {manager.isActive ? (
                         <span className="text-green-600 font-semibold">
                           Hoạt động
                         </span>
                       ) : (
                         <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
-                      )}
+                      )} */}
                     </td>
                   </tr>
                 ))}

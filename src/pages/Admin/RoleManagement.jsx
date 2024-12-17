@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input, Button } from "@material-tailwind/react";
 import { fetchRoles, createRole, updateRole, deleteRole } from "../../services/roleService";
 import RoleActions from "../../components/Admin/RoleActions.jsx";
 import AddRoleModal from "../../components/Admin/AddRoleModal.jsx";
 import EditRoleModal from "../../components/Admin/EditRoleModal.jsx";
 import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const RoleManagement = () => {
   const [roles, setRoles] = useState([]);
@@ -105,15 +107,18 @@ const RoleManagement = () => {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý vai trò ({filteredRoles.length})
+            <Typography variant="h4"
+             color="blue-gray"
+             className="p-4 text-center"
+             >
+              Quản lý <span className="text-orange-500">[Vai Trò]</span> ({filteredRoles.length})
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button
               onClick={() => setIsAddModalOpen(true)}
             >
+              <FontAwesomeIcon icon={faPlus} />{" "}
               Tạo mới
-            </button>
+            </Button>
           </div>
 
           {/* Search Input */}

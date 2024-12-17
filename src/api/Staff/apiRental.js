@@ -67,3 +67,11 @@ export const getRentalbyStatusAPI = (orderStatus) => {
       }
     });
   };
+
+  export const approveExtensionAPI = (rentalOrderCode) => {
+    return axios.post(`${API_BASE_URL}/approve-extension/${rentalOrderCode}`, {
+      headers: {
+        'accept': '*/*'
+      }
+    });
+  };

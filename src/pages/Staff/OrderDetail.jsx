@@ -28,6 +28,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
+import TransportFee from "./TransportFee";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -50,6 +51,8 @@ const OrderDetail = () => {
   const [updating, setUpdating] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
+  const [transportFee, setTransportFee] = useState(0);
+
 
   const statusOptions = [
     { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-800" },
@@ -83,7 +86,7 @@ const OrderDetail = () => {
         if (response.data.isSuccess) {
           setOrder(response.data.data);
           setFormData(response.data.data);
-          console.log(response.data.data);
+          // console.log(response.data.data);
 
         } else {
           setError("Failed to retrieve order details");
@@ -104,7 +107,7 @@ const OrderDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status?orderId=${orderId}&status=${newStatus}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}&status=${newStatus}`,
         {},
         {
           headers: {
@@ -132,7 +135,7 @@ const OrderDetail = () => {
   const handleApprove = async () => {
     const response = await approveOrder(orderId);
     setReload((prev) => !prev);
-    console.log(response);
+    // console.log(response);
   };
 
   const handleReject = async () => {
@@ -268,6 +271,7 @@ const OrderDetail = () => {
       alert("Error updating order");
     }
   };
+
 
   if (loading)
     return (
@@ -489,10 +493,7 @@ const OrderDetail = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(item.unitPrice)}
+                        {item.unitPrice.toLocaleString('vi-VN')}₫
                       </p>
                     </div>
                   </li>
@@ -506,30 +507,36 @@ const OrderDetail = () => {
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Tạm tính</p>
               <p className="font-medium text-gray-900">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(order.subTotal)}
+                {order.subTotal.toLocaleString('vi-VN')}₫
               </p>
             </div>
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Phí vận chuyển</p>
-              <p className="font-medium text-green-600">Miễn phí</p>
+              {
+                order.totalAmount >= 2000000 ? 0 :
+                  order.deliveryMethod === "Giao hàng tận nơi" &&
+                  <TransportFee
+                    address={order.address}
+                    product={order.saleOrderDetailVMs.$values}
+                    branchId={order.branchId}
+                    setTransportFee={setTransportFee}
+                  />
+              }
+
+
+
             </div>
             <div className="flex justify-between py-3 pt-4 mt-2 border-t border-gray-200">
               <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(order.totalAmount)}
+              <p className="text-lg font-semibold text-rose-700">
+                {(order.totalAmount + transportFee).toLocaleString('vi-VN')}₫
               </p>
             </div>
           </div>
 
-          {order.orderStatus === "Chờ xử lý" &&
-            order.deliveryMethod !== "Đến cửa hàng nhận" &&
-            order.deliveryMethod !== "STORE_PICKUP" && (
+          {(order.orderStatus === "Chờ xử lý" && order.branchId === null) &&
+            (order.deliveryMethod !== "Đến cửa hàng nhận" &&
+              order.deliveryMethod !== "STORE_PICKUP") && (
               <div className="mt-6 flex gap-3 justify-end">
                 <Button
                   onClick={handleReject}
@@ -716,7 +723,7 @@ const OrderDetail = () => {
               <div>
                 <p className="text-sm text-gray-500">Phương thức thanh toán</p>
                 <p className="font-medium">
-                  {order.paymentMethod || "KH chưa thanh toán"}
+                  {order.paymentMethod || ""}
                 </p>
               </div>
               <div>

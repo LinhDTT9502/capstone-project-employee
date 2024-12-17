@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input, Button } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   fetchCategories,
@@ -10,6 +10,8 @@ import {
 import CategoryActions from "../../components/Admin/CategoryActions.jsx";
 import AddCategoryModal from "../../components/Admin/AddCategoryModal.jsx";
 import EditCategoryModal from "../../components/Admin/EditCategoryModal.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -122,15 +124,15 @@ const CategoryManagement = () => {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý Danh Mục ({filteredCategories.length})
+            <Typography variant="h4" className="p-4 text-center">
+            Quản lý <span className="text-orange-500">[Danh Mục]</span> ({filteredCategories.length})
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button
               onClick={() => setIsAddModalOpen(true)}
             >
-              Thêm Danh Mục
-            </button>
+              <FontAwesomeIcon icon={faPlus} />{" "}
+              Tạo mới
+            </Button> 
           </div>
 
           {/* Search Bar */}
@@ -161,7 +163,6 @@ const CategoryManagement = () => {
                     <th className="p-4 border-b">Hình Ảnh</th>
                     <th className="p-4 border-b">Tên Danh Mục</th>
                     <th className="p-4 border-b">Môn thể thao</th>
-                    <th className="p-4 border-b">ID Môn thể thao</th>
                     <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
@@ -178,7 +179,6 @@ const CategoryManagement = () => {
                       </td>
                       <td className="p-4 border-b">{category.categoryName}</td>
                       <td className="p-4 border-b">{category.sportName}</td>
-                      <td className="p-4 border-b">{category.sportId}</td>
                       <td className="p-4 border-b">
                         <CategoryActions
                           category={category}
@@ -200,7 +200,7 @@ const CategoryManagement = () => {
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
                     }`}
                   >
                     {number + 1}

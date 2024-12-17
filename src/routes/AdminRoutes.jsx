@@ -38,7 +38,7 @@ const AdminRoutes = () => {
       <Route path="/manage-role" element={<RoleManagement />} />
       <Route path="/manage-sport" element={<SportManagement />} />
       <Route path="/manage-promotion" element={<PromotionManagement />} />
-      <Route path="/manage-warehouse" element={<Warehouse />} />
+      <Route path="/manage-warehouse" element={<Warehouse />} />z
     </Routes>
   );
 };

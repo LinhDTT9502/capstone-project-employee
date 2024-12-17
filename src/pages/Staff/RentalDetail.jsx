@@ -32,6 +32,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
+import TransportFee from "./TransportFee";
+import RentalTransportFee from "./RentalTransportFee";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -57,6 +59,21 @@ const RentalDetail = () => {
 
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [transportFees, setTransportFees] = useState({});
+  const [transportFee, setTransportFee] = useState(null)
+  // Step 1: Extract all fee values
+  const feeValues = Object.values(transportFees);
+
+  // Step 2: Calculate the total fee
+  const totalFees = feeValues.reduce((acc, fee) => acc + fee, 0);
+
+
+  const updateTransportFee = (childId, fee) => {
+    setTransportFees((prevFees) => ({
+      ...prevFees,
+      [childId]: fee,
+    }));
+  };
 
   const statusOptions = [
     { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
@@ -577,21 +594,24 @@ const RentalDetail = () => {
                               })}
                             </p>
                             <p>
+                              <TransportFee
+                                address={child.address}
+                                product={order.childOrders.$values}
+                                branchId={child.branchId}
+                                setTransportFee={(fee) => updateTransportFee(child.id, fee)}
+                              />
                               <span className="font-semibold">Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
-                                {new Intl.NumberFormat("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }).format(child.totalAmount)}
+                                {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
+                                  "vi-VN"
+                                )}
+                                ₫
                               </p>
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-medium text-gray-900">
-                              {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(child.rentPrice)}
+                              {child.rentPrice.toLocaleString('vi-VN')}₫
                             </p>
                           </div>
                         </div>
@@ -628,10 +648,6 @@ const RentalDetail = () => {
                               year: 'numeric',
                             })}
                           </p>
-                          <p>
-                            <span className="font-semibold">Total:</span>{" "}
-                            {totalAmount || "N/A"} ₫
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -644,21 +660,27 @@ const RentalDetail = () => {
             {/* Order Summary */}
             <div className="p-4 rounded-lg bg-gray-50">
               <div className="flex justify-between py-2">
-                <p className="text-gray-600">Tổng phụ</p>
+                <p className="text-gray-600">Tạm tính</p>
                 <p className="font-medium text-gray-900">
                   {subTotal.toLocaleString()} ₫</p>
               </div>
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
-                <p className="font-semibold text-green-600">Free</p>
+                <p className="font-semibold text-orange-600">
+                {children.length > 0 ? (totalFees.toLocaleString('vi-VN')) : (<RentalTransportFee
+                    address={order.address}
+                    product={order}
+                    branchId={order.branchId}
+                    setTransportFee={setTransportFee}
+                  />
+                  )}
+                  ₫</p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }).format(order.totalAmount)}
+                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))}₫
+
                 </p>
               </div>
             </div>

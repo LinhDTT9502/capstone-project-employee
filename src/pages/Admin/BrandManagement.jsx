@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import { Typography, Card, Spinner, Input, Button } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import {
   getAllBrands,
@@ -10,6 +10,8 @@ import {
 import BrandActions from "../../components/Admin/BrandActions.jsx";
 import AddBrandModal from "../../components/Admin/AddBrandModal.jsx";
 import EditBrandModal from "../../components/Admin/EditBrandModal.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
@@ -123,15 +125,15 @@ const BrandManagement = () => {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4" color="blue-gray">
-              Quản lý Thương Hiệu ({filteredBrands.length})
+            <Typography variant="h4" className="p-4 text-center">
+              Quản lý <span className="text-orange-500">[Thương Hiệu]</span> ({filteredBrands.length})
             </Typography>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow"
+            <Button
               onClick={() => setIsAddModalOpen(true)}
             >
-              Thêm Thương Hiệu
-            </button>
+              <FontAwesomeIcon icon={faPlus} />{" "}
+                            Tạo mới
+            </Button>
           </div>
 
           {/* Search Bar */}
@@ -159,8 +161,8 @@ const BrandManagement = () => {
                 <thead>
                   <tr className="bg-gray-100 text-left">
                     <th className="p-4 border-b">#</th>
-                    <th className="p-4 border-b">Tên Thương Hiệu</th>
-                    <th className="p-4 border-b">Hình Ảnh</th>
+                    <th className="p-4 border-b">Tên thương hiệu</th>
+                    <th className="p-4 border-b">Logo</th>
                     <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
@@ -173,7 +175,7 @@ const BrandManagement = () => {
                         <img
                           src={brand.logo}
                           alt={brand.brandName}
-                          className="h-10 w-10 object-cover rounded"
+                          className="h-10 w-30 object-cover rounded"
                         />
                       </td>
                       <td className="p-4 border-b">
@@ -198,7 +200,7 @@ const BrandManagement = () => {
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
                     }`}
                   >
                     {number + 1}
