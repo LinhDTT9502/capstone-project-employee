@@ -7,6 +7,7 @@ import { SportSelect } from '../../components/Product/SportSelect';
 import SearchBar from '../../components/Admin/SearchBar';
 import ImportFileExcel from './ImportFileExcel';
 import TemplateFile from './TemplateFile';
+import { toast, ToastContainer } from 'react-toastify';
 const ImportProduct = () => {
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
@@ -16,6 +17,7 @@ const ImportProduct = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isImportExcel, setIsImportExcel] = useState(false)
   const [isImportDirectly, setIsImportDirectly] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [formData, setFormData] = useState({
     categoryId: "",
@@ -128,6 +130,8 @@ const ImportProduct = () => {
       }
     });
 
+    setIsLoading(true); // Show loading modal
+
     try {
       const response = await fetch(
         "https://capstone-project-703387227873.asia-southeast1.run.app/api/Product/import-product",
@@ -141,7 +145,7 @@ const ImportProduct = () => {
       );
 
       if (response.ok) {
-        alert("Product imported successfully!");
+        toast.success("Nhập kho thành công!");
         setFormData({
           categoryId: "",
           brandId: "",
@@ -149,12 +153,12 @@ const ImportProduct = () => {
           productCode: "",
           mainImage: null,
           productImages: [],
-          quantity: 21,
+          quantity: 0,
           productName: "",
-          listedPrice: 2147,
+          listedPrice: 0,
           isRent: true,
-          price: 2147,
-          rentPrice: 2147,
+          price: 0,
+          rentPrice: 0,
           size: "",
           description: "",
           color: "",
@@ -171,11 +175,13 @@ const ImportProduct = () => {
       } else {
         const errorData = await response.json();
         console.error("Error response:", errorData);
-        alert(`Failed to import product: ${JSON.stringify(errorData.errors)}`);
+        toast.error('Nhập kho thất bại!')
       }
     } catch (error) {
-      console.error("Error importing product:", error);
-      alert("Error importing product");
+      console.error("Error:", error);
+      toast.error("Xảy ra sự cố.");
+    } finally {
+      setIsLoading(false); // Hide loading modal
     }
   };
   useEffect(() => {
@@ -224,7 +230,7 @@ const ImportProduct = () => {
         {isImportExcel && (
           <div className="mt-4 space-y-4">
             <ImportFileExcel />
-       <TemplateFile/>
+            <TemplateFile />
           </div>
         )}
       </div>
@@ -310,20 +316,6 @@ const ImportProduct = () => {
                           name="quantity"
                           type="number"
                           value={formData.quantity}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="listedPrice">
-                          Giá niêm yết
-                        </label>
-                        <input
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          id="listedPrice"
-                          name="listedPrice"
-                          type="number"
-                          value={formData.listedPrice}
                           onChange={handleInputChange}
                           required
                         />
@@ -647,14 +639,26 @@ const ImportProduct = () => {
                     type="button"
                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    Cancel
+                    Hủy bỏ
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus-ring-offset-2 focus:ring-blue-500"
                   >
-                    Save Product
+                    Nhập
                   </button>
+                  {/* Loading Modal */}
+                  {isLoading && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                      <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-md shadow-lg">
+                        <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                        <p className="text-gray-700 text-lg">Đang xử lý...</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Toast notifications */}
+                  <ToastContainer />
                 </div>
               </form>
             </div>

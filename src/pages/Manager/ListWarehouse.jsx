@@ -5,8 +5,9 @@ import { editQuantity, fetchProductsbyBranch } from '../../services/warehouseSer
 import { toast } from 'react-toastify';
 import { Button, Dialog, DialogBody, DialogHeader } from '@material-tailwind/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faPencil, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faPencil, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { fetchBranchDetail } from '../../services/branchService';
+import WarehouseActionsV2 from '../../components/Admin/WarehouseActionsV2';
 
 const ListWarehouses = () => {
   const [warehouses, setWarehouses] = useState([]);
@@ -321,6 +322,15 @@ const ListWarehouses = () => {
                       >
                         <FontAwesomeIcon icon={faPencilAlt} className="text-sm" />
                       </Button>
+                      <Button
+                        size="md"
+                        color="red"
+                        variant="text"
+                        className="flex items-center gap-2 px-4 py-2"
+                        onClick={() => showEditQuantity(item)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="text-sm" />
+                      </Button>
                     </div>
                   </td>
 
@@ -348,8 +358,8 @@ const ListWarehouses = () => {
             </button>
           ))}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
