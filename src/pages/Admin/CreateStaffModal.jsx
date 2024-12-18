@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { fetchAllUsers } from "../../services/ManageUserService";
 import { fetchBranchs } from "../../services/branchService";
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
+import { createStaff, fetchAllStaff } from "../../services/Staff/StaffService";
 
 const CreateStaffModal = ({ onClose }) => {
   const [branches, setBranches] = useState([]);
@@ -15,24 +15,26 @@ const CreateStaffModal = ({ onClose }) => {
 
   useEffect(() => {
     const fetchBranches = async () => {
-        const fetchedBranchs = await fetchBranchs();
+      const fetchedBranchs = await fetchBranchs();
       setBranches(fetchedBranchs || []);
     };
 
-    const fetchUsers = async () => {
-        const data = await fetchAllUsers();
-      setUsers(data || []);
+    const fetchSTaffs = async () => {
+      const data = await fetchAllStaff();
+      const filterStaff = data.filter((u) => u.branchId === null && u.userVM.roleId === 3);
+      setUsers(filterStaff || []);
+      console.log(filterStaff);
     };
 
     fetchBranches();
-    fetchUsers();
+    fetchSTaffs();
   }, []);
 
   const handleBranchChange = (branchId) => {
     setSelectedBranch(branchId);
     // Fetch managers based on selected branch
     const fetchManagers = async () => {
-        const data = await fetchAllManagers();
+      const data = await fetchAllManagers();
       const filteredManagers = data.filter((m) => m.branchId === branchId);
       setManagers(filteredManagers);
     };
@@ -49,14 +51,10 @@ const CreateStaffModal = ({ onClose }) => {
       position,
     };
 
-    const response = await fetch("https://capstone-project/api/Staff/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newStaff),
-    });
-
-    if (response.ok) {
-      onClose(true); // Close modal and refresh list
+    const data = await createStaff(newStaff)
+    if (data.isSuccess) {
+      alert('Tạo nhân viên mới thành công!')
+      onClose(true);
     } else {
       alert("Failed to create staff");
     }
@@ -65,14 +63,14 @@ const CreateStaffModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-md">
-        <h2 className="text-xl font-bold mb-4">Create New Staff</h2>
+        <h2 className="text-xl font-bold mb-4">Tạo nhân viên mới</h2>
         <div className="mb-4">
-          <label className="block text-sm font-medium">Branch</label>
+          <label className="block text-sm font-medium">Chi nhánh</label>
           <select
             className="w-full p-2 border rounded"
             onChange={(e) => handleBranchChange(Number(e.target.value))}
           >
-            <option value="">Select Branch</option>
+            <option value="">Chọn chi nhánh</option>
             {branches.map((branch) => (
               <option key={branch.id} value={branch.id}>
                 {branch.branchName}
@@ -82,12 +80,12 @@ const CreateStaffModal = ({ onClose }) => {
         </div>
         {managers.length > 0 && (
           <div className="mb-4">
-            <label className="block text-sm font-medium">Manager</label>
+            <label className="block text-sm font-medium">Quản lý</label>
             <select
               className="w-full p-2 border rounded"
               onChange={(e) => setSelectedManager(Number(e.target.value))}
             >
-              <option value="">Select Manager</option>
+              <option value="">Chọn quản lý</option>
               {managers.map((manager) => (
                 <option key={manager.id} value={manager.id}>
                   {manager.userVM.fullName}
@@ -97,17 +95,20 @@ const CreateStaffModal = ({ onClose }) => {
           </div>
         )}
         <div className="mb-4">
-          <label className="block text-sm font-medium">User</label>
+          <label className="block text-sm font-medium">Nhân viên</label>
           <select
             className="w-full p-2 border rounded"
             onChange={(e) => setSelectedUser(Number(e.target.value))}
           >
-            <option value="">Select User</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.fullName}
-              </option>
-            ))}
+            <option value="">Chọn nhân viên</option>
+            {users.length>0 ? (
+              users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.fullName}
+                </option>
+              ))) : (<option>
+              Chưa có nhân viên mới
+              </option>)}
           </select>
         </div>
         <div className="mb-4">
