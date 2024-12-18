@@ -1,14 +1,14 @@
 import React from "react";
 import { Switch } from "@material-tailwind/react";
 
-const ChangeStatusButton = ({ userId, isActive, onChangeStatus }) => {
+const ChangeBranchStatusButton = ({ branchId, isActive, onChangeStatus }) => {
   const handleToggle = () => {
     const confirmationMessage = isActive
-      ? "Bạn có chắc chắn muốn vô hiệu hóa người dùng này không?"
-      : "Bạn có chắc chắn muốn kích hoạt người dùng này không?";
+      ? "Bạn có chắc chắn muốn vô hiệu hóa chi nhánh này không?"
+      : "Bạn có chắc chắn muốn kích hoạt chi nhánh này không?";
 
     if (window.confirm(confirmationMessage)) {
-      onChangeStatus(userId, !isActive);
+      onChangeStatus(branchId, !isActive);
     }
   };
 
@@ -30,4 +30,4 @@ const ChangeStatusButton = ({ userId, isActive, onChangeStatus }) => {
   );
 };
 
-export default ChangeStatusButton;
+export default ChangeBranchStatusButton;

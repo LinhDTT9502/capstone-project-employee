@@ -10,14 +10,15 @@ import { addNewBranch, getBranchs, removeBranch } from "../../services/branchSer
 import BranchActions from "../../components/Admin/BranchActions.jsx";
 import AddBranchModal from "../../components/Admin/AddBranchModal.jsx";
 import { createBranch } from "../../api/apiBranch.js";
+import ChangeBranchStatusButton from "../../components/Admin/ChangeBranchStatusButton.jsx";
 
 const ManageBranch = () => {
   const [branchs, setBranchs] = useState([]);
-  const [filteredBranches, setFilteredBranchs] = useState([]); 
+  const [filteredBranches, setFilteredBranchs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -27,27 +28,27 @@ const ManageBranch = () => {
 
   const fetchBranchs = async () => {
     try {
-        setLoading(true);
+      setLoading(true);
 
-        const response = await getBranchs(); // Sửa ở đây
-        const branches = response
-            .filter(b => b.status === true)
-            .sort((a, b) => b.id - a.id);
+      const response = await getBranchs(); // Sửa ở đây
+      const branches = response
+        .filter(b => b.status === true)
+        .sort((a, b) => b.id - a.id);
 
-        setBranchs(branches);
-        setFilteredBranchs(branches);
-        setCurrentPage(1);
+      setBranchs(branches);
+      setFilteredBranchs(branches);
+      setCurrentPage(1);
     } catch (error) {
-        setError("Đã xảy ra lỗi khi lấy dữ liệu thương hiệu.");
-        toast.error("Không thể lấy dữ liệu thương hiệu!", {
-            position: "top-right",
-        });
-        setBranchs([]);
-        setFilteredBranchs([]);
+      setError("Đã xảy ra lỗi khi lấy dữ liệu thương hiệu.");
+      toast.error("Không thể lấy dữ liệu thương hiệu!", {
+        position: "top-right",
+      });
+      setBranchs([]);
+      setFilteredBranchs([]);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   useEffect(() => {
     fetchBranchs();
@@ -57,7 +58,7 @@ const ManageBranch = () => {
   useEffect(() => {
     const lowerCaseTerm = searchTerm.toLowerCase();
     const filtered = branchs.filter((branch) =>
-        branch.branchName?.toLowerCase().includes(lowerCaseTerm)
+      branch.branchName?.toLowerCase().includes(lowerCaseTerm)
     );
     setFilteredBranchs(filtered);
     setCurrentPage(1);
@@ -73,8 +74,8 @@ const ManageBranch = () => {
 
   const handleAddBranch = async (formData) => {
     try {
-        console.log(formData)
-      
+      console.log(formData)
+
       fetchBranchs();
       toast.success("Thêm chi nhánh thành công!", { position: "top-right" });
     } catch (error) {
@@ -82,29 +83,50 @@ const ManageBranch = () => {
     }
   };
 
-//   const handleEditBrand = async (brandId, formData) => {
-//     try {
-//       await updateBrand(brandId, formData);
-//       fetchBranchs();
-//       toast.success("Cập nhật thương hiệu thành công!", { position: "top-right" });
-//     } catch (error) {
-//       toast.error("Cập nhật thương hiệu thất bại!", { position: "top-right" });
-//     }
-//   };
+  //   const handleEditBrand = async (brandId, formData) => {
+  //     try {
+  //       await updateBrand(brandId, formData);
+  //       fetchBranchs();
+  //       toast.success("Cập nhật thương hiệu thành công!", { position: "top-right" });
+  //     } catch (error) {
+  //       toast.error("Cập nhật thương hiệu thất bại!", { position: "top-right" });
+  //     }
+  //   };
 
-    const handleDeleteBranch = async (branchId) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa chi nhánh này không?")) {
-            try {
-                var response = await removeBranch(branchId);
+  const handleDeleteBranch = async (branchId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa chi nhánh này không?")) {
+      try {
+        var response = await removeBranch(branchId);
 
-                fetchBranchs(); // Gọi lại hàm fetchBranchs để lấy lại danh sách chi nhánh
-                toast.success("Chi nhánh đã được xóa!");
-            } catch (error) {
-                toast.error("Có lỗi xảy ra khi xóa chi nhánh.");
-            }
-        }
-    };
+        fetchBranchs(); // Gọi lại hàm fetchBranchs để lấy lại danh sách chi nhánh
+        toast.success("Chi nhánh đã được xóa!");
+      } catch (error) {
+        toast.error("Có lỗi xảy ra khi xóa chi nhánh.");
+      }
+    }
+  };
 
+  // const handleChangeStatus = async (userId, newStatus) => {
+  //     // if (
+  //     //   !window.confirm(
+  //     //     "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
+  //     //   )
+  //     // )
+  //     //   return;
+
+  //     try {
+  //       const response = await changeUserStatus(userId, newStatus);
+  //       if (response.isSuccess) {
+  //         fetchBranchs();
+  //         toast.success("Thay đổi trạng thái thành công!");
+  //       } else {
+  //         toast.error("Thay đổi trạng thái thất bại!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error changing status:", error);
+  //       toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
+  //     }
+  //   };
 
   return (
     <>
@@ -118,7 +140,7 @@ const ManageBranch = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{zIndex: 99999 }}
+        style={{ zIndex: 99999 }}
       />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
@@ -130,20 +152,20 @@ const ManageBranch = () => {
               onClick={() => setIsAddModalOpen(true)}
             >
               <FontAwesomeIcon icon={faPlus} />{" "}
-                            Tạo mới
+              Tạo mới
             </Button>
           </div>
 
           {/* Search Bar */}
           <div className="p-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm thương hiệu..."
-            className="w-full p-2 border border-gray-300 rounded"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+            <input
+              type="text"
+              placeholder="Tìm kiếm chi nhánh..."
+              className="w-full p-2 border border-gray-300 rounded"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
           {loading ? (
             <div className="flex justify-center p-4">
@@ -183,12 +205,13 @@ const ManageBranch = () => {
                       <td className="p-4 border-b">{branch.location}</td>
                       <td className="p-4 border-b">{branch.hotline}</td>
                       <td className="p-4 border-b">
-                              <Switch
-                                  color="green"
-                                  checked={branch.status}
-                              />
-       
-                        </td>
+                        <ChangeBranchStatusButton
+                          branchId={branch.id}
+                          isActive={branch.status}
+                        // onChangeStatus={handleChangeStatus}
+                        />
+
+                      </td>
 
                       <td className="p-4 border-b">
                         <BranchActions
@@ -211,9 +234,8 @@ const ManageBranch = () => {
                   <button
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
-                    className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
-                    }`}
+                    className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                      }`}
                   >
                     {number + 1}
                   </button>

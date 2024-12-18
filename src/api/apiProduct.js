@@ -58,3 +58,12 @@ export const getAllProductsAPI = () => {
     }
   });
 };
+
+export const changeProductStatusAPI = (productId) => {
+  const url = `${API_BASE_URL}/active-deactive-product/${productId}`;
+  return axios.delete(url, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};

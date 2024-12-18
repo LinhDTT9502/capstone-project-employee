@@ -13,7 +13,10 @@ import EditCategoryModal from "../../components/Admin/EditCategoryModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { fetchProductsbyBranch } from "../../services/warehouseService.js";
-import { fetchAllProducts } from "../../services/productService.js";
+import { changeProductStatus, fetchAllProducts } from "../../services/productService.js";
+import ProductActions from "../../components/Admin/ProductActions.jsx";
+import ChangeStatusButton from "../../components/Admin/ChangeStatusButton.jsx";
+import ChangeProductStatusButton from "../../components/Admin/ChangeProductStatusButton.jsx";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -25,7 +28,7 @@ const ProductManagement = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -37,7 +40,6 @@ const ProductManagement = () => {
       const response = await fetchAllProducts();
 
       const activeProducts = response
-        .filter(product => product.status === true)
         .sort((a, b) => b.id - a.id);
       setProducts(activeProducts);
       setFilteredProducts(activeProducts);
@@ -107,6 +109,28 @@ const ProductManagement = () => {
       } catch (error) {
         toast.error("Xóa sản phẩm thất bại!", { position: "top-right" });
       }
+    }
+  };
+
+  const handleChangeStatus = async (productId) => {
+    // if (
+    //   !window.confirm(
+    //     "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
+    //   )
+    // )
+    //   return;
+
+    try {
+      const response = await changeProductStatus(productId);
+      if (response.status === 200) {
+        fetchProductData();
+        toast.success("Thay đổi trạng thái thành công!");
+      } else {
+        toast.error("Thay đổi trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error changing status:", error);
+      toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
     }
   };
 
@@ -188,29 +212,22 @@ const ProductManagement = () => {
                       <td className="p-4 border-b">{product.price.toLocaleString('vi-VN')}</td>
                       <td className="p-4 border-b">{product.rentPrice === 0 ? "" : product.rentPrice.toLocaleString('vi-VN')}</td>
                       <td className="p-4 border-b">
-                        <CategoryActions
-                          category={product}
-                          onEdit={() => {
-                            setSelectedCategory(product);
-                            setIsEditModalOpen(true);
-                          }}
-                          onDelete={() => handleDeleteCategory(product.id)}
+                        <ChangeProductStatusButton
+                          productId={product.id}
+                          isActive={product.status}
+                          onChangeStatus={handleChangeStatus}
                         />
                       </td>
                       <td className="p-4 border-b">
-                        <Switch
-                          color="green"
-                          checked={true}
+                        <ProductActions
+                          category={product}
+                          onEdit={() => {
+                            setSelectedProduct(product);
+                            setIsEditModalOpen(true);
+                          }}
                         />
-                        {/* {staff.isActive ? (
-                                              // <span className="text-green-600 font-semibold">
-                                              //   Hoạt động
-                                              // </span>
-                                          
-                                            ) : (
-                                              <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
-                                            )} */}
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -242,12 +259,12 @@ const ProductManagement = () => {
         )}
 
         {/* Edit Category Modal */}
-        {isEditModalOpen && selectedCategory && (
+        {isEditModalOpen && selectedProduct && (
           <EditCategoryModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
             onEditCategory={handleEditCategory}
-            category={selectedCategory}
+            category={selectedProduct}
           />
         )}
       </div>

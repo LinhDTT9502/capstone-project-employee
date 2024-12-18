@@ -3,8 +3,8 @@ import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
-  const [categoryName, setCategoryName] = useState("");
+const EditProductModal = ({ isOpen, onClose, onEditProduct, product }) => {
+  const [productName, setProductName] = useState("");
   const [sportName, setSportName] = useState("");
   const [sportId, setSportId] = useState(0);
   const [categoryImage, setCategoryImage] = useState("");
@@ -113,4 +113,4 @@ const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
   );
 };
 
-export default EditCategoryModal;
+export default EditProductModal;

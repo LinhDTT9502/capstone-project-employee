@@ -1,4 +1,4 @@
-import { getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize } from "../api/apiProduct";
+import { changeProductStatusAPI, getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize } from "../api/apiProduct";
 
 export const fetchProductColor = async (productCode) => {
   try {
@@ -46,6 +46,16 @@ export const fetchAllProducts = async () => {
     return response.data.data.$values;
   } catch (error) {
     console.error(`Error fetching product:`, error);
+    throw error;
+  }
+};
+
+export const changeProductStatus = async (productId) => {
+  try {
+    const response = await changeProductStatusAPI(productId);
+    return response;
+  } catch (error) {
+    console.error(`Error update product status:`, error);
     throw error;
   }
 };
