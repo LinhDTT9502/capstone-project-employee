@@ -29,7 +29,7 @@ const SearchBar = ({ onSelect }) => {
         className="w-full border rounded px-3 py-2"
       />
       {results.length > 0 && (
-        <div className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-48 overflow-y-auto">
+        <div className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-56 overflow-y-auto">
           {results.map((product) => (
             <div
               key={product.id}
