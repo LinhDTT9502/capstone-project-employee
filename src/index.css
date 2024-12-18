@@ -2,3 +2,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@media print {
+    /* Hide everything except the print-only container */
+    body * {
+      visibility: hidden;
+    }
+  
+    .print-only {
+      visibility: visible;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  
+    /* Ensure print styles look clean */
+    .print-only * {
+      visibility: visible;
+    }
+  
+    /* Optional: Remove margins and paddings for print */
+    @page {
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  }
+  

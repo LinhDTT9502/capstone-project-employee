@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import { getAllBrands } from "../../services/brandService";
 
-export function BrandSelect() {
+export function BrandSelect({brand, setBrand}) {
   const [brands, setBrands] = useState([]);
-  const [brand, setBrand] = useState("");
 
+  const loadBrands = async () => {
+    try {
+      const fetchedBrands = await getAllBrands();
+      setBrands(fetchedBrands);
+    } catch (error) {
+      console.error("Failed to fetch brand:", error);
+    }
+  };
   useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        const fetchedBrands = await getAllBrands();
-        setBrands(fetchedBrands);
-      } catch (error) {
-        console.error("Failed to fetch brand:", error);
-      }
-    };
+   
     loadBrands();
-  }, []);
+  }, [brand, setBrand]);
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">

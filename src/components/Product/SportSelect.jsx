@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import { fetchSports } from "../../services/sportService";
 
-export function SportSelect() {
+export function SportSelect({sport, setSport}) {
   const [sports, setSports] = useState([]);
-  const [sport, setSport] = useState("");
-
+ 
+  const loadSports = async () => {
+    try {
+      const fetchedSports = await fetchSports();
+      setSports(fetchedSports);
+    } catch (error) {
+      console.error("Failed to fetch sport:", error);
+    }
+  };
   useEffect(() => {
-    const loadSports = async () => {
-      try {
-        const fetchedSports = await fetchSports();
-        setSports(fetchedSports);
-      } catch (error) {
-        console.error("Failed to fetch sport:", error);
-      }
-    };
+    
     loadSports();
-  }, []);
+  }, [sport, setSport]);
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { fetchCategories } from '../../services/categoryService';
-import { fetchBrands } from '../../services/brandService';
-import { fetchBranchs } from '../../services/branchService';
-import { fetchSports } from '../../services/sportService';
-import { fetchSuppliers } from '../../services/supplierService';
-
 const ProductForm = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
