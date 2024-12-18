@@ -9,8 +9,8 @@ export const getAllBranchs = () => {
     }
   });
 };
-export const getBranchDetail = (branchId ) => {
-  return axios.get(`${API_BASE_URL}/get-branch-by-id/${branchId }`, {
+export const getBranchDetail = (branchId) => {
+  return axios.get(`${API_BASE_URL}/get-branch-by-id/${branchId}`, {
     headers: {
       'accept': '*/*'
     }

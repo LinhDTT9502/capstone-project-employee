@@ -22,7 +22,9 @@ import {
   faBars,
   faReceipt,
   faWarehouse,
-  faComment
+  faComment,
+  faFileImport,
+  faToolbox
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -86,14 +88,14 @@ export default function SidebarStaff() {
       <SidebarLink to="/admin/manage-managers" icon={faUserTie}>
         Danh sách Quản lý
       </SidebarLink>
+      <SidebarLink to="/admin/manage-role" icon={faUsers}>
+        Quản lý vai trò
+      </SidebarLink>
       <SidebarLink to="/admin/manage-feedback" icon={faComments}>
         Danh sách phản hồi
       </SidebarLink>
-      <SidebarLink to="/admin/import-history" icon={faComments}>
-        Lịch sử nhập hàng
-      </SidebarLink>
-      <SidebarLink to="/admin/manage-role" icon={faUsers}>
-        Quản lý vai trò
+      <SidebarLink to="/admin/manage-products" icon={faToolbox}>
+        Quản lý sản phẩm
       </SidebarLink>
       <SidebarLink to="/admin/manage-sport" icon={faBaseball}>
         Quản lý thể thao
@@ -109,6 +111,9 @@ export default function SidebarStaff() {
       </SidebarLink>
       <SidebarLink to="/admin/manage-warehouse" icon={faWarehouse}>
         Xem kho
+      </SidebarLink>
+      <SidebarLink to="/admin/import-history" icon={faComments}>
+        Lịch sử nhập hàng
       </SidebarLink>
     </>
   );
@@ -225,8 +230,11 @@ export default function SidebarStaff() {
     <SidebarLink to="/manager/list-staffs" icon={faUsers}>
       Danh sách nhân viên
     </SidebarLink>
-    <SidebarLink to="/manager/import" icon={faUsers}>
+    <SidebarLink to="/manager/import" icon={faFileImport}>
       Nhập kho
+    </SidebarLink>
+    <SidebarLink to="/manager/warehouse" icon={faWarehouse}>
+      Quản lý kho
     </SidebarLink>
   </>
   );

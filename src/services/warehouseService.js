@@ -1,4 +1,4 @@
-import { fetchAllWarehousesApi, getProductofBranchAPI } from "../api/apiWarehouse";
+import { fetchAllWarehousesApi, getProductofBranchAPI, updateQuantity } from "../api/apiWarehouse";
 
 export const getAllWarehouses = async () => {
   try {
@@ -11,12 +11,21 @@ export const getAllWarehouses = async () => {
 };
 
 export const fetchProductsbyBranch = async (branchId) => {
-    try {
-      const response = await getProductofBranchAPI(branchId);
-      return response.data.data.$values
-    } catch (error) {
-      console.error('Error fetching Warehouse data:', error);
-      throw error;
-    }
-  };
-  
+  try {
+    const response = await getProductofBranchAPI(branchId);
+    return response.data.data.$values
+  } catch (error) {
+    console.error('Error fetching Warehouse data:', error);
+    throw error;
+  }
+};
+
+export const editQuantity = async (warehouseId, availableQuantity, totalQuantity) => {
+  try {
+    const response = await updateQuantity(warehouseId, availableQuantity, totalQuantity);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating warehouse:", error);
+    throw error;
+  }
+};

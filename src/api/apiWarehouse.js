@@ -12,12 +12,19 @@ export const fetchAllWarehousesApi = () => {
 };
 
 export const getProductofBranchAPI = (branchId) => {
-    const url = `${API_BASE_URL}/list-products-of-branch/${branchId}`;
-    return axios.get(url, {
-      headers: {
-        'accept': '*/*'
-      }
-    });
-  };
-  
-  
+  const url = `${API_BASE_URL}/list-products-of-branch/${branchId}`;
+  return axios.get(url, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};
+
+
+export const updateQuantity = (warehouseId, availableQuantity, totalQuantity) => {
+  return axios.put(`${API_BASE_URL}/update-quantity-of-warehouse/${warehouseId}?availableQuantity=${availableQuantity}&totalQuantity=${totalQuantity}`, {
+    headers: {
+      accept: '*/*',
+    },
+  });
+};
