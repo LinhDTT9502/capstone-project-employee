@@ -53,7 +53,7 @@ function App() {
               <Route
                 path="/staff/*"
                 element={
-                  <PrivateRoute allowedRoles={["Staff"]}>
+                  <PrivateRoute allowedRoles={["BranchStaff"]}>
                     <StaffRoutes />
                   </PrivateRoute>
                 }
@@ -61,7 +61,7 @@ function App() {
               <Route
                 path="/coordinator/*"
                 element={
-                  <PrivateRoute allowedRoles={["Order Coordinator"]}>
+                  <PrivateRoute allowedRoles={["Coordinator"]}>
                     <CoordinatorRoutes />
                   </PrivateRoute>
                 }
@@ -77,7 +77,7 @@ function App() {
               <Route
                 path="/content-staff/*"
                 element={
-                  <PrivateRoute allowedRoles={["Content Staff"]}>
+                  <PrivateRoute allowedRoles={["ContentStaff"]}>
                     <ContentStaffRoutes />
                   </PrivateRoute>
                 }

@@ -82,7 +82,7 @@ function HeaderStaff() {
 
     // Open the appropriate modal based on the prefix
     if (orderCode.startsWith("S-")) {
-      if (user.role === "Order Coordinator") {
+      if (user.role === "Coordinator") {
         if (data.branchId !== null) {
           alert("Đơn hàng này đã được bàn giao!");
           console.log(branchId);
@@ -102,7 +102,7 @@ function HeaderStaff() {
   };
 
   const handleLogo = () => {
-    if (user.role === "Order Coordinator" || user.role === "Staff") {
+    if (user.role === "Coordinator" || user.role === "Staff") {
       navigate(`/staff/orders`);
     } else if (user.role === "Admin") {
       navigate(`/admin/dashboard`);

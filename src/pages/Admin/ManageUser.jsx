@@ -245,12 +245,12 @@ export default function ManageUser() {
   const getRoleName = (roleId) => {
     const roles = {
       1: "Admin",
-      2: "Manager",
-      3: "Staff",
-      4: "Customer",
-      5: "Owner",
-      16: "Coordinator",
-      17: "Content Staff",
+      3: "Manager",
+      5: "BranchStaff",
+      7: "Customer",
+      2: "Owner",
+      4: "Coordinator",
+      6: "ContentStaff",
     };
     return roles[roleId] || "Unknown role";
   };
@@ -650,13 +650,13 @@ export default function ManageUser() {
                   setNewUserData((prevData) => ({ ...prevData, roleId: value }))
                 }
               >
-                <Option value="1">Admin</Option>
-                <Option value="2">Manager</Option>
-                <Option value="3">Staff</Option>
-                <Option value="4">Customer</Option>
-                <Option value="5">Owner</Option>
-                <Option value="16">Coordinator</Option>
-                <Option value="17">Content Staff</Option>
+               <Option value="1">Admin</Option>
+              <Option value="3">Manager</Option>
+              <Option value="5">BranchStaff</Option>
+              <Option value="7">Customer</Option>
+              <Option value="2">Owner</Option>
+              <Option value="4">Coordinator</Option>
+              <Option value="6">Content Staff</Option>
               </Select>
             </div>
           </DialogBody>
