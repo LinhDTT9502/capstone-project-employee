@@ -3,9 +3,12 @@ import { Avatar, Card, List, ListItem, ListItemPrefix, Typography } from "@mater
 import { fetchProductsbyBranch } from "../../../services/warehouseService";
 import { fetchBranchs } from "../../../services/branchService";
 
-const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, orderId }) => {
+const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, orderId,selectedProducts }) => {
     const [branches, setBranches] = useState([]);
     const [branchStatus, setBranchStatus] = useState({});
+    const [check, setCheck] = useState([]);
+    console.log(selectedProducts);
+    
 
     useEffect(() => {
         const loadBranchesWithStatus = async () => {
@@ -15,17 +18,42 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
 
                 const statusPromises = branchData.map(async (branch) => {
                     const products = await fetchProductsbyBranch(branch.id);
+                    // Track unavailable products for each branch
+                    const unavailableProducts = selectedProducts.map((selectedProduct) => {
+                        // Find the branch product by matching selected product id
+                        const branchProduct = products.find((p) => p.productId === Number(selectedProduct.id)); // Use Number to ensure type consistency
+      
+                        // If the branch product exists and selected product quantity exceeds available quantity
+                        if (branchProduct && selectedProduct.quantity > branchProduct.availableQuantity) {
+         
+                            return {
+                                productName: selectedProduct.productName,
+                                productId: selectedProduct.id,
+                                availableQuantity: branchProduct.availableQuantity,
+                            };
+                            
+                            
+                        }
 
-                    // Check if any product from the order is available in the branch
-                    const isAvailable = products.some(
-                        (product) => productIds.includes(product.productId) && product.availableQuantity > 0
-                    );
+                        // If product is available or not selected for out of stock, return null
+                        return null;
+                    }).filter(product => product !== null); // Filter out null values
 
-                    return { branchId: branch.id, status: isAvailable ? "Còn hàng" : "Hết hàng" };
+                    // Determine branch status
+                    const isAvailable = unavailableProducts.length === 0;
+                   setCheck(unavailableProducts)
+                    return {
+                        branchId: branch.id,
+                        status: isAvailable
+                            ? "Còn hàng" // In stock
+                            : `Hết hàng: ${unavailableProducts.map(p => `${p.productName} (Số lượng còn: ${p.availableQuantity})`).join(", ")}`, // Out of stock
+                    };
                 });
 
+                // Wait for all availability checks to complete
                 const statuses = await Promise.all(statusPromises);
 
+                // Update branchStatus with the results
                 const statusMap = {};
                 statuses.forEach(({ branchId, status }) => {
                     statusMap[branchId] = status;
@@ -37,7 +65,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
         };
 
         loadBranchesWithStatus();
-    }, [productIds]);
+    }, [productIds,selectedProducts]);
 
     const handleBranchChange = (branchId) => {
         setSelectedBranchId(branchId);
@@ -50,6 +78,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                 <List>
                     {branches.map((branch) => (
                         <ListItem
+                        disabled={branchStatus[branch.id] !== "Còn hàng"}
                             key={branch.id}
                             className={`cursor-pointer hover:bg-gray-100 ${branchStatus[branch.id] === "Hết hàng" ? "opacity-50 cursor-not-allowed" : ""}`}
                             onClick={() => branchStatus[branch.id] !== "Hết hàng" && handleBranchChange(branch.id)}
@@ -61,7 +90,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                                 checked={selectedBranchId === branch.id}
                                 onChange={() => handleBranchChange(branch.id)}
                                 className="mr-2"
-                                disabled={branchStatus[branch.id] === "Hết hàng"}
+                                disabled={branchStatus[branch.id] !== "Còn hàng"}
                             />
                             <ListItemPrefix>
                                 <Avatar

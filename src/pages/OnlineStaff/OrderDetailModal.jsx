@@ -141,6 +141,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
               setSelectedBranchId={setSelectedBranchId}
               productIds={productIds}
               orderId={orderId}
+              selectedProducts={orderDetail.saleOrderDetailVMs.$values}
             />
           </div>
         )}
