@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
 import { getCommentsById } from '../../services/Coordinator/CommentService';
 import { fetchAProductByProductCode, fetchProductColor } from '../../services/productService';
+import ReplyComment from './ReplyComment';
 
 const CommentDetailModal = ({ open, onClose, commentId }) => {
   const [commentDetail, setCommentDetail] = useState(null);
@@ -9,8 +10,6 @@ const CommentDetailModal = ({ open, onClose, commentId }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-
 
 
   const fetchCommentDetail = async () => {
@@ -36,6 +35,8 @@ const CommentDetailModal = ({ open, onClose, commentId }) => {
   useEffect(() => {
     fetchCommentDetail();
   }, [open, commentId]);
+
+
 
 
   if (!open) return null;
@@ -106,6 +107,18 @@ const CommentDetailModal = ({ open, onClose, commentId }) => {
                     >
                       Trả lời
                     </button>
+                  )}
+                  {replyingTo === commentDetail.id && commentDetail.parentCommentId === 0 && (
+                    <div className="mt-4">
+                      <ReplyComment
+                        productCode={commentDetail.productCode}
+                        parentCommentId={commentDetail.id}
+                        onReplySuccess={() => {
+                          setReplyingTo(null);
+                          fetchComments();
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
