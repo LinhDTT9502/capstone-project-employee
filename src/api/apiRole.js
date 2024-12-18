@@ -24,12 +24,12 @@ export const addRole = (roleData) => {
 
 // Edit role by ID
 export const editRole = (roleId, roleData) => {
-    return axios.post(`${API_BASE_URL}/edit-role/${roleId}`, roleData);
+    return axios.put(`${API_BASE_URL}/edit-role/${roleId}`, roleData);
   };
   
   
 // Remove role by ID
 export const removeRole = (id) => {
-    return axios.post(`${API_BASE_URL}/remove-role?roleId=${id}`, {
+    return axios.delete(`${API_BASE_URL}/remove-role?roleId=${id}`, {
     });
   };

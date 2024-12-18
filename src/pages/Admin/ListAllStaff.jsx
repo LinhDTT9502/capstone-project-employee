@@ -10,8 +10,11 @@ import {
   Button,
   Input,
 } from "@material-tailwind/react";
-import CreateStaffModal from "./CreateStaffModal";
-import { fetchAllStaff } from "../../services/Staff/StaffService";
+import CreateStaffModal from "../../components/Admin/CreateStaffModal";
+import { editStaff, fetchAllStaff, removeStaff } from "../../services/Staff/StaffService";
+import StaffActions from "../../components/Admin/StaffActions";
+import { toast } from "react-toastify";
+import EditStaffModal from "../../components/Admin/EditStaffModal";
 
 const ListAllStaff = () => {
   const [staffData, setStaffData] = useState([]);
@@ -21,12 +24,12 @@ const ListAllStaff = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const fetchStaffData = async () => {
     try {
       const result = await fetchAllStaff();
-      console.log(result);
-
       if (result) {
         setStaffData(result);
         setFilteredStaffData(result);
@@ -63,6 +66,37 @@ const ListAllStaff = () => {
     setIsModalOpen(false);
     if (newStaff) {
       fetchStaffData();
+    }
+  };
+
+  const handleEditStaff = (selectedStaff) => {
+    setSelectedStaff(selectedStaff);
+    setIsEditModalOpen(true);
+  };
+
+ const handleDeleteStaff = async (id) => {
+  if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) {
+    try {
+      console.log(id)
+      await removeStaff(id);
+      fetchStaffData();
+      toast.success("Xóa nhân viên thành công!", { position: "top-right" });
+    } catch (error) {
+      toast.error("Xóa nhân viên thất bại!", { position: "top-right" });
+    }
+  }
+  };
+
+  const handleUpdateStaff = async (staff) => {
+    try {
+      console.log(staff)
+      await editStaff(staff);
+      fetchStaffData();
+      toast.success("Nhân viên được cập nhật thành công!", {
+        position: "top-right",
+      });
+    } catch (error) {
+      toast.error("Cập nhật nhân viên thất bại!", { position: "top-right" });
     }
   };
 
@@ -117,9 +151,6 @@ const ListAllStaff = () => {
                 {filteredStaffData.map((staff, index) => (
                 
                   <tr key={staff.staffId} className="hover:bg-gray-50">
-
-                      {console.log(staff)}
-
                     <td className="p-4 border-b">{index + 1}</td>
                     <td
                       className="p-4 border-b font-bold cursor-pointer hover:underline"
@@ -153,6 +184,13 @@ const ListAllStaff = () => {
                         <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
                       )} */}
                     </td>
+                    <td className="p-4 border-b">
+                          <StaffActions
+                            staff={staff}
+                            onEdit={handleEditStaff}
+                            onDelete={handleDeleteStaff}
+                          />
+                        </td>
                   </tr>
                 ))}
               </tbody>
@@ -161,7 +199,14 @@ const ListAllStaff = () => {
         )}
       </Card>
       {isModalOpen && <CreateStaffModal onClose={handleModalClose} />}
+      <EditStaffModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleUpdateStaff}
+        staff={selectedStaff}
+      />
     </div>
+    
   );
 };
 

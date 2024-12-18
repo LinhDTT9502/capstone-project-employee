@@ -14,7 +14,7 @@ import SportManagement from '../pages/Admin/SportManagement';
 import PromotionManagement from '../pages/Admin/PromotionManagement';
 import ListImportHistory from '../pages/Admin/ListImportHistory';
 import Warehouse from '../pages/Admin/Warehouse';
-
+import ManageBranch from'../pages/Admin/ManageBranch';
 
 const AdminRoutes = () => {
   const token = localStorage.getItem('token');
@@ -28,6 +28,7 @@ const AdminRoutes = () => {
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/manage-user" element={<ManageUser2 />} />
+      <Route path="/manage-branch" element={<ManageBranch />} />
       <Route path="/manage-staff" element={<ListAllStaff />} />
       <Route path="/manage-staff/:staffId" element={<StaffDetail />} />
       <Route path="/manage-managers" element={<ListAllManagers />} />
