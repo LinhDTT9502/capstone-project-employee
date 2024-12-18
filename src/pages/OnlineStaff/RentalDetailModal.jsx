@@ -190,6 +190,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
                 .map((order) => order.productId)
                 .filter(Boolean)}
               orderCode={orderCode}
+              selectedProducts={childOrders}
             />
           </div>
         )}
