@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { fetchBranchs } from "../../services/branchService";
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
-import { createStaff, fetchAllStaff } from "../../services/Staff/StaffService";
+import { createStaff, fetchAllStaffWithoutBranch } from "../../services/Staff/StaffService";
+import { toast } from "react-toastify";
 
 const CreateStaffModal = ({ onClose }) => {
   const [branches, setBranches] = useState([]);
@@ -19,15 +20,13 @@ const CreateStaffModal = ({ onClose }) => {
       setBranches(fetchedBranchs || []);
     };
 
-    const fetchSTaffs = async () => {
-      const data = await fetchAllStaff();
-      const filterStaff = data.filter((u) => u.branchId === null && u.userVM.roleId === 3);
-      setUsers(filterStaff || []);
-      console.log(filterStaff);
+    const fetchStaffs = async () => {
+      const data = await fetchAllStaffWithoutBranch();
+      setUsers(data);
     };
 
     fetchBranches();
-    fetchSTaffs();
+    fetchStaffs();
   }, []);
 
   const handleBranchChange = (branchId) => {
@@ -53,10 +52,10 @@ const CreateStaffModal = ({ onClose }) => {
 
     const data = await createStaff(newStaff)
     if (data.isSuccess) {
-      alert('Tạo nhân viên mới thành công!')
+      toast.success('Tạo nhân viên mới thành công!')
       onClose(true);
     } else {
-      alert("Failed to create staff");
+      toast.error("Failed to create staff");
     }
   };
 
@@ -112,7 +111,7 @@ const CreateStaffModal = ({ onClose }) => {
           </select>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium">Position</label>
+          <label className="block text-sm font-medium">Vị trí làm việc</label>
           <input
             type="text"
             className="w-full p-2 border rounded"
@@ -121,7 +120,7 @@ const CreateStaffModal = ({ onClose }) => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium">Start Date</label>
+          <label className="block text-sm font-medium">Ngày bắt đầu</label>
           <input
             type="date"
             className="w-full p-2 border rounded"
@@ -134,13 +133,13 @@ const CreateStaffModal = ({ onClose }) => {
             onClick={() => onClose(false)}
             className="px-4 py-2 bg-gray-300 rounded mr-2"
           >
-            Cancel
+            Đóng
           </button>
           <button
             onClick={handleSubmit}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
-            Save
+            Tạo mới
           </button>
         </div>
       </div>
