@@ -81,13 +81,14 @@ export default function Dashboard() {
       <h2 className="text-2xl font-bold mx-10 mt-4">Thống kê dữ liệu</h2>
 
       <hr className="mb-8 flex justify-between items-center mx-10 my-4" />
-      <div className="flex mx-10  space-x-2">
-        <div className="w-2/3">
-          <BarChart />
-        </div>
-        <div className="w-1/3">
+      <div className="mx-10  space-x-2">
+        <div className="w-full">
           <PieChart />
         </div>
+        <div className="w-full">
+          <BarChart />
+        </div>
+
       </div>
       {/* <RecentOrder/> */}
     </>

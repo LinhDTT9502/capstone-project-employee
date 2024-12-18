@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { getOrderList } from "../../services/Staff/OrderService";
 import { getRentalsList } from "../../services/Staff/RentalService";
+import { height } from "@fortawesome/free-regular-svg-icons/faAddressBook";
 
 const PieChart = () => {
   const [chartData, setChartData] = useState({
@@ -49,7 +50,8 @@ const PieChart = () => {
         breakpoint: 480,
         options: {
           chart: {
-            width: 200,
+            width: 300,
+            height: 100
           },
           legend: {
             position: "bottom",
@@ -67,7 +69,8 @@ const PieChart = () => {
           options={chartOptions}
           series={chartData.series}
           type="pie"
-          width={380}
+          width={500}
+          height={400}
         />
       </div>
     </div>

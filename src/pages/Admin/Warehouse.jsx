@@ -33,7 +33,10 @@ const Warehouse = () => {
     try {
       setLoading(true);
       const data = await getAllWarehouses();
-      setWarehouses(data);
+      // Sorting warehouses by 'id' in descending order
+      const sortedWarehouses = data.sort((a, b) => b.id - a.id);
+
+      setWarehouses(sortedWarehouses);
     } catch {
       toast.error("Không thể lấy dữ liệu kho hàng!");
     } finally {
@@ -68,6 +71,14 @@ const Warehouse = () => {
     loadBranches();
   }, []);
 
+  useEffect(() => {
+    if (branches.length > 0) {
+      const firstBranchId = branches[0].id;
+      setSelectedBranch(firstBranchId);
+      fetchByBranch(firstBranchId); // Fetch data for the first branch
+    }
+  }, [branches]); // Run this effect whenever the branches array changes
+
   const handleBranchSelect = (branchId) => {
     setSelectedBranch(branchId);
     if (branchId) {
@@ -98,32 +109,25 @@ const Warehouse = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar pauseOnHover />
       <Card className="shadow-lg">
         <div className="p-4 flex justify-between items-center">
-          <Typography variant="h4"  className="p-4 text-center">
+          <Typography variant="h4" className="p-4 text-center">
             Quản lý <span className="text-orange-500">[Kho hàng]</span> ({warehouses.length})
           </Typography>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex space-x-4 border-b p-2">
-          <button
-            onClick={() => handleBranchSelect(null)}
-            className={`px-4 py-2 ${
-              selectedBranch === null ? "bg-orange-500 text-white" : "bg-gray-200"
-            } rounded`}
-          >
-            Tất Cả
-          </button>
-          {branches.map((branch) => (
-            <button
-              key={branch.id}
-              onClick={() => handleBranchSelect(branch.id)}
-              className={`px-4 py-2 ${
-                selectedBranch === branch.id ? "bg-orange-500 text-white" : "bg-gray-200"
-              } rounded`}
-            >
-              {branch.branchName}
-            </button>
-          ))}
+        <div>
+          {/* Filter Tabs */}
+          <div className="flex space-x-4 border-b p-2">
+            {branches.map((branch) => (
+              <button
+                key={branch.id}
+                onClick={() => handleBranchSelect(branch.id)}
+                className={`px-4 py-2 ${selectedBranch === branch.id ? "bg-orange-500 text-white" : "bg-gray-200"
+                  } rounded`}
+              >
+                {branch.branchName.split("2Sport ").pop()}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Table Data */}
@@ -137,8 +141,9 @@ const Warehouse = () => {
               <thead>
                 <tr className="bg-gray-100 text-left">
                   <th className="p-4 border-b">#</th>
+                  <th className="p-4 border-b">Ảnh</th>
                   <th className="p-4 border-b">Tên Sản Phẩm</th>
-                  <th className="p-4 border-b">Chi Nhánh</th>
+                  <th className="p-4 border-b">Thuộc tính</th>
                   <th className="p-4 border-b">Tổng Số Lượng</th>
                   <th className="p-4 border-b">Số Lượng Có Sẵn</th>
                   <th className="p-4 border-b"></th>
@@ -148,8 +153,18 @@ const Warehouse = () => {
                 {currentItems.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="p-4 border-b">{indexOfFirstItem + index + 1}</td>
+                    <td className="p-4 border-b">
+                      {item.imgAvatarPath && (
+                        <img
+                          src={item.imgAvatarPath}
+                          alt="Product Avatar"
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      )}
+                    </td>
+
                     <td className="p-4 border-b">{item.productName}</td>
-                    <td className="p-4 border-b">{item.branchName}</td>
+                    <td className="p-4 border-b">{item.color} - {item.size} - {item.condition}</td>
                     <td className="p-4 border-b">{item.totalQuantity}</td>
                     <td className="p-4 border-b">{item.availableQuantity}</td>
                     <td className="p-4 border-b">
@@ -174,9 +189,8 @@ const Warehouse = () => {
                 <button
                   key={number + 1}
                   onClick={() => handlePageChange(number + 1)}
-                  className={`px-3 py-1 mx-1 border rounded ${
-                    currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                    }`}
                 >
                   {number + 1}
                 </button>

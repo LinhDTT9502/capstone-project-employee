@@ -9,8 +9,8 @@ export const getAllBranchs = () => {
     }
   });
 };
-export const getBranchDetail = (branchId ) => {
-  return axios.get(`${API_BASE_URL}/get-branch-by-id/${branchId }`, {
+export const getBranchDetail = (branchId) => {
+  return axios.get(`${API_BASE_URL}/get-branch-by-id/${branchId}`, {
     headers: {
       'accept': '*/*'
     }
@@ -35,8 +35,8 @@ export const createBranch = async (branchData) => {
   }
 };
 
-export const deleteBranch = (branchId ) => {
-  const response = axios.post(`${API_BASE_URL}/delete-branch/${branchId }`, {
+export const deleteBranch = (branchId) => {
+  const response = axios.post(`${API_BASE_URL}/delete-branch/${branchId}`, {
     headers: {
       'accept': '*/*'
     }

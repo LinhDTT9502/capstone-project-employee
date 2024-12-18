@@ -190,9 +190,6 @@ function HeaderStaff() {
         <img src="/Logo.png" alt="2Sport" className="object-scale-down w-20" />
       </div>
       <div className="flex">
-        <div className="flex items-center pr-5">
-          <FontAwesomeIcon icon={faMagnifyingGlass} className="text-xl" />
-        </div>
 
         <Menu open={openNoti} handler={setOpenNoti}>
           <MenuHandler>
@@ -222,7 +219,7 @@ function HeaderStaff() {
               <MenuItem
                 key={notiItem.id}
                 className={notiItem.isRead ? "bg-white" : "bg-blue-100"}
-                // onClick={(event) => handleNotificationClick(notification.id, event)}
+              // onClick={(event) => handleNotificationClick(notification.id, event)}
               >
                 <div>{highlightNumbers(notiItem)}</div>
               </MenuItem>
@@ -245,7 +242,7 @@ function HeaderStaff() {
             <MenuList>
               <MenuItem onClick={handleViewProfile}>
                 <Button variant="text">Xem hồ sơ</Button>
-                
+
               </MenuItem>
 
               <MenuItem>
@@ -263,11 +260,11 @@ function HeaderStaff() {
         />
       )}
       {profileModalOpen && (
-                  <Profile
-                    open={profileModalOpen}
-                    onClose={handleCloseProfileModal}
-                  />
-                )}
+        <Profile
+          open={profileModalOpen}
+          onClose={handleCloseProfileModal}
+        />
+      )}
     </div>
   );
 }

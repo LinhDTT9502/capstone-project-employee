@@ -48,3 +48,13 @@ export const getProductByProductCodeAPI = (productCode) => {
     }
   });
 };
+
+
+export const getAllProductsAPI = () => {
+  const url = `${API_BASE_URL}/list-all-products`;
+  return axios.get(url, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};

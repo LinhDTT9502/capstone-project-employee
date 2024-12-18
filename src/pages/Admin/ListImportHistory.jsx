@@ -57,6 +57,14 @@ const ListImportHistory = () => {
     getListBranch();
   }, []);
 
+  useEffect(() => {
+    if (branches.length > 0) {
+      const firstBranchId = branches[0].id;
+      setSelectedBranch(firstBranchId);
+      fetchImportHistoryByBranch(firstBranchId); // Fetch data for the first branch
+    }
+  }, [branches]); // Run this effect whenever the branches array changes
+
   const handleBranchSelect = async (branchId) => {
     setSelectedBranch(branchId);
     setLoading(true);
@@ -105,7 +113,7 @@ const ListImportHistory = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = importList.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(importList.length / itemsPerPage);
+  const totalPages = Math.ceil(currentItems.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -122,36 +130,29 @@ const ListImportHistory = () => {
       <Card className="shadow-lg">
         <div className="p-4 flex justify-between items-center">
           <Typography variant="h4"
-           color="blue-gray"
-           className="p-4 text-center"
-           >
+            color="blue-gray"
+            className="p-4 text-center"
+          >
             Quản lý <span className="text-orange-500">[Lịch Sử Nhập Hàng]</span>
           </Typography>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex space-x-4 border-b p-2">
-          <button
-            onClick={() => handleBranchSelect(null)}
-            className={`px-4 py-2 ${
-              selectedBranch === null ? "bg-orange-500 text-white" : "bg-gray-200"
-            } rounded`}
-          >
-            Tất Cả
-          </button>
-          {branches.map((branch) => (
-            <button
-              key={branch.id}
-              onClick={() => handleBranchSelect(branch.id)}
-              className={`px-4 py-2 ${
-                selectedBranch === branch.id
+        <div>
+          {/* Filter Tabs */}
+          <div className="flex space-x-4 border-b p-2">
+            {branches.map((branch) => (
+              <button
+                key={branch.id}
+                onClick={() => handleBranchSelect(branch.id)}
+                className={`px-4 py-2 ${selectedBranch === branch.id
                   ? "bg-orange-500 text-white"
                   : "bg-gray-200"
-              } rounded`}
-            >
-              {branch.branchName.split("2Sport ").pop()}
-            </button>
-          ))}
+                  } rounded`}
+              >
+                {branch.branchName.split("2Sport ").pop()}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Table Data */}
@@ -192,17 +193,17 @@ const ListImportHistory = () => {
                       >
                         <FontAwesomeIcon icon={faEye} className="text-sm" />
                       </Button>
-                      
-                      <Button
-                          size="md"
-                          color="red"
-                          variant="text"
-                          onClick={() => handleDelete(item.id)}
-                          className="flex items-center gap-2 px-2 py-2"
 
-                        >
-                          <FontAwesomeIcon icon={faTrash} className="text-sm	" />
-                        </Button></div>
+                      <Button
+                        size="md"
+                        color="red"
+                        variant="text"
+                        onClick={() => handleDelete(item.id)}
+                        className="flex items-center gap-2 px-2 py-2"
+
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="text-sm	" />
+                      </Button></div>
                     </td>
                   </tr>
                 ))}
@@ -215,11 +216,10 @@ const ListImportHistory = () => {
                 <button
                   key={number + 1}
                   onClick={() => handlePageChange(number + 1)}
-                  className={`px-3 py-1 mx-1 border rounded ${
-                    currentPage === number + 1
-                      ? "bg-black text-white"
-                      : "bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1
+                    ? "bg-black text-white"
+                    : "bg-gray-200"
+                    }`}
                 >
                   {number + 1}
                 </button>
@@ -231,12 +231,12 @@ const ListImportHistory = () => {
 
       {/* Modal for Import Details */}
       <Dialog open={modalOpen} handler={() => setModalOpen(false)} size="xl">
-      <DialogHeader className="text-2xl font-bold text-gray-800 border-b pb-4">
+        <DialogHeader className="text-2xl font-bold text-gray-800 border-b pb-4">
           Chi Tiết Nhập Hàng
         </DialogHeader>
         <DialogBody className="p-6">
           {selectedImport && (
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-100 p-4 rounded-lg shadow lg:col-span-3">
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">Hành Động</h3>
@@ -296,7 +296,7 @@ const ListImportHistory = () => {
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">Số Lượng Nhập</h3>
                 <p className="text-lg text-gray-900">{selectedImport.quantity}</p>
               </div>
-              
+
             </div>
           )}
         </DialogBody>

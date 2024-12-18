@@ -14,7 +14,8 @@ import SportManagement from '../pages/Admin/SportManagement';
 import PromotionManagement from '../pages/Admin/PromotionManagement';
 import ListImportHistory from '../pages/Admin/ListImportHistory';
 import Warehouse from '../pages/Admin/Warehouse';
-import ManageBranch from'../pages/Admin/ManageBranch';
+import ProductManagement from '../pages/Admin/ProductManagement';
+import ManageBranch from '../pages/Admin/ManageBranch';
 
 const AdminRoutes = () => {
   const token = localStorage.getItem('token');
@@ -23,7 +24,7 @@ const AdminRoutes = () => {
     if (!token) {
       navigate('/');
     }
-}, [token, navigate]);
+  }, [token, navigate]);
   return (
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
@@ -37,6 +38,7 @@ const AdminRoutes = () => {
       <Route path="/manage-brand" element={<BrandManagement />} />
       <Route path="/manage-category" element={<CategoryManagement />} />
       <Route path="/manage-role" element={<RoleManagement />} />
+      <Route path="/manage-products" element={<ProductManagement />} />
       <Route path="/manage-sport" element={<SportManagement />} />
       <Route path="/manage-promotion" element={<PromotionManagement />} />
       <Route path="/manage-warehouse" element={<Warehouse />} />z

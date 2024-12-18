@@ -10,9 +10,9 @@ export const fetchBranchs = async () => {
   }
 };
 
-export const fetchBranchDetail = async (branchId ) => {
+export const fetchBranchDetail = async (branchId) => {
   try {
-    const response = await getBranchDetail(branchId );
+    const response = await getBranchDetail(branchId);
     return response.data;
   } catch (error) {
     console.error('Error fetching brand data:', error);
