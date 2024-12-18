@@ -1,21 +1,32 @@
 import { useState, useEffect } from "react";
 import { fetchCategories } from "../../services/categoryService";
 
-export function CategorySelect() {
+export function CategorySelect({ category, setCategory, selectedProduct }) {
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState("");
+
+  const loadCategories = async () => {
+    try {
+      const fetchedCategories = await fetchCategories();
+      setCategories(fetchedCategories);
+
+      // Set the category ID if `selectedProduct` exists
+      if (selectedProduct) {
+        const matchingCategory = fetchedCategories.find(
+          (cat) => cat.categoryName === selectedProduct.categoryName
+        );
+        if (matchingCategory) {
+          setCategory(matchingCategory.id.toString());
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
 
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const fetchedCategories = await fetchCategories();
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
     loadCategories();
   }, []);
+
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">

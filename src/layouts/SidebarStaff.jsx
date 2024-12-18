@@ -215,16 +215,20 @@ export default function SidebarStaff() {
       <SidebarLink to="/content-staff/blogs" icon={faBlog}>
         Blog
       </SidebarLink>
-      <SidebarLink to="/content-staff/test" icon={faVial}>
+      {/* <SidebarLink to="/content-staff/test" icon={faVial}>
         Test
-      </SidebarLink>
+      </SidebarLink> */}
     </>
   );
 
-  const renderManagerLinks = () => (
+  const renderManagerLinks = () => (<>
     <SidebarLink to="/manager/list-staffs" icon={faUsers}>
       Danh sách nhân viên
     </SidebarLink>
+    <SidebarLink to="/manager/import" icon={faUsers}>
+      Nhập kho
+    </SidebarLink>
+  </>
   );
 
   return (

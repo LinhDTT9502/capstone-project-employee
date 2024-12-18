@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faSpinner, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { CategorySelect } from '../../components/Product/CategorySelect';
 import { BrandSelect } from '../../components/Product/BrandSelect';
 import { SportSelect } from '../../components/Product/SportSelect';
+import SearchBar from '../../components/Admin/SearchBar';
+import ImportFileExcel from './ImportFileExcel';
 
-const ProductForm = () => {
+const ImportProduct = () => {
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [productImagesPreview, setProductImagesPreview] = useState([]);
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
+  const [sport, setSport] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isAdd, setIsAdd] = useState(false)
+
   const [formData, setFormData] = useState({
-    categoryId: 0,
-    brandId: 0,
-    sportId: 0,
+    categoryId: "",
+    brandId: "",
+    sportId: "",
     productCode: "",
     mainImage: null,
     productImages: [],
-    quantity: 2147483647,
+    quantity: 21,
     productName: "",
-    listedPrice: 2147483647,
+    listedPrice: 2147,
     isRent: true,
-    price: 2147483647,
-    rentPrice: 2147483647,
+    price: 2147,
+    rentPrice: 2147,
     size: "",
     description: "",
     color: "",
@@ -31,71 +41,187 @@ const ProductForm = () => {
     discount: 0,
   });
 
-  const [mainImagePreview, setMainImagePreview] = useState(null);
-  const [productImagesPreview, setProductImagesPreview] = useState([]);
+  // Update formData when category, brand, or sport changes
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: category,
+      brandId: brand,
+      sportId: sport,
+    }));
+  }, [category, brand, sport]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({ ...prev, mainImage: file }));
+      setFormData((prev) => ({ ...prev, mainImage: file }));
       setMainImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleProductImagesUpload = (e) => {
     const files = Array.from(e.target.files || []);
-    const newPreviews = files.map(file => ({
-      url: URL.createObjectURL(file),
-      loading: true,
-    }));
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setProductImagesPreview((prev) => [...prev, ...previews]);
+    console.log(previews);
 
-    setProductImagesPreview(prev => [...prev, ...newPreviews]);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       productImages: [...prev.productImages, ...files],
     }));
-
-    setTimeout(() => {
-      setProductImagesPreview(prev =>
-        prev.map(img => ({ ...img, loading: false }))
-      );
-    }, 1000);
   };
 
   const removeMainImage = () => {
-    setFormData(prev => ({ ...prev, mainImage: null }));
+    setFormData((prev) => ({ ...prev, mainImage: null }));
     setMainImagePreview(null);
   };
 
   const removeProductImage = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       productImages: prev.productImages.filter((_, i) => i !== index),
     }));
-    setProductImagesPreview(prev =>
+    setProductImagesPreview((prev) =>
       prev.filter((_, i) => i !== index)
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const token = localStorage.getItem("token");
+
+    // Create a new FormData object for submission
+    const formDataToSend = new FormData();
+    formDataToSend.append("CategoryId", formData.categoryId);
+    formDataToSend.append("BrandId", formData.brandId);
+    formDataToSend.append("SportId", formData.sportId);
+    formDataToSend.append("ProductCode", formData.productCode);
+
+    // Attach main image
+    if (formData.mainImage) {
+      formDataToSend.append("MainImage", formData.mainImage);
+    }
+
+    // Attach product images
+    formData.productImages.forEach((image, index) => {
+      formDataToSend.append(`ProductImages`, image);
+    });
+
+    // Add remaining fields
+    Object.keys(formData).forEach((key) => {
+      if (
+        key !== "mainImage" &&
+        key !== "productImages" &&
+        formData[key] !== undefined
+      ) {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
+
+    try {
+      const response = await fetch(
+        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Product/import-product",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        }
+      );
+
+      if (response.ok) {
+        alert("Product imported successfully!");
+        setFormData({
+          categoryId: "",
+          brandId: "",
+          sportId: "",
+          productCode: "",
+          mainImage: null,
+          productImages: [],
+          quantity: 21,
+          productName: "",
+          listedPrice: 2147,
+          isRent: true,
+          price: 2147,
+          rentPrice: 2147,
+          size: "",
+          description: "",
+          color: "",
+          condition: 0,
+          height: 0,
+          length: 0,
+          width: 0,
+          weight: 0,
+          offers: "",
+          discount: 0,
+        });
+        setMainImagePreview(null);
+        setProductImagesPreview([]);
+      } else {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        alert(`Failed to import product: ${JSON.stringify(errorData.errors)}`);
+      }
+    } catch (error) {
+      console.error("Error importing product:", error);
+      alert("Error importing product");
+    }
+  };
+  useEffect(() => {
+    if (selectedProduct) {
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: selectedProduct.categoryID || "",
+        brandId: selectedProduct.brandId || "",
+        sportId: selectedProduct.sportId || "",
+        productCode: selectedProduct.productCode || "",
+        productName: selectedProduct.productName || "",
+        listedPrice: selectedProduct.listedPrice || "",
+        isRent: selectedProduct.isRent || false,
+        price: selectedProduct.price || "",
+        rentPrice: selectedProduct.rentPrice || "",
+        size: selectedProduct.size || "",
+        description: selectedProduct.description || "",
+        color: selectedProduct.color || "",
+        condition: selectedProduct.condition || 0,
+        height: selectedProduct.height || 0,
+        length: selectedProduct.length || 0,
+        width: selectedProduct.width || 0,
+        weight: selectedProduct.weight || 0,
+        offers: selectedProduct.offers || "",
+        discount: selectedProduct.discount || 0,
+      }));
+
+      // Set image previews if needed
+      setMainImagePreview(selectedProduct.imgAvatarPath || null);
+      setProductImagesPreview(selectedProduct.listImages?.$values || []);
+    }
+  }, [selectedProduct]);
+
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
   };
 
   return (
     <div className="container mx-auto p-6">
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Đăng sản phẩm</h2>
+        <div className="px-6 py-4 border-b border-gray-200 space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">Nhập kho</h2>
+          <SearchBar onSelect={handleSelectProduct} />
         </div>
+        <button   onClick={() => setIsAdd(true)}>Nhập file excel</button>
+        {isAdd &&<ImportFileExcel/>}
+        
         <form onSubmit={handleSubmit} className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column - Product Information */}
@@ -131,15 +257,26 @@ const ProductForm = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <CategorySelect/>
+                  <CategorySelect
+                    category={category}
+                    setCategory={setCategory}
+                    selectedProduct={selectedProduct}
+                  />
+
                 </div>
                 <div>
-                    <BrandSelect/>
+                  <BrandSelect
+                    brand={brand}
+                    setBrand={setBrand}
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <SportSelect/>
+                <SportSelect
+                  sport={sport}
+                  setSport={setSport}
+                />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="productCode">
                     Mã sản phẩm
@@ -221,7 +358,7 @@ const ProductForm = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="size">
-                    Kích thước
+                    Size
                   </label>
                   <input
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -266,16 +403,16 @@ const ProductForm = () => {
                     Duyệt thuê
                   </label>
                   <div className='flex'>
-                  <p>Đơn hàng được thuê</p>
-                  <input
-                    className="mt-1"
-                    id="isRent"
-                    name="isRent"
-                    type="checkbox"
-                    checked={formData.isRent}
-                    onChange={handleInputChange}
-                  />
-                </div></div>
+                    <p>Đơn hàng được thuê</p>
+                    <input
+                      className="mt-1"
+                      id="isRent"
+                      name="isRent"
+                      type="checkbox"
+                      checked={formData.isRent}
+                      onChange={handleInputChange}
+                    />
+                  </div></div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -340,8 +477,8 @@ const ProductForm = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="offers">
                   Khuyến mãi
                 </label>
-                <input
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                <textarea
+                  className="w-full h-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   id="offers"
                   name="offers"
                   type="text"
@@ -454,7 +591,7 @@ const ProductForm = () => {
                       ) : (
                         <>
                           <img
-                            src={img.url}
+                            src={img}
                             alt={`Product ${index + 1}`}
                             className="h-20 w-20 object-cover pointer-events-none"
                           />
@@ -494,4 +631,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default ImportProduct;

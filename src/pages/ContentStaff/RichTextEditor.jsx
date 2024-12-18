@@ -121,7 +121,6 @@ const RichTextEditor = () => {
                   const images = data.$values;
                   console.log(images);
 
-
                   // Step 2: Open a modal or create a simple UI
                   let modalContent = '<div style="display: flex; flex-wrap: wrap;">';
                   images.forEach((imageUrl) => {

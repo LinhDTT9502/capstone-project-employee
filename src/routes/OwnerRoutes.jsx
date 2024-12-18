@@ -14,7 +14,6 @@ import SportManagement from '../pages/Admin/SportManagement';
 import PromotionManagement from '../pages/Admin/PromotionManagement';
 import ListImportHistory from '../pages/Admin/ListImportHistory';
 import Warehouse from '../pages/Admin/Warehouse';
-import ProductImportForm from '../pages/Admin/ProductImportForm';
 
 
 const OwnerRoutes = () => {
@@ -31,7 +30,6 @@ const OwnerRoutes = () => {
       <Route path="/import-history" element={<ListImportHistory />} />
       <Route path="/manage-feedback" element={<Feedback />} />
       <Route path="/manage-warehouse" element={<Warehouse />} />
-      <Route path="/test" element={<ProductImportForm />} />
     </Routes>
   );
 };
