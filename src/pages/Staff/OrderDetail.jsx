@@ -34,7 +34,7 @@ const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
   { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
-  { id: 4, label: "Đã vận chuyển" },
+  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Đã hoàn thành" },
 ];
@@ -55,49 +55,49 @@ const OrderDetail = () => {
 
 
   const statusOptions = [
-    { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-800" },
+ 
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
     {
-      label: "Đã vận chuyển",
+      label: "Đã giao cho đơn vị vận chuyển",
       value: 4,
       color: "bg-purple-100 text-purple-800",
     },
-    { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" },
     {
       label: "Đã hoàn thành",
       value: 11,
       color: "bg-orange-100 text-orange-800",
     },
+    { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-800" },
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
     const step = ORDER_STEPS.find((step) => step.label === orderStatus);
     return step ? step.id - 1 : 0;
   };
+  const fetchOrderDetail = async () => {
+    try {
+      const response = await axios.get(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
+      );
+      if (response.data.isSuccess) {
+        setOrder(response.data.data);
+        setFormData(response.data.data);
+        // console.log(response.data.data);
+
+      } else {
+        setError("Failed to retrieve order details");
+      }
+    } catch (error) {
+      setError("Error fetching order details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrderDetail = async () => {
-      try {
-        const response = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
-        );
-        if (response.data.isSuccess) {
-          setOrder(response.data.data);
-          setFormData(response.data.data);
-          // console.log(response.data.data);
-
-        } else {
-          setError("Failed to retrieve order details");
-        }
-      } catch (error) {
-        setError("Error fetching order details");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+ 
     fetchOrderDetail();
     getCurrentStepIndex();
   }, [reload]);
@@ -107,7 +107,7 @@ const OrderDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}&status=${newStatus}`,
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=${newStatus}`,
         {},
         {
           headers: {
@@ -118,7 +118,7 @@ const OrderDetail = () => {
 
       if (response) {
         // Update order status locally without needing to reload
-        setOrder((prevOrder) => ({ ...prevOrder, orderStatus: newStatus }));
+        fetchOrderDetail()
         setUpdating(true);
 
         alert("Cập nhật trạng thái thành công");
@@ -126,7 +126,8 @@ const OrderDetail = () => {
         alert("Failed to update order status");
       }
     } catch (error) {
-      alert("Error updating order status");
+      alert(error.response.data.message);
+      
     } finally {
       setUpdating(false);
     }
@@ -327,7 +328,7 @@ const OrderDetail = () => {
                   key={index}
                   completed={index < getCurrentStepIndex(order.orderStatus)}
                   className={`${index < getCurrentStepIndex(order.orderStatus)
-                    ? "bg-blue-500 text-green-600"
+                    ? "bg-blue-500 text-wrap w-10 text-green-600"
                     : "bg-green-600 text-green-600"
                     }`}
                 >
@@ -356,7 +357,7 @@ const OrderDetail = () => {
                       />
                     </div>
                     <div
-                      className={`absolute top-12 text-xs font-medium whitespace-nowrap ${index <= getCurrentStepIndex(order.orderStatus)
+                      className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${index <= getCurrentStepIndex(order.orderStatus)
                         ? "text-green-600"
                         : "text-gray-600"
                         }`}

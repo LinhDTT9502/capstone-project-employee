@@ -37,9 +37,9 @@ import RentalTransportFee from "./RentalTransportFee";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
-  { id: 2, label: "Đã xác nhận" },
-  { id: 3, label: "Đã thanh toán" },
-  { id: 4, label: "Đang xử lý" },
+  { id: 2, label: "Đã xác nhận đơn" },
+  { id: 3, label: "Đang xử lý" },
+  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Hoàn thành" },
 ];
@@ -197,6 +197,7 @@ const RentalDetail = () => {
       );
       if (response.data.isSuccess) {
         setOrder({ ...order, orderStatus: statusLabel });
+        fetchOrderDetail()
 
         alert("Order status updated successfully");
       } else {
@@ -213,7 +214,7 @@ const RentalDetail = () => {
   const handleApprove = async () => {
     const response = await approveRental(rentalId);
     setReload((prev) => !prev);
-    setIsApproved(true);
+    // setIsApproved(true);
   };
 
   const handleReject = async () => {
@@ -443,7 +444,7 @@ const RentalDetail = () => {
                         />
                       </div>
                       <div
-                        className={`absolute top-12 text-xs font-medium whitespace-nowrap ${index <= getCurrentStepIndex(order.orderStatus)
+                        className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${index <= getCurrentStepIndex(order.orderStatus)
                           ? "text-green-600"
                           : "text-gray-600"
                           }`}
@@ -594,12 +595,14 @@ const RentalDetail = () => {
                               })}
                             </p>
                             <p>
-                              <TransportFee
+                              {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? (<TransportFee
                                 address={child.address}
                                 product={order.childOrders.$values}
-                                branchId={child.branchId}
+                                branchId={order.branchId}
+
                                 setTransportFee={(fee) => updateTransportFee(child.id, fee)}
-                              />
+                              />) : (0)}
+
                               <span className="font-semibold">Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
                                 {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
@@ -667,13 +670,21 @@ const RentalDetail = () => {
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
                 <p className="font-semibold text-orange-600">
-                {children.length > 0 ? (totalFees.toLocaleString('vi-VN')) : (<RentalTransportFee
-                    address={order.address}
-                    product={order}
-                    branchId={order.branchId}
-                    setTransportFee={setTransportFee}
-                  />
+                  {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ? (
+                    children.length > 0 ? (
+                      totalFees.toLocaleString('vi-VN')
+                    ) : (
+                      <RentalTransportFee
+                        address={order.address}
+                        product={order}
+                        branchId={order.branchId}
+                        setTransportFee={setTransportFee}
+                      />
+                    )
+                  ) : (
+                    0
                   )}
+
                   ₫</p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
@@ -684,8 +695,9 @@ const RentalDetail = () => {
                 </p>
               </div>
             </div>
-            {order.orderStatus === "Chờ xử lý" &&
-              order.deliveryMethod !== "Đến cửa hàng nhận" && (
+            {(order.orderStatus === "Chờ xử lý" && order.branchId === null) &&
+              (order.deliveryMethod !== "Đến cửa hàng nhận" &&
+                order.deliveryMethod !== "STORE_PICKUP") && (
                 <div className="mt-6 flex gap-3 justify-end">
                   <Button
                     onClick={handleReject}
@@ -707,7 +719,6 @@ const RentalDetail = () => {
           <div className="sticky top-4">
             {/* Right Side - Customer Info & Summary */}
             <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-              {isApproved && (
                 <>
                   <select
                     onChange={(e) => setNewStatus(e.target.value)}
@@ -730,7 +741,6 @@ const RentalDetail = () => {
                     {updating ? "Đang cập nhật..." : "Cập nhật"}
                   </Button>
                 </>
-              )}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
                 {/* edit customerInformation part */}

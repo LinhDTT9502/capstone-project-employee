@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import Blog from '../components/Blog';
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from '../pages/ContentStaff/RichTextEditor';
+import EditProduct from '../pages/ContentStaff/EditProduct';
+import EditOffer from '../pages/ContentStaff/EditOffer';
 
 const ContentStaffRoutes = () => {
   const token = localStorage.getItem('token');
@@ -15,7 +17,8 @@ const ContentStaffRoutes = () => {
   return (
     <Routes>
       <Route path="/blogs" element={<Blog />} />
-      <Route path="/test" element={<RichTextEditor />} />z
+      <Route path="/edit-product" element={<EditProduct />} />
+      <Route path="/edit-offer" element={<EditOffer />} />
     </Routes>
   );
 };

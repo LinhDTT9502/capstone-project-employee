@@ -224,9 +224,12 @@ export default function SidebarStaff() {
       <SidebarLink to="/content-staff/blogs" icon={faBlog}>
         Blog
       </SidebarLink>
-      {/* <SidebarLink to="/content-staff/test" icon={faVial}>
-        Test
-      </SidebarLink> */}
+      <SidebarLink to="/content-staff/edit-product" icon={faVial}>
+        Chỉnh sửa nội dung sản phẩm
+      </SidebarLink>
+      <SidebarLink to="/content-staff/edit-offer" icon={faVial}>
+        Chỉnh sửa ưu đãi của sản phẩm
+      </SidebarLink>
     </>
   );
 
@@ -240,6 +243,21 @@ export default function SidebarStaff() {
     <SidebarLink to="/manager/warehouse" icon={faWarehouse}>
       Quản lý kho
     </SidebarLink>
+    <SidebarLink to="/manager/list-orders" icon={faClipboardList}>
+        Danh sách đơn hàng
+      </SidebarLink>
+      <SidebarLink to="/manager/list-rentals" icon={faHandshake}>
+        Danh sách đơn cho thuê
+      </SidebarLink>
+      <SidebarLink to="/manager/list-refund" icon={faHandshake}>
+        Yêu cầu hoàn tiền
+      </SidebarLink>
+      <SidebarLink to="/manager/list-extension" icon={faHandshake}>
+        Yêu cầu gia hạn đơn thuê
+      </SidebarLink>
+      <SidebarLink to="/manager/invoice" icon={faHandshake}>
+        In hóa đơn
+      </SidebarLink>
   </>
   );
 

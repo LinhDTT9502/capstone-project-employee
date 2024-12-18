@@ -76,7 +76,28 @@ const ListOrder = () => {
 
     setFilteredOrders(sortedOrders);
   };
+  
+  const handleRemoveOrder = async (orderId) => {
+    // Confirm before proceeding with removal
+    const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');
+    if (!confirmDelete) {
+      return; // Exit if user cancels
+    }
 
+    try {
+      console.log(orderId);
+
+      const data = await removeOrder(orderId); // Call the API
+      if (data.isSuccess) {
+        alert('Bạn đã xóa đơn hàng thành công!');
+        fetchOrders();
+      } else {
+        console.error('Không thể xóa đơn hàng:', data.message);
+      }
+    } catch (error) {
+      console.error('Lỗi khi xóa đơn hàng:', error);
+    }
+  }
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -185,7 +206,9 @@ const ListOrder = () => {
 
                 <td className="p-4">
                   <div className='flex items-center gap-3'>
-                    <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>
+                    
+                  {user.ManagerId !== "Unknow" ? (<Link to={`/manager/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>):( <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>) }
+                   
                     <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </td>
