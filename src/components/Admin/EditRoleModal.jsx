@@ -15,7 +15,7 @@ const EditRoleModal = ({ isOpen, onClose, onEditRole, role }) => {
   }, [role]);
 
   const handleSubmit = () => {
-    onEditRole(role.id, { roleName, description });
+    onEditRole(role.roleId, { roleName, description });
     onClose();
   };
 

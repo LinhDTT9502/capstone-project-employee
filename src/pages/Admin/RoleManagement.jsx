@@ -141,7 +141,7 @@ const RoleManagement = () => {
               {error}
             </Typography>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto p-4">
               <table className="min-w-full border border-gray-200 bg-white">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -153,6 +153,7 @@ const RoleManagement = () => {
                 </thead>
                 <tbody>
                   {filteredRoles.map((role, index) => (
+        
                     <tr key={role.roleId} className="hover:bg-gray-50">
                       <td className="p-4 border-b">{index + 1}</td>
                       <td className="p-4 border-b">{role.roleName}</td>

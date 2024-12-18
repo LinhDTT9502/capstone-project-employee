@@ -10,7 +10,7 @@ const RoleActions = ({ role, onEdit, onDelete }) => {
         size="md"
         color="black"
         variant="text"
-        className="flex items-center gap-2 px-4 py-2"
+        className="flex items-center gap-2 px-2 py-2"
         onClick={onEdit}
       >
         <FontAwesomeIcon icon={faPen} className="text-sm	" />
@@ -19,7 +19,7 @@ const RoleActions = ({ role, onEdit, onDelete }) => {
         size="md"
         color="red"
         variant="text"
-        className="flex items-center gap-2 px-4 py-2"
+        className="flex items-center gap-2 px-2 py-2"
         onClick={onDelete}
       >
         <FontAwesomeIcon icon={faTrash} className="text-sm	" />
