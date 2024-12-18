@@ -195,13 +195,13 @@ const EditUserModal = ({ isOpen, onClose, onEditUser, user }) => {
                 onChange={(value) => handleSelectChange("roleId", value)}
                 error={Boolean(validationErrors.roleId)}
               >
-                <Option value="1">Admin</Option>
-                <Option value="2">Manager</Option>
-                <Option value="3">Staff</Option>
-                <Option value="4">Customer</Option>
-                <Option value="5">Owner</Option>
-                <Option value="16">Coordinator</Option>
-                <Option value="17">Content Staff</Option>
+             <Option value="1">Admin</Option>
+                        <Option value="3">Manager</Option>
+                        <Option value="5">BranchStaff</Option>
+                        <Option value="7">Customer</Option>
+                        <Option value="2">Owner</Option>
+                        <Option value="4">Coordinator</Option>
+                        <Option value="6">Content Staff</Option>
               </Select>
               {validationErrors.roleId && (
                 <Typography color="red" className="text-xs mt-1">

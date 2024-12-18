@@ -125,13 +125,13 @@ const AddUserModal = ({ isOpen, onClose, onAddUser }) => {
               value={formData.roleId}
               onChange={(value) => handleSelectChange("roleId", value)}
             >
-              <Option value="1">Admin</Option>
-              <Option value="2">Manager</Option>
-              <Option value="3">Staff</Option>
-              <Option value="4">Customer</Option>
-              <Option value="5">Owner</Option>
-              <Option value="6">Coordinator</Option>
-              <Option value="7">Content Staff</Option>
+            <Option value="1">Admin</Option>
+              <Option value="3">Manager</Option>
+              <Option value="5">BranchStaff</Option>
+              <Option value="7">Customer</Option>
+              <Option value="2">Owner</Option>
+              <Option value="4">Coordinator</Option>
+              <Option value="6">Content Staff</Option>
             </Select>
           </div>
         </div>

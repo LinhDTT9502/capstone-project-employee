@@ -35,12 +35,12 @@ const ManageUser2 = () => {
 
   const roleMapping = {
     1: "Admin",
-    2: "Manager",
-    3: "Staff",
-    4: "Customer",
-    5: "Owner",
-    6: "Coordinator",
-    7: "Content Staff",
+    3: "Manager",
+    5: "BranchStaff",
+    7: "Customer",
+    2: "Owner",
+    4: "Coordinator",
+    6: "ContentStaff",
   };
   // Fetch all users
   const fetchUsers = async () => {

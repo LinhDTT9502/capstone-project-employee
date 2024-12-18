@@ -261,9 +261,9 @@ export default function SidebarStaff() {
           <div className="space-y-2">
             {user.role === "Admin" && renderAdminLinks()}
             {user.role === "Owner" && renderOwnerLinks()}
-            {user.role === "Order Coordinator" && renderCoordinatorLinks()}
-            {user.role === "Staff" && renderStaffLinks()}
-            {user.role === "Content Staff" && renderContentStaffLinks()}
+            {user.role === "Coordinator" && renderCoordinatorLinks()}
+            {user.role === "BranchStaff" && renderStaffLinks()}
+            {user.role === "ContentStaff" && renderContentStaffLinks()}
             {user.role === "Manager" && renderManagerLinks()}
           </div>
         </nav>
