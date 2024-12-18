@@ -10,7 +10,7 @@ import PendingOrderList from '../pages/OnlineStaff/PendingOrderList';
 const ListOrders = () => {
 
   const user = useSelector(selectUser)
-  const isStaffOrAdmin = user && (user.role === 'Order Coordinator' || user.role === 'Staff' || user.role === 'Manager');
+  const isStaffOrAdmin = user && (user.role === 'Coordinator' || user.role === 'Staff' || user.role === 'Manager');
 
   return (
     <>
