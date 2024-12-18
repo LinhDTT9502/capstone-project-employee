@@ -6,8 +6,7 @@ import { BrandSelect } from '../../components/Product/BrandSelect';
 import { SportSelect } from '../../components/Product/SportSelect';
 import SearchBar from '../../components/Admin/SearchBar';
 import ImportFileExcel from './ImportFileExcel';
-import FileDownload from '../../components/Manager/fileDownload';
-
+import TemplateFile from './TemplateFile';
 const ImportProduct = () => {
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
@@ -225,7 +224,7 @@ const ImportProduct = () => {
         {isImportExcel && (
           <div className="mt-4 space-y-4">
             <ImportFileExcel />
-            <FileDownload />
+       <TemplateFile/>
           </div>
         )}
       </div>
