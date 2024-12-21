@@ -29,9 +29,7 @@ const ImportProduct = () => {
     quantity: 0,
     productName: "",
     listedPrice: 0,
-    isRent: true,
     price: 0,
-    rentPrice: 0,
     size: "",
     description: "",
     color: "",
@@ -156,9 +154,7 @@ const ImportProduct = () => {
           quantity: 0,
           productName: "",
           listedPrice: 0,
-          isRent: true,
           price: 0,
-          rentPrice: 0,
           size: "",
           description: "",
           color: "",
@@ -194,9 +190,7 @@ const ImportProduct = () => {
         productCode: selectedProduct.productCode || "",
         productName: selectedProduct.productName || "",
         listedPrice: selectedProduct.listedPrice || "",
-        isRent: selectedProduct.isRent || false,
         price: selectedProduct.price || "",
-        rentPrice: selectedProduct.rentPrice || "",
         size: selectedProduct.size || "",
         color: selectedProduct.color || "",
         condition: selectedProduct.condition || 0,
@@ -320,9 +314,6 @@ const ImportProduct = () => {
                           required
                         />
                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="price">
                           Giá mua
@@ -333,20 +324,6 @@ const ImportProduct = () => {
                           name="price"
                           type="number"
                           value={formData.price}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="rentPrice">
-                          Giá thuê
-                        </label>
-                        <input
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          id="rentPrice"
-                          name="rentPrice"
-                          type="number"
-                          value={formData.rentPrice}
                           onChange={handleInputChange}
                           required
                         />
@@ -404,30 +381,6 @@ const ImportProduct = () => {
                           </span>
                         </div>
                       </div>
-                      <div>
-                        <label
-                          className="block text-sm font-medium text-gray-700 mb-2"
-                          htmlFor="isRent"
-                        >
-                          Duyệt thuê
-                        </label>
-                        <div className="flex items-center space-x-4">
-                          <p className="text-gray-700">Đơn hàng được thuê</p>
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              className="sr-only peer"
-                              id="isRent"
-                              name="isRent"
-                              type="checkbox"
-                              checked={formData.isRent}
-                              onChange={handleInputChange}
-                            />
-                            <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-blue-500 transition-colors"></div>
-                            <div className="w-4 h-4 bg-white rounded-full shadow absolute top-0.5 left-0.5 peer-checked:translate-x-5 transition-transform"></div>
-                          </label>
-                        </div>
-                      </div>
-
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
