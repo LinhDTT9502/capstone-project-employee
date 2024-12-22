@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getOrderbyBranch, removeOrder } from '../../services/Staff/OrderService';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from 'react-redux';
@@ -48,6 +48,9 @@ const ListOrder = () => {
   const fetchOrders = async () => {
     try {
       const data = await getOrderbyBranch(user.BranchId);
+
+      console.log(data);
+
       setOrders(data);
       setFilteredOrders(data);
     } catch (error) {
@@ -76,7 +79,7 @@ const ListOrder = () => {
 
     setFilteredOrders(sortedOrders);
   };
-  
+
   const handleRemoveOrder = async (orderId) => {
     // Confirm before proceeding with removal
     const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');
@@ -126,12 +129,12 @@ const ListOrder = () => {
           <input
             type="text"
             placeholder="Tìm kiếm đơn hàng"
-            className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
+            className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400"
             value={searchTerm}
             onChange={handleSearch}
           />
           <select
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400"
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400 w-full"
             onChange={handleSortChange}
             value={sortOrder}
           >
@@ -206,9 +209,9 @@ const ListOrder = () => {
 
                 <td className="p-4">
                   <div className='flex items-center gap-3'>
-                    
-                  {user.ManagerId !== "Unknow" ? (<Link to={`/manager/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>):( <Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>) }
-                   
+
+                    {user.ManagerId !== "Unknow" ? (<Link to={`/manager/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>) : (<Link to={`/staff/list-orders/${order.id}`} ><FontAwesomeIcon icon={faEye} /></Link>)}
+
                     <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </td>

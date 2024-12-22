@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { fetchStaffbyBranch } from '../../services/Staff/StaffService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
+import { fetchBranchDetail } from '../../services/branchService';
+import { toast } from 'react-toastify';
 
 const ListStaff = () => {
   const [staffs, setStaffs] = useState([]);
   const user = useSelector(selectUser);
+  const [branch, setBranch] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchStaffs = async () => {
@@ -21,9 +25,27 @@ const ListStaff = () => {
     fetchStaffs();
   }, []);
 
+  const fetchBranch = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchBranchDetail(user.BranchId);
+
+      setBranch(data);
+      console.log(data);
+    } catch {
+      toast.error('Không thể lấy dữ liệu chi nhánh!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBranch();
+  }, []);
+
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Danh sách nhân viên chi nhánh {user.BranchId}</h2>
+      <h2 className="text-2xl font-bold mb-4">Danh sách nhân viên chi nhánh <span className='text-orange-500 font-bold'>{branch?.branchName ?? ""}</span></h2>
       <div className="overflow-x-auto">
         <table className="table-auto w-full border border-gray-200">
           <thead>
@@ -41,9 +63,8 @@ const ListStaff = () => {
               staffs.map((staff, index) => (
                 <tr
                   key={staff.staffId}
-                  className={`${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  } hover:bg-gray-100`}
+                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                    } hover:bg-gray-100`}
                 >
                   <td className="px-4 py-2 border-b">
                     <img
@@ -62,7 +83,7 @@ const ListStaff = () => {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center py-4">
-                  No staff found.
+                  Không có nhân viên nào để thể hiện.
                 </td>
               </tr>
             )}

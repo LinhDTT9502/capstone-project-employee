@@ -67,7 +67,6 @@ const Warehouse = () => {
   };
 
   useEffect(() => {
-    loadWarehouses();
     loadBranches();
   }, []);
 

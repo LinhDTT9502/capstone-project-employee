@@ -99,38 +99,47 @@ const ListRefund = () => {
             <h1 className="text-xl font-bold mb-4">Đơn hàng yêu cầu hoàn tiền</h1>
 
             <div className="flex justify-between mb-4">
-                <div className="flex gap-2">
+                <div className="flex gap-1 p-1 bg-gray-200 rounded-full w-fit transition-all duration-300">
                     <button
                         onClick={() => setOrderType(1)}
-                        className={`cursor-pointer ${orderType === 1 ? "bg-blue-500 text-white p-2 rounded" : "p-2 rounded bg-gray-200 text-black"}`}>
+                        className={`cursor-pointer w-24 py-2 rounded-full text-center transition-all duration-300 ease-in-out ${orderType === 1
+                            ? "bg-green-500 text-white shadow-md"
+                            : "bg-transparent text-black hover:bg-gray-300"
+                            }`}>
                         Đơn mua
                     </button>
                     <button
                         onClick={() => setOrderType(2)}
-                        className={`cursor-pointer ${orderType === 2 ? "bg-blue-500 text-white p-2 rounded" : "p-2 rounded bg-gray-200 text-black"}`}>
+                        className={`cursor-pointer w-24 py-2 rounded-full text-center transition-all duration-300 ease-in-out ${orderType === 2
+                            ? "bg-blue-500 text-white shadow-md"
+                            : "bg-transparent text-black hover:bg-gray-300"
+                            }`}>
                         Đơn thuê
                     </button>
                 </div>
+
                 <div className="flex gap-2">
                     {[
-                        { label: "Tất cả", value: "" },
-                        { label: "Chờ xử lý", value: "Pending" },
-                        { label: "Đã chấp thuận", value: "Approved" },
-                        { label: "Bị từ chối", value: "Rejected" },
-                        { label: "Đã hoàn tiền", value: "Processed" },
-                        { label: "Thất bại", value: "Failed" },
-                        { label: "Hoàn tất", value: "Completed" },
+                        { label: "Tất cả", value: "", color: "bg-blue-500" },
+                        { label: "Chờ xử lý", value: "Pending", color: "bg-yellow-400" },
+                        { label: "Đã chấp thuận", value: "Approved", color: "bg-green-500" },
+                        { label: "Bị từ chối", value: "Rejected", color: "bg-red-500" },
+                        { label: "Đã hoàn tiền", value: "Processed", color: "bg-purple-500" },
+                        { label: "Thất bại", value: "Failed", color: "bg-red-500" },
+                        { label: "Hoàn tất", value: "Completed", color: "bg-blue-500" },
                     ].map((chip) => (
-
-
                         <Chip
                             key={chip.label}
                             value={chip.label}
-                            className={`cursor-pointer ${status === chip.value ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+                            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${status === chip.value
+                                ? `${chip.color} text-white shadow-md`
+                                : "bg-gray-200 text-black hover:bg-gray-300"
+                                }`}
                             onClick={() => handleStatusChange(chip.value)}
                         />
                     ))}
                 </div>
+
             </div>
 
 

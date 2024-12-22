@@ -135,12 +135,12 @@ const ListRentalbyBranch = () => {
           <input
             type="text"
             placeholder="Tìm kiếm đơn hàng"
-            className="border border-gray-300 rounded-lg p-2 w-1/3 focus:outline-none focus:border-blue-400"
+            className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400"
             value={searchTerm}
             onChange={handleSearch}
           />
           <select
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400"
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400 w-full"
             onChange={handleSortChange}
             value={sortOrder}
           >
@@ -221,7 +221,13 @@ const ListRentalbyBranch = () => {
                     )}
 
 
-                    <button onClick={() => handleRemoveOrder(order.id)}><FontAwesomeIcon icon={faTrash} /></button>
+                    <button
+                      onClick={() => handleRemoveOrder(order.id)}
+                      className="text-red-500 hover:text-red-700 p-2 rounded transition-all duration-300"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+
                   </div>
                 </td>
               </tr>

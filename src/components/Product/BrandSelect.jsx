@@ -1,19 +1,24 @@
 import { useState, useEffect } from "react";
 import { getAllBrands } from "../../services/brandService";
 
-export function BrandSelect({brand, setBrand}) {
+export function BrandSelect({ brand, setBrand }) {
   const [brands, setBrands] = useState([]);
 
   const loadBrands = async () => {
     try {
       const fetchedBrands = await getAllBrands();
       setBrands(fetchedBrands);
+      // Set the first sport as the default selected option
+      if (fetchedBrands.length > 0 && !brand) {
+        setBrand(brand);
+      }
     } catch (error) {
       console.error("Failed to fetch brand:", error);
     }
   };
+
   useEffect(() => {
-   
+
     loadBrands();
   }, [brand, setBrand]);
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { getOrderList } from "../../services/Staff/OrderService";
+import { getOrderbyBranch, getOrderList } from "../../services/Staff/OrderService";
 import { getRentalsList } from "../../services/Staff/RentalService";
 import { height } from "@fortawesome/free-regular-svg-icons/faAddressBook";
 
@@ -11,10 +11,10 @@ const PieChart = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (branchId) => {
       try {
-        const ordersData = await getOrderList();
-        const rentalsData = await getRentalsList();
+        const ordersData = await getOrderbyBranch(5); //thêm branchId vào đây
+        const rentalsData = await getRentalsList(); //thêm branchId vào đây
 
         // Calculate totalAmount for orders and rentals
         const ordersTotal = ordersData.reduce(
@@ -59,6 +59,25 @@ const PieChart = () => {
         },
       },
     ],
+    dataLabels: {
+      enabled: true,
+      formatter: (val, opts) => {
+        // Get the corresponding series value
+        const seriesValue = opts.w.config.series[opts.seriesIndex];
+        // Format it using toLocaleString("vi-VN")
+        return `${seriesValue.toLocaleString("vi-VN")} ₫`;
+      },
+      style: {
+        fontSize: "14px",
+        fontFamily: "Arial, sans-serif",
+        colors: ["#333"],
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => val.toLocaleString("vi-VN") + " ₫",
+      },
+    },
   };
 
   return (

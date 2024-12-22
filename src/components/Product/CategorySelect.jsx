@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchCategories } from "../../services/categoryService";
 
-export function CategorySelect({ category, setCategory, selectedProduct }) {
+export function CategorySelect({ category, setCategory }) {
   const [categories, setCategories] = useState([]);
 
   const loadCategories = async () => {
@@ -9,14 +9,9 @@ export function CategorySelect({ category, setCategory, selectedProduct }) {
       const fetchedCategories = await fetchCategories();
       setCategories(fetchedCategories);
 
-      // Set the category ID if `selectedProduct` exists
-      if (selectedProduct) {
-        const matchingCategory = fetchedCategories.find(
-          (cat) => cat.categoryName === selectedProduct.categoryName
-        );
-        if (matchingCategory) {
-          setCategory(matchingCategory.id.toString());
-        }
+      // Set the first sport as the default selected option
+      if (fetchCategories.length > 0 && !category) {
+        setCategory(category);
       }
     } catch (error) {
       console.error("Failed to fetch categories:", error);
@@ -25,7 +20,7 @@ export function CategorySelect({ category, setCategory, selectedProduct }) {
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [category, setCategory]);
 
   return (
     <div>

@@ -12,9 +12,9 @@ const ListExtension = () => {
 
     // Chip filter options
     const statusChips = [
-        { label: "Pending", value: 1 },
-        { label: "Approve", value: 2 },
-        { label: "Cancel", value: 3 },
+        { label: "Pending", value: 1, color: "yellow" },
+        { label: "Approve", value: 2, color: "green" },
+        { label: "Cancel", value: 3, color: "red" },
     ];
 
     // Fetch extension requests
@@ -27,7 +27,7 @@ const ListExtension = () => {
             } else {
                 setExtensionRequests(data.data.$values);
             }
-           
+
         } catch (error) {
             console.error("Error fetching orders:", error);
         }
@@ -40,7 +40,7 @@ const ListExtension = () => {
     const handleApprove = async (rentalOrderCode) => {
         const response = await approveExtension(rentalOrderCode);
         setReload((prev) => !prev);
-      };
+    };
 
     return (
         <div className="p-6 space-y-4">
@@ -56,7 +56,7 @@ const ListExtension = () => {
                         key={chip.value}
                         value={chip.label}
                         variant={extensionStatus === chip.value ? "filled" : "outlined"}
-                        color={extensionStatus === chip.value ? "blue" : "gray"}
+                        color={extensionStatus === chip.value ? chip.color : "gray"}
                         onClick={() => setExtensionStatus(chip.value)}
                         className="cursor-pointer"
                     />
@@ -107,14 +107,14 @@ const ListExtension = () => {
                                     <td className="px-6 py-4 text-sm text-gray-900">{request.rentPrice.toLocaleString()} VND</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">{request.extensionStatus}</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
-                                    <div className="flex items-center gap-4">
-                                        <button 
-                                        onClick={(e) => handleApprove(request.rentalOrderCode)}
-                                        className="bg-green-500 text-white p-2 rounded">approve</button>
-                                        <button className="bg-red-500 text-white p-2 rounded">reject</button>
+                                        <div className="flex items-center gap-4">
+                                            <button
+                                                onClick={(e) => handleApprove(request.rentalOrderCode)}
+                                                className="bg-green-500 text-white p-2 rounded">approve</button>
+                                            <button className="bg-red-500 text-white p-2 rounded">reject</button>
                                         </div>
                                     </td>
-                                </tr>  
+                                </tr>
                             ))
                         ) : (
                             <tr>

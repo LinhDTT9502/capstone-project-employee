@@ -19,7 +19,7 @@ const BarChart = () => {
       try {
         // Fetch Sale Orders
         const saleResponse = await axios.get(
-          "https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-all-sale-orders"
+          "https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-orders-by-branch?branchId=5"
         );
 
         // Fetch Rental Orders
@@ -56,7 +56,7 @@ const BarChart = () => {
               { name: "Tổng số đơn đặt hàng (Cho Thuê)", data: totalRentalOrders },
             ],
             categories: [
-              "T1", "T2", "T3", "T4", "T5","T6", "T7", "T8", "T9","T10", "T11", "T12",
+              "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12",
             ],
           });
         } else {

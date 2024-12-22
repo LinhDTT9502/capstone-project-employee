@@ -10,7 +10,7 @@ import { getBrandDetails } from "../../services/brandService";
 import { CategorySelect } from "../Product/CategorySelect";
 import { BrandSelect } from "../Product/BrandSelect";
 
-const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) => {
+const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   const [productName, setProductName] = useState("");
   const [productCode, setProductCode] = useState("");
   const [price, setPrice] = useState(0);
@@ -22,91 +22,11 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
   const [width, setWidth] = useState(0);
   const [weight, setWeight] = useState(0);
   const [isRent, setIsRent] = useState(false);
-  const [sportId, setSportId] = useState(0);
   const [productMainImage, setProductMainImage] = useState("");
   const [productImages, setProductImages] = useState([]);
-  const [brandName, setBrandName] = useState("");
-  const [categoryName, setCategoryName] = useState("");
-  const [sportName, setSportName] = useState("");
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
   const [sport, setSport] = useState("");
-  useEffect(() => {
-    console.log(product);
-    console.log(productImages);
-
-    if (product) {
-      setProductName(product.productName || "");
-      setProductCode(product.productCode || "");
-      setPrice(product.price || 0);
-      setColor(product.color || "");
-      setSize(product.size || "");
-      setCondition(product.condition || 0);
-      setHeight(product.height || 0);
-      setLength(product.length || 0);
-      setWidth(product.width || 0);
-      setWeight(product.weight || 0);
-      setIsRent(product.isRent || false);
-      setSportName(product.sportName || "");
-      setProductMainImage(product.imgAvatarPath || "");
-      getProductImages(product.id)
-    }
-  }, [product]);
-
-  const selectedSport = async () => {
-    try {
-      const data = await fetchSportDetails(product.sportId);
-      console.log(data.id);
-      setSport(data.id)
-    } catch (error) {
-      console.error("Failed to fetch sport", error);
-    }
-  }
-
-  const selectedCategory = async () => {
-    try {
-      const data = await fetchCategoryDetails(product.categoryID);
-      console.log(data.id);
-      setCategory(data.id)
-    } catch (error) {
-      console.error("Failed to fetch category", error);
-    }
-  }
-
-  const selectedBrand = async () => {
-    try {
-      const data = await getBrandDetails(product.brandId);
-      console.log(data);
-      setBrand(data.id)
-    } catch (error) {
-      console.error("Failed to fetch brand", error);
-    }
-  }
-
-  console.log(brand);
-
-
-  useEffect(() => {
-    if (product) {
-      selectedSport()
-      selectedCategory()
-      selectedBrand()
-    }
-  }, product)
-
-  const getProductImages = async (productId) => {
-    try {
-      const data = await getAllImagesVideosByProductId(productId);
-      console.log(data);
-
-      // Extract imageUrl and set them to productImagesPreview
-      const imageUrls = data.map(item => item.imageUrl);
-      setProductImages(imageUrls);
-    }
-    catch (error) {
-      console.error("Error:", error);
-    }
-  }
 
   const removeMainImage = () => {
     // setFormData((prev) => ({ ...prev, mainImage: null }));
@@ -156,12 +76,8 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
     if (length <= 0) errors.push("Length must be greater than 0.");
     if (width <= 0) errors.push("Width must be greater than 0.");
     if (weight <= 0) errors.push("Weight must be greater than 0.");
-    if (sportId <= 0) errors.push("Sport ID must be a positive number.");
     if (!productMainImage.trim()) errors.push("Main product image is required.");
     if (productImages.length === 0) errors.push("At least one product image is required.");
-    if (!brandName.trim()) errors.push("Brand name is required.");
-    if (!categoryName.trim()) errors.push("Category name is required.");
-    if (!sportName.trim()) errors.push("Sport name is required.");
 
     if (errors.length > 0) {
       alert("Validation Errors:\n" + errors.join("\n"));
@@ -190,15 +106,11 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
       width: parseFloat(width),
       weight: parseFloat(weight),
       isRent,
-      sportId: parseInt(sportId, 10),
       productMainImage: productMainImage.trim(),
       productImages: productImages, // Assuming it's already an array of valid images
-      brandName: brandName.trim(),
-      categoryName: categoryName.trim(),
-      sportName: sportName.trim(),
     };
 
-    onEditProduct(product.id, payload);
+    onAddProduct(payload);
 
     onClose();
   };
@@ -222,9 +134,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="productName"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
           <div className="ml-2 mt-4 w-1/2">
@@ -236,9 +146,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="productCode"
               value={productCode}
               onChange={(e) => setProductCode(e.target.value)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
         </div>
@@ -254,9 +162,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                 id="price"
                 value={price}
                 onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-                disabled={!isEdit} // Disable when not in edit mode
-                className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                className="w-full mt-2 border rounded px-3 py-2"
               />
               <span className="absolute inset-y-0 right-8 flex items-center text-gray-500">
                 ₫
@@ -272,9 +178,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
         </div>
@@ -288,9 +192,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="size"
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
           <div className="ml-2 w-1/2 mt-4">
@@ -302,9 +204,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="condition"
               value={condition}
               onChange={(e) => setCondition(parseInt(e.target.value, 10) || 0)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
         </div>
@@ -321,9 +221,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                 id="height"
                 value={height}
                 onChange={(e) => setHeight(parseFloat(e.target.value) || 0)}
-                disabled={!isEdit} // Disable when not in edit mode
-                className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                className="w-full mt-2 border rounded px-3 py-2"
               />
               <span className="absolute inset-y-0 right-7 flex items-center text-gray-500">
                 mm
@@ -340,9 +238,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                 id="length"
                 value={length}
                 onChange={(e) => setLength(parseFloat(e.target.value) || 0)}
-                disabled={!isEdit} // Disable when not in edit mode
-                className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                className="w-full mt-2 border rounded px-3 py-2"
               />
               <span className="absolute inset-y-0 right-7 flex items-center text-gray-500">
                 mm
@@ -360,9 +256,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                 id="width"
                 value={width}
                 onChange={(e) => setWidth(parseFloat(e.target.value) || 0)}
-                disabled={!isEdit} // Disable when not in edit mode
-                className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                className="w-full mt-2 border rounded px-3 py-2"
               />
               <span className="absolute inset-y-0 right-7 flex items-center text-gray-500">
                 mm
@@ -380,9 +274,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                 id="weight"
                 value={weight}
                 onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-                disabled={!isEdit} // Disable when not in edit mode
-                className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
+                className="w-full mt-2 border rounded px-3 py-2"
               />
               <span className="absolute inset-y-0 right-7 flex items-center text-gray-500">
                 g
@@ -419,9 +311,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
               id="isRent"
               checked={isRent}
               onChange={(e) => setIsRent(e.target.checked)}
-              disabled={!isEdit} // Disable when not in edit mode
-              className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
+              className="w-full mt-2 border rounded px-3 py-2"
             />
           </div>
         </div>
@@ -438,39 +328,33 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                     alt="Main product"
                     className="max-h-32 rounded-md"
                   />
-                  {isEdit && (
-                    <button
-                      type="button"
-                      onClick={removeMainImage}
-                      className="absolute top-1 right-1 -mt-2 -mr-2 text-black p-1 hover:text-red-500"
-                    >
-                      <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={removeMainImage}
+                    className="absolute top-1 right-1 -mt-2 -mr-2 text-black p-1 hover:text-red-500"
+                  >
+                    <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-1 text-center">
                   <FontAwesomeIcon icon={faCloudUploadAlt} className="mx-auto h-12 w-12 text-gray-400" />
-                  {isEdit ? (
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="main-image-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                      >
-                        <span>Tải ảnh lên</span>
-                        <input
-                          id="main-image-upload"
-                          name="main-image-upload"
-                          type="file"
-                          className="sr-only"
-                          onChange={handleMainImageUpload}
-                        />
-                      </label>
-                      <p className="pl-1">hoặc kéo và thả</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">Không thể chỉnh sửa</p>
-                  )}
+                  <div className="flex text-sm text-gray-600">
+                    <label
+                      htmlFor="main-image-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    >
+                      <span>Tải ảnh lên</span>
+                      <input
+                        id="main-image-upload"
+                        name="main-image-upload"
+                        type="file"
+                        className="sr-only"
+                        onChange={handleMainImageUpload}
+                      />
+                    </label>
+                    <p className="pl-1">hoặc kéo và thả</p>
+                  </div>
                   <p className="text-xs text-gray-500">
                     PNG, JPG, GIF
                   </p>
@@ -490,27 +374,23 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                     icon={faCloudUploadAlt}
                     className="h-12 w-12 text-gray-400 mb-2"
                   />
-                  {isEdit ? (
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="gallery-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                      >
-                        <span>Tải ảnh</span>
-                        <input
-                          id="gallery-upload"
-                          name="gallery-upload"
-                          type="file"
-                          className="sr-only"
-                          multiple
-                          onChange={handleProductImagesUpload}
-                        />
-                      </label>
-                      <p className="pl-1">hoặc kéo và thả</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">Không thể chỉnh sửa</p>
-                  )}
+                  <div className="flex text-sm text-gray-600">
+                    <label
+                      htmlFor="gallery-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    >
+                      <span>Tải ảnh</span>
+                      <input
+                        id="gallery-upload"
+                        name="gallery-upload"
+                        type="file"
+                        className="sr-only"
+                        multiple
+                        onChange={handleProductImagesUpload}
+                      />
+                    </label>
+                    <p className="pl-1">hoặc kéo và thả</p>
+                  </div>
                   <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
                 </div>
               ) : (
@@ -527,35 +407,31 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
                             alt={`Product ${index + 1}`}
                             className="h-full w-full object-cover"
                           />
-                          {isEdit && (
-                            <button
-                              type="button"
-                              className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
-                              onClick={() => removeProductImage(index)}
-                            >
-                              <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
+                            onClick={() => removeProductImage(index)}
+                          >
+                            <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
+                          </button>
                         </div>
                       ))}
                     </div>
                   </div>
-                  {isEdit && productImages.length < 5 && (
-                    <label
-                      htmlFor="gallery-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ml-4"
-                    >
-                      <span>Thêm ảnh</span>
-                      <input
-                        id="gallery-upload"
-                        name="gallery-upload"
-                        type="file"
-                        className="sr-only"
-                        multiple
-                        onChange={handleProductImagesUpload}
-                      />
-                    </label>
-                  )}
+                  <label
+                    htmlFor="gallery-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ml-4"
+                  >
+                    <span>Thêm ảnh</span>
+                    <input
+                      id="gallery-upload"
+                      name="gallery-upload"
+                      type="file"
+                      className="sr-only"
+                      multiple
+                      onChange={handleProductImagesUpload}
+                    />
+                  </label>
                 </div>
               )}
             </div>
@@ -572,15 +448,13 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
           >
             Hủy
           </button>
-          {isEdit && (
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
-            >
-              <FontAwesomeIcon icon={faSave} className="mr-1" />
-              Lưu
-            </button>
-          )}
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
+          >
+            <FontAwesomeIcon icon={faSave} className="mr-1" />
+            Thêm
+          </button>
 
         </div>
 
@@ -589,4 +463,4 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
   );
 };
 
-export default EditProductModal;
+export default AddProductModal;

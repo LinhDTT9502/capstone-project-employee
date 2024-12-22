@@ -1,31 +1,33 @@
-import { 
-    getAllSports, 
-    getSportDetails, 
-    addSport, 
-    editSport, 
-    removeSport 
+import {
+    getAllSports,
+    getSportDetails,
+    addSport,
+    editSport,
+    removeSport
 } from "../api/apiSport";
 
 // Fetch all sports
 export const fetchSports = async () => {
     try {
-      const response = await getAllSports();
-      const filteredSports = response.data.data.$values
-        .filter((sport) => sport.status === true)
-        .sort((a, b) => b.id - a.id);
-      return filteredSports;
+        const response = await getAllSports();
+        const filteredSports = response.data.data.$values
+            .filter((sport) => sport.status === true)
+            .sort((a, b) => b.id - a.id);
+        return filteredSports;
     } catch (error) {
-      console.error("Error fetching sports:", error);
-      throw error;
+        console.error("Error fetching sports:", error);
+        throw error;
     }
-  };
-  
+};
+
 
 // Fetch sport details by ID
 export const fetchSportDetails = async (sportId) => {
     try {
         const response = await getSportDetails(sportId);
-        return response.data; 
+        console.log(response.data);
+
+        return response.data;
     } catch (error) {
         console.error(`Error fetching sport details for ID ${sportId}:`, error);
         throw error;
@@ -36,7 +38,7 @@ export const fetchSportDetails = async (sportId) => {
 export const createSport = async (sportData) => {
     try {
         const response = await addSport(sportData);
-        return response.data; 
+        return response.data;
     } catch (error) {
         console.error("Error adding new sport:", error);
         throw error;

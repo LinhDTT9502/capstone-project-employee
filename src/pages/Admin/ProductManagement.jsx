@@ -17,6 +17,8 @@ import { changeProductStatus, fetchAllProducts } from "../../services/productSer
 import ProductActions from "../../components/Admin/ProductActions.jsx";
 import ChangeStatusButton from "../../components/Admin/ChangeStatusButton.jsx";
 import ChangeProductStatusButton from "../../components/Admin/ChangeProductStatusButton.jsx";
+import EditProductModal from "../../components/Admin/EditProductModal.jsx";
+import AddProductModal from "../../components/Admin/AddProductModal.jsx";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -28,6 +30,7 @@ const ProductManagement = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,9 +93,9 @@ const ProductManagement = () => {
     }
   };
 
-  const handleEditCategory = async (categoryId, updatedData) => {
+  const handleEditProduct = async (productId, updatedData) => {
     try {
-      await updateCategoryById(categoryId, updatedData);
+      await updateCategoryById(productId, updatedData);
       fetchProductData();
       toast.success("Cập nhật sản phẩm thành công!", { position: "top-right" });
     } catch (error) {
@@ -224,6 +227,16 @@ const ProductManagement = () => {
                           onEdit={() => {
                             setSelectedProduct(product);
                             setIsEditModalOpen(true);
+                            setIsEditModal(true);
+                          }}
+                          onView={() => {
+                            setSelectedProduct(product);
+                            setIsEditModalOpen(true);
+                            setIsEditModal(false);
+                          }}
+                          onDelete={() => {
+                            setSelectedProduct(product);
+                            setIsEditModalOpen(true);
                           }}
                         />
                       </td>
@@ -249,22 +262,23 @@ const ProductManagement = () => {
           )}
         </Card>
 
-        {/* Add Category Modal */}
+        {/* Add Product Modal */}
         {isAddModalOpen && (
-          <AddCategoryModal
+          <AddProductModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onAddCategory={handleAddCategory}
           />
         )}
 
-        {/* Edit Category Modal */}
+        {/* Edit Product Modal */}
         {isEditModalOpen && selectedProduct && (
-          <EditCategoryModal
+          <EditProductModal
+            isEdit={isEditModal}
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onEditCategory={handleEditCategory}
-            category={selectedProduct}
+            onEditCategory={handleEditProduct}
+            product={selectedProduct}
           />
         )}
       </div>

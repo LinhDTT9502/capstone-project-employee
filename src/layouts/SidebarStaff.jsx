@@ -25,7 +25,9 @@ import {
   faComment,
   faFileImport,
   faToolbox,
-  faHouse
+  faHouse,
+  faPrint,
+  faExchange
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -33,16 +35,21 @@ export default function SidebarStaff() {
   const user = useSelector(selectUser);
   const [isOpen, setIsOpen] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState("/coordinator/assign-orders");
   const location = useLocation();
+  const [activeItem, setActiveItem] = useState(location.pathname);
 
+  // useEffect(() => {
+  //   if (location.pathname.startsWith("/coordinator")) {
+  //     setIsOpen(true);
+  //   } else {
+  //     setIsOpen(false);
+  //   }
+  // }, [location]);
+
+  // Update `activeItem` whenever the route changes
   useEffect(() => {
-    if (location.pathname.startsWith("/coordinator")) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
-  }, [location]);
+    setActiveItem(location.pathname);
+  }, [location.pathname]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -52,7 +59,7 @@ export default function SidebarStaff() {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  const SidebarLink = ({ to, icon, children }) => (
+  const SidebarLink = ({ to, icon, children, isSidebarCollapsed }) => (
     <Link
       to={to}
       onClick={() => setActiveItem(to)} // Updates activeItem
@@ -204,16 +211,16 @@ export default function SidebarStaff() {
       <SidebarLink to="/staff/list-orders" icon={faClipboardList}>
         Danh sách đơn hàng
       </SidebarLink>
-      <SidebarLink to="/staff/list-rentals" icon={faHandshake}>
+      <SidebarLink to="/staff/list-rentals" icon={faClipboardList}>
         Danh sách đơn cho thuê
       </SidebarLink>
-      <SidebarLink to="/staff/list-refund" icon={faHandshake}>
+      <SidebarLink to="/staff/list-refund" icon={faExchange}>
         Yêu cầu hoàn tiền
       </SidebarLink>
       <SidebarLink to="/staff/list-extension" icon={faHandshake}>
         Yêu cầu gia hạn đơn thuê
       </SidebarLink>
-      <SidebarLink to="/staff/invoice" icon={faHandshake}>
+      <SidebarLink to="/staff/invoice" icon={faPrint}>
         In hóa đơn
       </SidebarLink>
     </>
@@ -244,20 +251,20 @@ export default function SidebarStaff() {
       Quản lý kho
     </SidebarLink>
     <SidebarLink to="/manager/list-orders" icon={faClipboardList}>
-        Danh sách đơn hàng
-      </SidebarLink>
-      <SidebarLink to="/manager/list-rentals" icon={faHandshake}>
-        Danh sách đơn cho thuê
-      </SidebarLink>
-      <SidebarLink to="/manager/list-refund" icon={faHandshake}>
-        Yêu cầu hoàn tiền
-      </SidebarLink>
-      <SidebarLink to="/manager/list-extension" icon={faHandshake}>
-        Yêu cầu gia hạn đơn thuê
-      </SidebarLink>
-      <SidebarLink to="/manager/invoice" icon={faHandshake}>
-        In hóa đơn
-      </SidebarLink>
+      Danh sách đơn hàng
+    </SidebarLink>
+    <SidebarLink to="/manager/list-rentals" icon={faClipboardList}>
+      Danh sách đơn cho thuê
+    </SidebarLink>
+    <SidebarLink to="/manager/list-refund" icon={faExchange}>
+      Yêu cầu hoàn tiền
+    </SidebarLink>
+    <SidebarLink to="/manager/list-extension" icon={faHandshake}>
+      Yêu cầu gia hạn đơn thuê
+    </SidebarLink>
+    <SidebarLink to="/manager/invoice" icon={faPrint}>
+      In hóa đơn
+    </SidebarLink>
   </>
   );
 

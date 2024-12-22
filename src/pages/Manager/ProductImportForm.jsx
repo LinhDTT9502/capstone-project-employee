@@ -8,6 +8,10 @@ import SearchBar from '../../components/Admin/SearchBar';
 import ImportFileExcel from './ImportFileExcel';
 import TemplateFile from './TemplateFile';
 import { toast, ToastContainer } from 'react-toastify';
+import { getAllImagesVideosByProductId } from '../../services/imageVideosService';
+import { fetchSportDetails } from '../../services/sportService';
+import { fetchCategoryDetails } from '../../services/categoryService';
+import { getBrandDetails } from '../../services/brandService';
 const ImportProduct = () => {
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
@@ -18,6 +22,47 @@ const ImportProduct = () => {
   const [isImportExcel, setIsImportExcel] = useState(false)
   const [isImportDirectly, setIsImportDirectly] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  const selectedSport = async () => {
+    try {
+      const data = await fetchSportDetails(selectedProduct.sportId);
+      console.log(data.id);
+      setSport(data.id)
+    } catch (error) {
+      console.error("Failed to fetch sport", error);
+    }
+  }
+
+  const selectedCategory = async () => {
+    try {
+      const data = await fetchCategoryDetails(selectedProduct.categoryID);
+      console.log(data.id);
+      setCategory(data.id)
+    } catch (error) {
+      console.error("Failed to fetch category", error);
+    }
+  }
+
+  const selectedBrand = async () => {
+    try {
+      const data = await getBrandDetails(selectedProduct.brandId);
+      console.log(data);
+      setBrand(data.id)
+    } catch (error) {
+      console.error("Failed to fetch brand", error);
+    }
+  }
+
+  console.log(brand);
+
+
+  useEffect(() => {
+    if (selectedProduct) {
+      selectedSport()
+      selectedCategory()
+      selectedBrand()
+    }
+  }, selectedProduct)
 
   const [formData, setFormData] = useState({
     categoryId: "",
@@ -182,6 +227,11 @@ const ImportProduct = () => {
   };
   useEffect(() => {
     if (selectedProduct) {
+      console.log(selectedProduct.id);
+
+      getProductImages(selectedProduct.id);
+      console.log(productImagesPreview);
+
       setFormData((prev) => ({
         ...prev,
         categoryId: selectedProduct.categoryID || "",
@@ -205,6 +255,21 @@ const ImportProduct = () => {
       setProductImagesPreview(selectedProduct.listImages?.$values || []);
     }
   }, [selectedProduct]);
+
+  const getProductImages = async (productId) => {
+    try {
+      const data = await getAllImagesVideosByProductId(productId);
+      console.log(data);
+
+      // Extract imageUrl and set them to productImagesPreview
+      const imageUrls = data.map(item => item.imageUrl);
+      setProductImagesPreview(imageUrls);
+    }
+    catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
 
   const handleSelectProduct = (product) => {
     setSelectedProduct(product);
@@ -266,7 +331,6 @@ const ImportProduct = () => {
                         <CategorySelect
                           category={category}
                           setCategory={setCategory}
-                          selectedProduct={selectedProduct}
                         />
 
                       </div>
@@ -283,6 +347,7 @@ const ImportProduct = () => {
                         sport={sport}
                         setSport={setSport}
                       />
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="productCode">
                           Mã sản phẩm
@@ -316,7 +381,7 @@ const ImportProduct = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="price">
-                          Giá mua
+                          Giá bán
                         </label>
                         <input
                           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -531,15 +596,63 @@ const ImportProduct = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Đăng ảnh sản phẩm
                       </label>
-                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                        <div className="space-y-1 text-center">
-                          <FontAwesomeIcon icon={faCloudUploadAlt} className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="flex text-sm text-gray-600">
+                      <div className="mt-1 flex items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative h-40">
+                        {/* If no files are selected */}
+                        {productImagesPreview.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center flex-grow text-center">
+                            <FontAwesomeIcon icon={faCloudUploadAlt} className="h-12 w-12 text-gray-400 mb-2" />
+                            <div className="flex text-sm text-gray-600">
+                              <label
+                                htmlFor="gallery-upload"
+                                className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                              >
+                                <span>Tải ảnh</span>
+                                <input
+                                  id="gallery-upload"
+                                  name="gallery-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  multiple
+                                  onChange={handleProductImagesUpload}
+                                />
+                              </label>
+                              <p className="pl-1">hoặc kéo và thả</p>
+                            </div>
+                            <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between w-full">
+                            {/* File upload text and icon pushed to the right */}
+                            <div className="flex-grow">
+                              <div className="flex gap-2 overflow-x-auto">
+                                {productImagesPreview.map((img, index) => (
+                                  <div
+                                    key={index}
+                                    className="relative flex-shrink-0 h-24 w-24 rounded-lg overflow-hidden"
+                                  >
+                                    <img
+                                      src={img}
+                                      alt={`Product ${index + 1}`}
+                                      className="h-full w-full object-cover"
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
+                                      onClick={() => removeProductImage(index)}
+                                    >
+                                      <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Upload button pushed to the right */}
                             <label
                               htmlFor="gallery-upload"
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ml-4"
                             >
-                              <span>Tải ảnh</span>
+                              <span>Thêm ảnh</span>
                               <input
                                 id="gallery-upload"
                                 name="gallery-upload"
@@ -549,41 +662,12 @@ const ImportProduct = () => {
                                 onChange={handleProductImagesUpload}
                               />
                             </label>
-                            <p className="pl-1">hoặc kéo và thả</p>
                           </div>
-                          <p className="text-xs text-gray-500">
-                            PNG, JPG, GIF
-                          </p>
-                        </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-6 gap-4 mt-4">
-                      {productImagesPreview.map((img, index) => (
-                        <div key={index} className="relative">
-                          <div className="group aspect-w-10 aspect-h-7 block overflow-hidden rounded-lg bg-gray-100">
-                            {img.loading ? (
-                              <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-blue-500 animate-spin absolute inset-0 m-auto" />
-                            ) : (
-                              <>
-                                <img
-                                  src={img}
-                                  alt={`Product ${index + 1}`}
-                                  className="h-20 w-20 object-cover pointer-events-none"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
-                                  onClick={() => removeProductImage(index)}
-                                >
-                                  <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+
                   </div>
                 </div>
 
