@@ -26,6 +26,7 @@ import PieChart from "../../components/Chart/PieChart";
 import BarChart from "../../components/Chart/BarChart";
 import { getOrderbyBranch } from "../../services/Staff/OrderService";
 import { fetchBranchs, getBranchs } from "../../services/branchService";
+import { getRentalbyBranch } from "../../services/Staff/RentalService";
 
 export default function Dashboard() {
   // const { t } = useTranslation();
@@ -37,6 +38,7 @@ export default function Dashboard() {
   const [activeLength, setActiveLength] = useState(0);
   const [completedLength, setCompletedLength] = useState(0);
   const [orders, setOrders] = useState([]);
+  const [rentalOrders, setRentalOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOrder, setSortOrder] = useState('latest');
@@ -69,24 +71,27 @@ export default function Dashboard() {
     "Đã giao hàng": 'bg-green-100 text-green-600'
   };
 
-  const totalPages = Math.ceil(orders.length / ordersPerPage);
+  let totalSaleOrderPages = 0
+  let totalRentalOrderPages = 0
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
+  if (orders !== null) {
+    totalSaleOrderPages = Math.ceil(orders.length / ordersPerPage);
+  }
+
+  if (rentalOrders !== null) {
+    totalRentalOrderPages = Math.ceil(rentalOrders.length / ordersPerPage);
+  }
+
+
+  const handleSaleOrderPageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalSaleOrderPages) {
       setCurrentPage(newPage);
     }
   };
 
-  const fetchOrders = async (branchId) => {
-    try {
-      const data = await getOrderbyBranch(1);
-
-      setOrders(data);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      setError('Failed to fetch orders');
-    } finally {
-      setLoading(false);
+  const handleRentalOrderPageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalRentalOrderPages) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -103,41 +108,79 @@ export default function Dashboard() {
     }
   };
 
-  const fetchByBranch = async (branchId) => {
+  const fetchSaleOrderByBranch = async (branchId) => {
     try {
+      console.log(branchId);
+
       setLoading(true);
       const data = await getOrderbyBranch(branchId);
-      setOrders(data);
-      setCurrentPage(1);
-    } catch {
-      toast.error("Không thể lấy dữ liệu đơn hàng theo chi nhánh!");
+
+      // Sort the data by createdAt in descending order
+      const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // Simulate a delay for a better user experience
+      setTimeout(() => {
+        setOrders(sortedData);
+        setCurrentPage(1);
+      }, 5000); // Adjust delay as needed (in milliseconds)
+    } catch (error) {
+      console.error("Không thể lấy dữ liệu đơn hàng theo chi nhánh!", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchRentalOrderByBranch = async (branchId) => {
+    try {
+      console.log(branchId);
+
+      setLoading(true);
+      const data = await getRentalbyBranch(branchId);
+
+      // Sort the data by createdAt in descending order
+      const sortedData = data.sort((a, b) => new Date(b.rentalStartDate) - new Date(a.rentalStartDate));
+
+      // Simulate a delay for a better user experience
+      setTimeout(() => {
+        setRentalOrders(sortedData); // Use the sorted data
+        setCurrentPage(1);
+      }, 5000); // Adjust delay as needed (in milliseconds)
+    } catch (error) {
+      console.error("Không thể lấy dữ liệu đơn thuê theo chi nhánh!", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   useEffect(() => {
-    fetchOrders();
+    fetchSaleOrderByBranch(selectedBranch);
+    fetchRentalOrderByBranch(selectedBranch);
     fetchBranches();
   }, []);
 
   useEffect(() => {
-    if (branches.length > 0) {
+    if (branches.length > 0 && selectedBranch === null) {
       const firstBranchId = branches[0].id;
       setSelectedBranch(firstBranchId);
-      fetchByBranch(firstBranchId); // Fetch data for the first branch
+      fetchSaleOrderByBranch(firstBranchId); // Fetch data for the first branch
+      fetchRentalOrderByBranch(firstBranchId); // Fetch data for the first branch
     }
   }, [branches]); // Run this effect whenever the branches array changes
 
-  const handleBranchSelect = (branchId) => {
+  const handleBranchSelect = async (branchId) => {
     setSelectedBranch(branchId);
 
     if (branchId) {
-      getOrderbyBranch(branchId);
+      fetchSaleOrderByBranch(branchId)
+      fetchRentalOrderByBranch(branchId)
     } else {
-      fetchOrders(branchId);
+      fetchSaleOrderByBranch(branches[0].id)
+      fetchRentalOrderByBranch(branches[0].id)
     }
   };
+  console.log(selectedBranch);
+
 
   const handleSortChange = (e) => {
     const selectedSortOrder = e.target.value;
@@ -207,16 +250,20 @@ export default function Dashboard() {
       <hr className="mb-8 flex justify-between items-center mx-10 my-4" />
       <div className="mx-10 flex space-x-2">
         <div className="w-1/2">
-          <BarChart />
+          <BarChart
+            branchId={selectedBranch}
+          />
         </div>
         <div className="w-1/2">
-          <PieChart />
+          <PieChart
+            branchId={selectedBranch}
+          />
         </div>
 
       </div>
       {/* <RecentOrder/> */}
 
-      <div className="flex items-center justify-between my-4">
+      <div className="flex items-center justify-between my-2">
         <div className="flex gap-1 p-1 bg-gray-200 rounded-full w-fit transition-all duration-300">
           <button
             onClick={() => setOrderType(1)}
@@ -235,7 +282,7 @@ export default function Dashboard() {
             Đơn thuê
           </button>
         </div>
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <select
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-blue-400 w-full"
             onChange={handleSortChange}
@@ -244,7 +291,7 @@ export default function Dashboard() {
             <option value="latest">Đơn mới nhất</option>
             <option value="earliest">Đơn cũ nhất</option>
           </select>
-        </div>
+        </div> */}
       </div>
 
       <div>
@@ -264,49 +311,124 @@ export default function Dashboard() {
 
         </div>
       </div>
+
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
-        <thead className="bg-gray-100 border-b border-gray-200">
-          <tr>
-            <th className="text-left p-4 font-semibold text-gray-600">Mã đơn hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
-            {/* <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th> */}
-            <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
-            <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
-            <th className="text-left p-4 font-semibold text-gray-600"></th>
-
-          </tr>
-        </thead>
-        <tbody>
-          {orders
-            .slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
-            .map((order) => (
-
-              <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="p-4">{order.saleOrderCode}</td>
-                <td className="p-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">{order.fullName}</span>
-                    <span className="text-sm text-gray-500">{order.email}</span>
-                  </div>
-                </td>
-                <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
-                <td className="p-4"><span className={`px-3 py-1 rounded-full text-sm font-medium ${paymentStyles[order.paymentStatus] || 'bg-gray-100 text-gray-600'
-                  }`}>{order.paymentStatus}</span></td>
-                <td className="p-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[order.orderStatus] || 'bg-gray-100 text-gray-600'
-                      }`}
-                  >
-                    {order.orderStatus}
-                  </span>
-                </td>
-
+        {orderType === 1 ? (
+          <>
+            <thead className="bg-gray-100 border-b border-gray-200">
+              <tr>
+                <th className="text-left p-4 font-semibold text-gray-600">Mã đơn hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
+                <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600"></th>
               </tr>
-
-            ))}
-        </tbody>
+            </thead>
+            {loading ? (
+              <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
+                Đang tải dữ liệu...
+              </div>
+            ) : orders && orders.length > 0 ? (
+              <tbody>
+                {orders
+                  .slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
+                  .map((order) => (
+                    <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="p-4">{order.saleOrderCode}</td>
+                      <td className="p-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-700">{order.fullName}</span>
+                          <span className="text-sm text-gray-500">{order.email}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${paymentStyles[order.paymentStatus] || 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {order.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[order.orderStatus] || 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {order.orderStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            ) : (
+              <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
+                Hiện tại không có đơn hàng nào cả
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <thead className="bg-gray-100 border-b border-gray-200">
+              <tr>
+                <th className="text-left p-4 font-semibold text-gray-600">Mã đơn hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Ngày bắt đầu thuê</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Ngày kết thúc thuê</th>
+                <th className="text-left p-4 font-semibold text-gray-600">Số ngày thuê</th>
+                <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
+                <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
+                <th className="text-left p-4 font-semibold text-gray-600"></th>
+              </tr>
+            </thead>
+            {loading ? (
+              <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
+                Đang tải dữ liệu...
+              </div>
+            ) : rentalOrders && rentalOrders.length > 0 ? (
+              <tbody>
+                {rentalOrders
+                  .slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
+                  .map((rentalOrder) => (
+                    <tr key={rentalOrder.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="p-4">{rentalOrder.saleOrderCode}</td>
+                      <td className="p-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-700">{rentalOrder.fullName}</span>
+                          <span className="text-sm text-gray-500">{rentalOrder.email}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">{new Date(rentalOrder.rentalStartDate).toLocaleDateString()}</td>
+                      <td className="p-4">{new Date(rentalOrder.rentalEndDate).toLocaleDateString()}</td>
+                      {/* Fix: Display rentalDays directly if it's a number */}
+                      <td className="p-4">{rentalOrder.rentalDays}</td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${paymentStyles[rentalOrder.paymentStatus] || 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {rentalOrder.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[rentalOrder.orderStatus] || 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {rentalOrder.orderStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            ) : (
+              <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
+                Hiện tại không có đơn hàng nào cả
+              </div>
+            )}
+          </>
+        )}
       </table>
+
+
+
 
     </>
   );

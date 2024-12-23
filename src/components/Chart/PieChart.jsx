@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { getOrderbyBranch, getOrderList } from "../../services/Staff/OrderService";
-import { getRentalsList } from "../../services/Staff/RentalService";
+import { getRentalbyBranch, getRentalsList } from "../../services/Staff/RentalService";
 import { height } from "@fortawesome/free-regular-svg-icons/faAddressBook";
 
-const PieChart = () => {
+const PieChart = ({ branchId }) => {
   const [chartData, setChartData] = useState({
     series: [],
     labels: [],
   });
 
   useEffect(() => {
-    const fetchData = async (branchId) => {
+    const fetchData = async () => {
       try {
-        const ordersData = await getOrderbyBranch(5); //thêm branchId vào đây
-        const rentalsData = await getRentalsList(); //thêm branchId vào đây
+        const ordersData = await getOrderbyBranch(branchId); //thêm branchId vào đây
+        const rentalsData = await getRentalbyBranch(2); //thêm branchId vào đây
 
-        // Calculate totalAmount for orders and rentals
-        const ordersTotal = ordersData.reduce(
-          (acc, order) => acc + (order.totalAmount || 0),
-          0
-        );
-        const rentalsTotal = rentalsData.reduce(
-          (acc, rental) => acc + (rental.totalAmount || 0),
-          0
-        );
+        console.log(ordersData);
+        console.log(rentalsData);
 
-        // Update chart data
-        setChartData({
-          series: [ordersTotal, rentalsTotal],
-          labels: ["Doanh thu đơn đã bán", "Doanh thu đơn cho thuê"],
-        });
+        if (ordersData.length > 0 && rentalsData.length > 0) {
+          // Calculate totalAmount for orders and rentals
+          const ordersTotal = ordersData.reduce(
+            (acc, order) => acc + (order.totalAmount || 0),
+            0
+          );
+          const rentalsTotal = rentalsData.reduce(
+            (acc, rental) => acc + (rental.totalAmount || 0),
+            0
+          );
+
+
+          // Update chart data
+          setChartData({
+            series: [ordersTotal, rentalsTotal, 100 - ordersTotal - rentalsTotal],
+            labels: ["Doanh thu đơn đã bán", "Doanh thu đơn cho thuê", "Doanh thu khác"],
+          });
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Card, CardBody, CardHeader } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-const BarChart = () => {
+const BarChart = ({ branchId }) => {
   const [chartData, setChartData] = useState({
     series: [
       { name: "Tổng số đơn đặt hàng (Bán)", data: [] },
@@ -19,15 +19,17 @@ const BarChart = () => {
       try {
         // Fetch Sale Orders
         const saleResponse = await axios.get(
-          "https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-orders-by-branch?branchId=5"
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-orders-by-branch?branchId=${branchId}`
         );
 
         // Fetch Rental Orders
         const rentalResponse = await axios.get(
-          "https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-all-rental-orders"
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-orders-by-branch?branchId=2`
         );
 
-        if (saleResponse.data.isSuccess && rentalResponse.data.isSuccess) {
+        if (saleResponse.data.data !== null && rentalResponse.data.data !== null) {
+          console.log(saleResponse);
+
           const saleOrders = saleResponse.data.data.$values;
           const rentalOrders = rentalResponse.data.data.$values;
 
