@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAllBrands } from "../../services/brandService";
 
-export function BrandSelect({ brand, setBrand }) {
+export function BrandSelect({ isEdit, brand, setBrand }) {
   const [brands, setBrands] = useState([]);
 
   const loadBrands = async () => {
@@ -30,6 +30,7 @@ export function BrandSelect({ brand, setBrand }) {
         className="mt-1 p-2 border border-gray-300 rounded w-full"
         value={brand}
         onChange={(e) => setBrand(e.target.value)}
+        disabled={!isEdit} // Disable if isEdit is false
       >
         <option value="" disabled>
           Chọn thương hiệu

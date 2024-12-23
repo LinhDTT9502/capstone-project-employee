@@ -2,38 +2,45 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { SportSelect } from "../Product/SportSelect";
 
 const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
   const [categoryName, setCategoryName] = useState("");
-  const [sportName, setSportName] = useState("");
   const [sportId, setSportId] = useState(0);
-  const [categoryImage, setCategoryImage] = useState("");
+  const [categoryImage, setCategoryImage] = useState(null);
 
   useEffect(() => {
     if (category) {
       setCategoryName(category.categoryName || "");
-      setSportName(category.sportName || "");
       setSportId(category.sportId || 0);
-      setCategoryImage(category.categoryImage || "");
+      setCategoryImage(category.categoryImgPath || null); // Use a valid URL if it's already set
     }
   }, [category]);
 
-  const handleSubmit = () => {
-    if (!categoryName.trim() || !sportName.trim() || !sportId || !categoryImage.trim()) {
+  const handleSubmit = async () => {
+    if (!categoryName.trim() || !sportId || !categoryImage) {
       alert("Tất cả các trường đều bắt buộc.");
       return;
     }
 
-    const payload = {
-      categoryName: categoryName.trim(),
-      sportName: sportName.trim(),
-      sportId: parseInt(sportId, 10),
-      categoryImage: categoryImage.trim(),
-    };
+    const formData = new FormData();
+    formData.append("categoryName", categoryName.trim());
+    formData.append("sportId", sportId);
+    if (categoryImage instanceof File) {
+      formData.append("categoryImage", categoryImage); // Only append file if it's a new upload
+    }
 
-    onEditCategory(category.id, payload);
+    try {
+      await onEditCategory(category.id, formData);
+      onClose();
+    } catch (error) {
+      console.error("Error updating category:", error);
+      alert("Có lỗi xảy ra khi lưu danh mục.");
+    }
+  };
 
-    onClose();
+  const removeMainImage = () => {
+    setCategoryImage(null);
   };
 
   return (
@@ -58,40 +65,49 @@ const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
           />
         </div>
         <div className="mt-4">
-          <label htmlFor="sportName" className="block text-sm font-medium text-gray-700">
-            Tên Môn Thể Thao
-          </label>
-          <input
-            type="text"
-            id="sportName"
-            value={sportName}
-            onChange={(e) => setSportName(e.target.value)}
-            className="w-full mt-2 border rounded px-3 py-2"
-          />
+          <SportSelect isEdit={true} sport={sportId} setSport={setSportId} />
         </div>
         <div className="mt-4">
-          <label htmlFor="sportId" className="block text-sm font-medium text-gray-700">
-            ID Môn Thể Thao
-          </label>
-          <input
-            type="number"
-            id="sportId"
-            value={sportId}
-            onChange={(e) => setSportId(e.target.value)}
-            className="w-full mt-2 border rounded px-3 py-2"
-          />
-        </div>
-        <div className="mt-4">
-          <label htmlFor="categoryImage" className="block text-sm font-medium text-gray-700">
-            Đường Dẫn Hình Ảnh
-          </label>
-          <input
-            type="text"
-            id="categoryImage"
-            value={categoryImage}
-            onChange={(e) => setCategoryImage(e.target.value)}
-            className="w-full mt-2 border rounded px-3 py-2"
-          />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh sản phẩm đại diện</label>
+          <div className="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-md">
+            {categoryImage ? (
+              <div className="relative">
+                <img
+                  src={categoryImage instanceof File ? URL.createObjectURL(categoryImage) : categoryImage}
+                  alt="Main product"
+                  className="max-h-32 rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={removeMainImage}
+                  className="absolute top-1 right-1 -mt-2 -mr-2 text-black p-1 hover:text-red-500"
+                >
+                  <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-1 text-center">
+                <FontAwesomeIcon icon={faSave} className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="flex text-sm text-gray-600">
+                  <label
+                    htmlFor="main-image-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                  >
+                    <span>Tải ảnh lên</span>
+                    <input
+                      id="main-image-upload"
+                      name="main-image-upload"
+                      type="file"
+                      className="sr-only"
+                      onChange={(e) => setCategoryImage(e.target.files[0])}
+                    />
+                  </label>
+                  <p className="pl-1">hoặc kéo và thả</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="mt-6 flex justify-end gap-3">
           <button

@@ -13,12 +13,13 @@ import EditCategoryModal from "../../components/Admin/EditCategoryModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { fetchProductsbyBranch } from "../../services/warehouseService.js";
-import { changeProductStatus, fetchAllProducts } from "../../services/productService.js";
+import { addProduct, changeProductStatus, fetchAllProducts, updateProductById } from "../../services/productService.js";
 import ProductActions from "../../components/Admin/ProductActions.jsx";
 import ChangeStatusButton from "../../components/Admin/ChangeStatusButton.jsx";
 import ChangeProductStatusButton from "../../components/Admin/ChangeProductStatusButton.jsx";
 import EditProductModal from "../../components/Admin/EditProductModal.jsx";
 import AddProductModal from "../../components/Admin/AddProductModal.jsx";
+import { updateProductAPI } from "../../api/apiProduct.js";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -83,9 +84,11 @@ const ProductManagement = () => {
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleAddCategory = async (categoryData) => {
+  const handleAddProduct = async (productData) => {
     try {
-      await createCategory(categoryData);
+      console.log(productData);
+
+      await addProduct(productData, token);
       fetchProductData();
       toast.success("Thêm sản phẩm thành công!", { position: "top-right" });
     } catch (error) {
@@ -93,9 +96,14 @@ const ProductManagement = () => {
     }
   };
 
+  const token = localStorage.getItem("token");
+
   const handleEditProduct = async (productId, updatedData) => {
     try {
-      await updateCategoryById(productId, updatedData);
+      console.log(updatedData);
+      console.log(token);
+
+      await updateProductById(productId, updatedData, token);
       fetchProductData();
       toast.success("Cập nhật sản phẩm thành công!", { position: "top-right" });
     } catch (error) {
@@ -267,7 +275,7 @@ const ProductManagement = () => {
           <AddProductModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onAddCategory={handleAddCategory}
+            onAddProduct={handleAddProduct}
           />
         )}
 
@@ -277,7 +285,7 @@ const ProductManagement = () => {
             isEdit={isEditModal}
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onEditCategory={handleEditProduct}
+            onEditProduct={handleEditProduct}
             product={selectedProduct}
           />
         )}

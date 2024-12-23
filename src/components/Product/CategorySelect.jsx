@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchCategories } from "../../services/categoryService";
 
-export function CategorySelect({ category, setCategory }) {
+export function CategorySelect({ isEdit, category, setCategory }) {
   const [categories, setCategories] = useState([]);
 
   const loadCategories = async () => {
@@ -31,6 +31,7 @@ export function CategorySelect({ category, setCategory }) {
         className="mt-1 p-2 border border-gray-300 rounded w-full"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
+        disabled={!isEdit}
       >
         <option value="" disabled>
           Chọn danh mục

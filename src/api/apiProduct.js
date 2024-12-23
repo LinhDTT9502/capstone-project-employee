@@ -67,3 +67,67 @@ export const changeProductStatusAPI = (productId) => {
     }
   });
 };
+
+export const updateProductAPI = async (productId, productData, token) => {
+  try {
+    const url = `${API_BASE_URL}/update-product/${productId}`;
+    const formData = new FormData();
+
+    // Append all fields from productData to FormData
+    for (const key in productData) {
+      if (productData[key] instanceof Array) {
+        // If the key is an array (e.g., ProductImages), append each item separately
+        productData[key].forEach((item) => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, productData[key]);
+      }
+    }
+
+    const response = await axios.put(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+        Accept: '*/*',
+      },
+    });
+
+    // Return the response data
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update product: ${error.message}`);
+  }
+};
+
+export const addProductAPI = async (productData, token) => {
+  try {
+    const url = `${API_BASE_URL}/add-product`;
+    const formData = new FormData();
+
+    // Append all fields from productData to FormData
+    for (const key in productData) {
+      if (productData[key] instanceof Array) {
+        // If the key is an array (e.g., ProductImages), append each item separately
+        productData[key].forEach((item) => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, productData[key]);
+      }
+    }
+
+    const response = await axios.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+        Accept: '*/*',
+      },
+    });
+
+    // Return the response data
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update product: ${error.message}`);
+  }
+};

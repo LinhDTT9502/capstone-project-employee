@@ -12,7 +12,17 @@ export const fetchAllImagesVideosApi = () => {
 };
 
 export const fetchAllImagesVideosByProductIdApi = (productId) => {
+
   return axios.get(`${API_BASE_URL}/list-all-image-of-a-product/${productId}`, {
+    headers: {
+      "accept": "*/*",
+    },
+  });
+};
+
+export const deleteImageByIdApi = (id) => {
+
+  return axios.delete(`${API_BASE_URL}/delete-image-video-by-id/${id}`, {
     headers: {
       "accept": "*/*",
     },

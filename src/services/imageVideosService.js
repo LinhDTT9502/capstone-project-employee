@@ -1,4 +1,4 @@
-import { fetchAllImagesVideosApi, fetchAllImagesVideosByProductIdApi } from "../api/apiImageVideo";
+import { deleteImageByIdApi, fetchAllImagesVideosApi, fetchAllImagesVideosByProductIdApi } from "../api/apiImageVideo";
 
 export const getAllImagesVideos = async () => {
   try {
@@ -12,7 +12,9 @@ export const getAllImagesVideos = async () => {
 
 export const getAllImagesVideosByProductId = async (productId) => {
   try {
+
     const response = await fetchAllImagesVideosByProductIdApi(productId);
+
     return response.data.data.$values
   } catch (error) {
     console.error('Error fetching images data:', error);
@@ -20,6 +22,19 @@ export const getAllImagesVideosByProductId = async (productId) => {
   }
 };
 
+
+export const deleteImageById = (id) => {
+  try {
+
+    const response = deleteImageByIdApi(id);
+    console.log(response);
+
+    return response.data
+  } catch (error) {
+    console.error('Delete failed:', error);
+    throw error;
+  }
+};
 // export const editQuantity = async (warehouseId, availableQuantity, totalQuantity) => {
 //   try {
 //     const response = await updateQuantity(warehouseId, availableQuantity, totalQuantity);
