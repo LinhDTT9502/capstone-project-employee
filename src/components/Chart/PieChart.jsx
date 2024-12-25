@@ -1,40 +1,44 @@
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { getOrderbyBranch, getOrderList } from "../../services/Staff/OrderService";
-import { getRentalbyBranch, getRentalsList } from "../../services/Staff/RentalService";
-import { height } from "@fortawesome/free-regular-svg-icons/faAddressBook";
+import { getOrderbyBranch } from "../../services/Staff/OrderService";
+import { getRentalbyBranch } from "../../services/Staff/RentalService";
 
 const PieChart = ({ branchId }) => {
   const [chartData, setChartData] = useState({
     series: [],
     labels: [],
   });
+  const [isDataAvailable, setIsDataAvailable] = useState(false); // State to track data availability
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const ordersData = await getOrderbyBranch(branchId); //thêm branchId vào đây
-        const rentalsData = await getRentalbyBranch(2); //thêm branchId vào đây
+        const ordersData = await getOrderbyBranch(branchId);
+        const rentalsData = await getRentalbyBranch(branchId);
 
-        console.log(ordersData);
-        console.log(rentalsData);
-
-        if (ordersData.length > 0 && rentalsData.length > 0) {
-          // Calculate totalAmount for orders and rentals
-          const ordersTotal = ordersData.reduce(
+        // Calculate totalAmount for orders and rentals
+        let ordersTotal = 0;
+        let rentalsTotal = 0;
+        if (ordersData !== null) {
+          ordersTotal = ordersData.reduce(
             (acc, order) => acc + (order.totalAmount || 0),
             0
           );
-          const rentalsTotal = rentalsData.reduce(
+        }
+        if (rentalsData !== null) {
+          rentalsTotal = rentalsData.reduce(
             (acc, rental) => acc + (rental.totalAmount || 0),
             0
           );
+        }
 
-
-          // Update chart data
+        if (ordersTotal === 0 && rentalsTotal === 0) {
+          setIsDataAvailable(false); // No data available
+        } else {
+          setIsDataAvailable(true); // Data is available
           setChartData({
-            series: [ordersTotal, rentalsTotal, 100 - ordersTotal - rentalsTotal],
-            labels: ["Doanh thu đơn đã bán", "Doanh thu đơn cho thuê", "Doanh thu khác"],
+            series: [ordersTotal, rentalsTotal],
+            labels: ["Doanh thu đơn đã bán", "Doanh thu đơn cho thuê"],
           });
         }
       } catch (error) {
@@ -43,7 +47,7 @@ const PieChart = ({ branchId }) => {
     };
 
     fetchData();
-  }, []);
+  }, [branchId]);
 
   const chartOptions = {
     chart: {
@@ -57,7 +61,7 @@ const PieChart = ({ branchId }) => {
         options: {
           chart: {
             width: 300,
-            height: 100
+            height: 100,
           },
           legend: {
             position: "bottom",
@@ -68,9 +72,7 @@ const PieChart = ({ branchId }) => {
     dataLabels: {
       enabled: true,
       formatter: (val, opts) => {
-        // Get the corresponding series value
         const seriesValue = opts.w.config.series[opts.seriesIndex];
-        // Format it using toLocaleString("vi-VN")
         return `${seriesValue.toLocaleString("vi-VN")} ₫`;
       },
       style: {
@@ -84,19 +86,24 @@ const PieChart = ({ branchId }) => {
         formatter: (val) => val.toLocaleString("vi-VN") + " ₫",
       },
     },
+    colors: isDataAvailable ? undefined : ["#ccc"], // Neutral color for placeholder
   };
 
   return (
     <div>
       <div id="chart">
         <h3>Tổng doanh thu tính đến hiện tại</h3>
-        <ReactApexChart
-          options={chartOptions}
-          series={chartData.series}
-          type="pie"
-          width={500}
-          height={400}
-        />
+        {isDataAvailable ? (
+          <ReactApexChart
+            options={chartOptions}
+            series={chartData.series}
+            type="pie"
+            width={500}
+            height={400}
+          />
+        ) : (
+          <p className="my-16 text-center text-gray-500">Không có dữ liệu doanh thu để hiển thị.</p>
+        )}
       </div>
     </div>
   );

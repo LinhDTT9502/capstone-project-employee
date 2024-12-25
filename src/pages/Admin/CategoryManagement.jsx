@@ -12,17 +12,22 @@ import AddCategoryModal from "../../components/Admin/AddCategoryModal.jsx";
 import EditCategoryModal from "../../components/Admin/EditCategoryModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import ChangeCategoryStatusButton from "../../components/Admin/ChangeCategoryStatusButton.jsx";
+import ConfirmDeleteSportModal from "../../components/Admin/ConfirmDeleteSportModal.jsx";
+import ConfirmDeleteCategoryModal from "../../components/Admin/ConfirmDeleteCategoryModal.jsx";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]); // State for filtered categories
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState(""); // Search input state
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteCategoryModalOpen, setIsConfirmDeleteCategoryModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,31 +35,31 @@ const CategoryManagement = () => {
 
   // Fetch categories
   const fetchCategoryData = async () => {
-  try {
-    setLoading(true);
-    const response = await fetchCategories();
+    try {
+      setLoading(true);
+      const response = await fetchCategories();
 
-    const activeCategories = response
-      .filter(category => category.status === true) 
-      .sort((a, b) => b.id - a.id); 
+      const activeCategories = response
+        .filter(category => category.status === true)
+        .sort((a, b) => b.id - a.id);
 
-    setCategories(activeCategories);
-    setFilteredCategories(activeCategories);
-    setCurrentPage(1);
-  } catch (err) {
-    setError("Đã xảy ra lỗi khi lấy dữ liệu danh mục.");
-    toast.error("Không thể lấy dữ liệu danh mục!", { position: "top-right" });
-    setCategories([]);
-    setFilteredCategories([]);
-  } finally {
-    setLoading(false);
-  }
-};
+      setCategories(activeCategories);
+      setFilteredCategories(activeCategories);
+      setCurrentPage(1);
+    } catch (err) {
+      setError("Đã xảy ra lỗi khi lấy dữ liệu danh mục.");
+      toast.error("Không thể lấy dữ liệu danh mục!", { position: "top-right" });
+      setCategories([]);
+      setFilteredCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   useEffect(() => {
     fetchCategoryData();
-  }, []);
+  }, [isReload]);
 
   // Filter categories based on the search term
   useEffect(() => {
@@ -119,32 +124,32 @@ const CategoryManagement = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{zIndex: 99999 }}
+        style={{ zIndex: 99999 }}
       />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
             <Typography variant="h4" className="p-4 text-center">
-            Quản lý <span className="text-orange-500">[Danh Mục]</span> ({filteredCategories.length})
+              Quản lý <span className="text-orange-500">[Danh Mục]</span> ({filteredCategories.length})
             </Typography>
             <Button
               onClick={() => setIsAddModalOpen(true)}
             >
               <FontAwesomeIcon icon={faPlus} />{" "}
               Tạo mới
-            </Button> 
+            </Button>
           </div>
 
           {/* Search Bar */}
           <div className="p-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm danh mục..."
-            className="w-full p-2 border border-gray-300 rounded"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+            <input
+              type="text"
+              placeholder="Tìm kiếm danh mục..."
+              className="w-full p-2 border border-gray-300 rounded"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
           {loading ? (
             <div className="flex justify-center p-4">
@@ -162,7 +167,8 @@ const CategoryManagement = () => {
                     <th className="p-4 border-b">#</th>
                     <th className="p-4 border-b">Hình Ảnh</th>
                     <th className="p-4 border-b">Tên Danh Mục</th>
-                    <th className="p-4 border-b">Môn thể thao</th>
+                    <th className="p-4 border-b">Môn Thể Thao</th>
+                    <th className="p-4 border-b">Trạng Thái</th>
                     <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
@@ -180,13 +186,24 @@ const CategoryManagement = () => {
                       <td className="p-4 border-b">{category.categoryName}</td>
                       <td className="p-4 border-b">{category.sportName}</td>
                       <td className="p-4 border-b">
+                        <ChangeCategoryStatusButton
+                          category={category}
+                          isActive={category.status}
+                          setIsReload={setIsReload}
+                        />
+
+                      </td>
+                      <td className="p-4 border-b">
                         <CategoryActions
                           category={category}
                           onEdit={() => {
                             setSelectedCategory(category);
                             setIsEditModalOpen(true);
                           }}
-                          onDelete={() => handleDeleteCategory(category.id)}
+                          onDelete={() => {
+                            setSelectedCategory(category);
+                            setIsConfirmDeleteCategoryModalOpen(true);
+                          }}
                         />
                       </td>
                     </tr>
@@ -199,9 +216,8 @@ const CategoryManagement = () => {
                   <button
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
-                    className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
-                    }`}
+                    className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                      }`}
                   >
                     {number + 1}
                   </button>
@@ -227,6 +243,17 @@ const CategoryManagement = () => {
             onClose={() => setIsEditModalOpen(false)}
             onEditCategory={handleEditCategory}
             category={selectedCategory}
+          />
+        )}
+
+
+        {/* Delete Category Modal */}
+        {isConfirmDeleteCategoryModalOpen && selectedCategory && (
+          <ConfirmDeleteCategoryModal
+            isOpen={isConfirmDeleteCategoryModalOpen}
+            onClose={() => setIsConfirmDeleteCategoryModalOpen(false)}
+            category={selectedCategory}
+            setIsReload={setIsReload}
           />
         )}
       </div>

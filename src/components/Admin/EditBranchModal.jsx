@@ -1,27 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Dialog } from "@material-tailwind/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faPlus, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { createBranch } from '../../api/apiBranch';
-import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudUploadAlt, faPlus, faSave, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import { updateBranchAPI } from "../../api/apiBranch";
+import { updateBranchById } from "../../services/branchService";
 
-const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
+const EditBranchModal = ({ isOpen, onClose, branch, setIsReload }) => {
   const [branchName, setBranchName] = useState("");
   const [location, setLocation] = useState("");
-  const [hotline, setHotline] = useState("");
-  const [uploadFile, setUploadFile] = useState(null);
+  const [hotline, setHotLine] = useState("");
+  const [uploadFile, setUploadFile] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const removeImage = () => {
-    setUploadFile(null);
-  };
 
-  const handleImageUpload = (e) => {
+  useEffect(() => {
+    if (branch) {
+      console.log(branch);
+
+      setBranchName(branch.branchName || ""); // Ensure `branchName` field matches backend requirements
+      setUploadFile(branch.imgAvatarPath || "");
+      setLocation(branch.location || "");
+      setHotLine(branch.hotline || "");
+    }
+  }, [branch]);
+
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Invalid file type. Please upload a PNG, JPG, GIF, or WEBP file.");
+        return;
+      }
+
+      // Create a preview URL
       setUploadFile(file);
     }
+  };
+
+  const removeImage = () => {
+    setUploadFile(null);
   };
 
   const handleSubmit = async () => {
@@ -34,29 +54,36 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
       });
       return;
     }
-
     const formData = new FormData();
+    console.log(branchName);
+
     formData.append("BranchName", branchName.trim());
     formData.append("Location", location.trim());
     formData.append("Hotline", hotline.trim());
-    formData.append("ImageURL", uploadFile);
+
+    if (uploadFile) {
+      formData.append("ImageURL", uploadFile);
+    }
 
     try {
+      console.log(formData);
+
       setLoading(true)
-      const response = await createBranch(formData);
+      const response = await updateBranchById(branch.id, formData);
       console.log(response);
 
-      toast.success("Thêm chi nhánh thành công!", { position: "top-right" });
+      toast.success("Chỉnh sửa chi nhánh thành công!", { position: "top-right" });
       setIsReload(true);
       onClose();
     } catch (error) {
-      toast.error("Thêm chi nhánh thất bại!", { position: "top-right" });
+      console.log(error);
+      toast.error("Chỉnh sửa chi nhánh thất bại!", { position: "top-right" });
       setLoading(false)
-
+      onClose();
     }
   };
-  useEffect(() => {
-  }, [isOpen, onClose]);
+
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
       {loading && (
@@ -106,7 +133,7 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
             type="text"
             id="hotline"
             value={hotline}
-            onChange={(e) => setHotline(e.target.value)}
+            onChange={(e) => setHotLine(e.target.value)}
             className="w-full mt-2 border rounded px-3 py-2"
           />
           {errors.hotline && <p className="text-sm text-red-500">{errors.hotline}</p>}
@@ -143,7 +170,7 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
                       name="main-image-upload"
                       type="file"
                       className="sr-only"
-                      onChange={handleImageUpload}
+                      onChange={handleFileChange}
                     />
                   </label>
                   <p className="pl-1">hoặc kéo và thả</p>
@@ -176,4 +203,4 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
   );
 };
 
-export default AddBranchModal;
+export default EditBranchModal;

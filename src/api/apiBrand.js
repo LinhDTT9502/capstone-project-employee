@@ -5,7 +5,7 @@ const API_BASE_URL = "https://capstone-project-703387227873.asia-southeast1.run.
 // Fetch all brands
 export const fetchAllBrandsApi = () => {
   return axios.get(`${API_BASE_URL}/list-all`, {
-    params: { status: true } ,
+    params: { status: true },
     headers: {
       "accept": "*/*",
     },
@@ -18,21 +18,23 @@ export const fetchBrandDetailsByIdApi = (brandId) => {
 };
 
 // Add a new brand
-export const createBrandApi = (formData) => {
+export const createBrandApi = (formData, token) => {
+  console.log(token);
+
   return axios.post(`${API_BASE_URL}/add-brand`, formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "multipart/form-data", 
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 };
 
 
 // Update a brand by ID
-export const updateBrandApi = (brandId, formData) => {
+export const updateBrandApi = (brandId, formData, token) => {
   return axios.put(`${API_BASE_URL}/update-brand/${brandId}`, formData, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -41,8 +43,18 @@ export const updateBrandApi = (brandId, formData) => {
 // Delete a brand by ID
 export const deleteBrandApi = (brandId) => {
   return axios.delete(`${API_BASE_URL}/delete-brand/${brandId}`, {
-    
+
     headers: {
       "accept": "*/*",
     },
-  });};
+  });
+};
+
+// Change brand status
+export const changeBrandStatusApi = (brandId) => {
+  return axios.put(`${API_BASE_URL}/edit-status/${brandId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};

@@ -10,7 +10,7 @@ export function SportSelect({ isEdit, sport, setSport }) {
       setSports(fetchedSports);
       // Set the first sport as the default selected option
       if (fetchedSports.length > 0 && !sport) {
-        setSport(fetchedSports[0].id); // Set the first sport if sport is not provided
+        setSport(sport); // Set the first sport if sport is not provided
       }
     } catch (error) {
       console.error("Failed to fetch sport:", error);
@@ -19,7 +19,7 @@ export function SportSelect({ isEdit, sport, setSport }) {
 
   useEffect(() => {
     loadSports();
-  }, [sport, setSport]);
+  }, []);
 
   return (
     <div>

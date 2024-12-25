@@ -74,17 +74,17 @@ const ListAllStaff = () => {
     setIsEditModalOpen(true);
   };
 
- const handleDeleteStaff = async (id) => {
-  if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) {
-    try {
-      console.log(id)
-      await removeStaff(id);
-      fetchStaffData();
-      toast.success("Xóa nhân viên thành công!", { position: "top-right" });
-    } catch (error) {
-      toast.error("Xóa nhân viên thất bại!", { position: "top-right" });
+  const handleDeleteStaff = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) {
+      try {
+        console.log(id)
+        await removeStaff(id);
+        fetchStaffData();
+        toast.success("Xóa nhân viên thành công!", { position: "top-right" });
+      } catch (error) {
+        toast.error("Xóa nhân viên thất bại!", { position: "top-right" });
+      }
     }
-  }
   };
 
   const handleUpdateStaff = async (staff) => {
@@ -110,7 +110,7 @@ const ListAllStaff = () => {
           <Button onClick={handleCreateStaff}>
             <FontAwesomeIcon icon={faPlus} />{" "}
             Tạo mới
-            </Button>
+          </Button>
         </div>
 
         {/* Search Input */}
@@ -145,11 +145,12 @@ const ListAllStaff = () => {
                   <th className="p-4 border-b">Chức vụ</th>
                   <th className="p-4 border-b">Ngày bắt đầu</th>
                   <th className="p-4 border-b">Trạng thái</th>
+                  <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredStaffData.map((staff, index) => (
-                
+
                   <tr key={staff.staffId} className="hover:bg-gray-50">
                     <td className="p-4 border-b">{index + 1}</td>
                     <td
@@ -171,10 +172,10 @@ const ListAllStaff = () => {
                       })}
                     </td>
                     <td className="p-4 border-b">
-                    <Switch
-                              color="green"
-                              checked={staff.isActive}
-                            />
+                      <Switch
+                        color="green"
+                        checked={staff.isActive}
+                      />
                       {/* {staff.isActive ? (
                         // <span className="text-green-600 font-semibold">
                         //   Hoạt động
@@ -185,12 +186,12 @@ const ListAllStaff = () => {
                       )} */}
                     </td>
                     <td className="p-4 border-b">
-                          <StaffActions
-                            staff={staff}
-                            onEdit={handleEditStaff}
-                            onDelete={handleDeleteStaff}
-                          />
-                        </td>
+                      <StaffActions
+                        staff={staff}
+                        onEdit={handleEditStaff}
+                        onDelete={handleDeleteStaff}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -206,7 +207,7 @@ const ListAllStaff = () => {
         staff={selectedStaff}
       />
     </div>
-    
+
   );
 };
 

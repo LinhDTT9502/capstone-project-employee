@@ -3,7 +3,8 @@ import {
     getSportDetails,
     addSport,
     editSport,
-    removeSport
+    removeSport,
+    changeSportStatusApi
 } from "../api/apiSport";
 
 // Fetch all sports
@@ -63,6 +64,17 @@ export const deleteSport = async (sportId) => {
         return response.data;
     } catch (error) {
         console.error(`Error removing sport with ID ${sportId}:`, error);
+        throw error;
+    }
+};
+
+// Change sport status
+export const changeSportStatus = async (sportId) => {
+    try {
+        const response = await changeSportStatusApi(sportId);
+        return response;
+    } catch (error) {
+        console.error("Error changing sport status:", error);
         throw error;
     }
 };

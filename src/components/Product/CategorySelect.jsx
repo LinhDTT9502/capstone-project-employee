@@ -20,7 +20,7 @@ export function CategorySelect({ isEdit, category, setCategory }) {
 
   useEffect(() => {
     loadCategories();
-  }, [category, setCategory]);
+  }, []);
 
   return (
     <div>

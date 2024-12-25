@@ -7,8 +7,9 @@ import { SportSelect } from "../Product/SportSelect";
 import { CategorySelect } from "../Product/CategorySelect";
 import { BrandSelect } from "../Product/BrandSelect";
 import { toast } from "react-toastify";
+import { fetchAllProducts, updateProductById } from "../../services/productService";
 
-const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) => {
+const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => {
   const [productName, setProductName] = useState("");
   const [productCode, setProductCode] = useState("");
   const [price, setPrice] = useState(0);
@@ -28,8 +29,12 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
   const [brand, setBrand] = useState(4);
   const [sport, setSport] = useState(13);
   const [loading, setLoading] = useState(false); // Add loading state
-
   const token = localStorage.getItem("token");
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]); // State for filtered categories
+  const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
 
     if (product) {
@@ -69,24 +74,16 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
     }
   }
 
-
-  console.log(productImages);
-
-
   const removeMainImage = () => {
     // setFormData((prev) => ({ ...prev, mainImage: null }));
     setProductMainImage(null);
   };
 
   const removeProductImage = (index, imgId) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   productImages: prev.productImages.filter((_, i) => i !== index),
-    // }));
     setProductImages((prev) =>
       prev.filter((_, i) => i !== index)
     );
-    console.log(imgId);
+
     try {
       deleteImageById(imgId);
     } catch (error) {
@@ -94,7 +91,6 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
     }
 
   };
-  console.log(productMainImage);
 
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
@@ -104,13 +100,9 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
         alert("Invalid file type. Please upload a PNG, JPG, GIF, or WEBP file.");
         return;
       }
-      console.log(file);
 
       // Create a preview URL
       setProductMainImage(file);
-      console.log(file);
-
-
     }
   };
 
@@ -128,7 +120,6 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
     });
 
     // Create previews for valid files
-    console.log(validFiles);
 
     const previews = validFiles.map((file) => URL.createObjectURL(file));
     setProductImages((prev) => [...prev, ...validFiles]);
@@ -161,6 +152,28 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
 
     return true;
   };
+
+  // Fetch products
+  // const fetchProductData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetchAllProducts();
+
+  //     const activeProducts = response
+  //       .sort((a, b) => b.id - a.id);
+  //     setProducts(activeProducts);
+  //     setFilteredProducts(activeProducts);
+  //     setCurrentPage(1);
+  //   } catch (err) {
+  //     setError("Đã xảy ra lỗi khi lấy dữ liệu sản phẩm.");
+  //     toast.error("Không thể lấy dữ liệu sản phẩm!", { position: "top-right" });
+  //     setProducts([]);
+  //     setFilteredProducts([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
 
   const handleSubmit = async () => {
     if (!validateProduct()) return;
@@ -195,14 +208,16 @@ const EditProductModal = ({ isEdit, isOpen, onClose, onEditProduct, product }) =
       return image.file instanceof File ? image.file : image; // Add files or keep existing URLs
     });
 
-    console.log(payload);
 
 
     try {
-      await onEditProduct(product.id, payload);
+      await updateProductById(product.id, payload, token);
+      toast.success("Cập nhật sản phẩm thành công!", { position: "top-right" });
+
       onClose(); // Close the modal on success
+      setIsReload(true);
     } catch (error) {
-      toast.error("Update failed. Please try again."); // Handle error
+      toast.error("Cập nhật sản phẩm thất bại!", { position: "top-right" });
     } finally {
       setLoading(false); // Hide loading screen
     }

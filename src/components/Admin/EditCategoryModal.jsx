@@ -68,7 +68,7 @@ const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
           <SportSelect isEdit={true} sport={sportId} setSport={setSportId} />
         </div>
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh sản phẩm đại diện</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh danh mục</label>
           <div className="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-md">
             {categoryImage ? (
               <div className="relative">

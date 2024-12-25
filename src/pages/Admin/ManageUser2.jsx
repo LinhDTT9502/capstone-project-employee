@@ -17,11 +17,13 @@ import AddUserModal from "../../components/Admin/AddUserModal";
 import EditUserModal from "../../components/Admin/EditUserModal";
 import ViewUserModal from "../../components/Admin/ViewUserModal";
 import ChangeStatusButton from "../../components/Admin/ChangeStatusButton";
+import ConfirmDeleteUserModal from "../../components/Admin/ConfirmDeleteUserModal";
 
 const ManageUser2 = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -29,6 +31,7 @@ const ManageUser2 = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -194,9 +197,9 @@ const ManageUser2 = () => {
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
             <Typography variant="h4" color="blue-gray" className="p-4 text-center">
-            Quản lý <span className="text-orange-500">[Tài Khoản]</span> ({filteredUsers.length})
+              Quản lý <span className="text-orange-500">[Tài Khoản]</span> ({filteredUsers.length})
             </Typography>
-            <Button 
+            <Button
               onClick={() => setIsAddModalOpen(true)}
             >
               <FontAwesomeIcon icon={faPlus} />{" "}
@@ -248,10 +251,9 @@ const ManageUser2 = () => {
                       </td>
                       <td className="p-4 border-b">
                         <ChangeStatusButton
-                          userId={user.id}
+                          user={user}
                           isActive={user.isActived}
-                          onChangeStatus={handleChangeStatus}
-                       />
+                        />
                       </td>
                       <td className="p-4 border-b">
                         <UserActions
@@ -260,7 +262,11 @@ const ManageUser2 = () => {
                             setSelectedUser(user);
                             setIsEditModalOpen(true);
                           }}
-                          onDelete={() => handleDeleteUser(user.id)}
+                          // onDelete={() => handleDeleteUser(user.id)}
+                          onDelete={() => {
+                            setSelectedUser(user);
+                            setIsConfirmDeleteModalOpen(true);
+                          }}
                           onView={() => handleViewUser(user.id)}
                         />
                       </td>
@@ -277,8 +283,8 @@ const ManageUser2 = () => {
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
                     className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1
-                        ? "bg-black text-white"
-                        : "bg-gray-200"
+                      ? "bg-black text-white"
+                      : "bg-gray-200"
                       }`}
                   >
                     {number + 1}
@@ -305,6 +311,16 @@ const ManageUser2 = () => {
             onClose={() => setIsEditModalOpen(false)}
             onEditUser={handleEditUser}
             user={selectedUser}
+          />
+        )}
+
+        {/* Confirm Delete User Modal */}
+        {isConfirmDeleteModalOpen && selectedUser && (
+          <ConfirmDeleteUserModal
+            isOpen={isConfirmDeleteModalOpen}
+            onClose={() => setIsConfirmDeleteModalOpen(false)}
+            user={selectedUser}
+            setIsReload={setIsReload}
           />
         )}
 

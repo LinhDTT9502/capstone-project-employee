@@ -12,16 +12,21 @@ import AddBrandModal from "../../components/Admin/AddBrandModal.jsx";
 import EditBrandModal from "../../components/Admin/EditBrandModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import ChangeBrandStatusButton from "../../components/Admin/ChangeBrandStatusButton.jsx";
+import ConfirmDeleteBrandModal from "../../components/Admin/ConfirmDeleteBrandModal.jsx";
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
-  const [filteredBrands, setFilteredBrands] = useState([]); 
+  const [filteredBrands, setFilteredBrands] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteBrandModalOpen, setIsConfirmDeleteBrandModalOpen] = useState(false);
+
   const [selectedBrand, setSelectedBrand] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +36,7 @@ const BrandManagement = () => {
     try {
       setLoading(true);
 
-      const response = await getAllBrands(); 
+      const response = await getAllBrands();
 
       const activeBrands = response
         .filter((brand) => brand.status)
@@ -45,16 +50,17 @@ const BrandManagement = () => {
       toast.error("Không thể lấy dữ liệu thương hiệu!", {
         position: "top-right",
       });
-      setBrands([]); 
+      setBrands([]);
       setFilteredBrands([]);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchBrands();
-  }, []);
+    setIsReload(false)
+  }, [isReload]);
 
   // Filter brands based on search term
   useEffect(() => {
@@ -77,7 +83,6 @@ const BrandManagement = () => {
   const handleAddBrand = async (formData) => {
     try {
       await createBrand(formData);
-      fetchBrands();
       toast.success("Thêm thương hiệu thành công!", { position: "top-right" });
     } catch (error) {
       toast.error("Thêm thương hiệu thất bại!", { position: "top-right" });
@@ -94,19 +99,6 @@ const BrandManagement = () => {
     }
   };
 
-    const handleDeleteBrand = async (brandId) => {
-      if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
-        try {
-          await removeBrand(brandId);
-          fetchBrands();
-          toast.success("Thương hiệu đã được xóa thành công!", {
-            position: "top-right",
-          });        } catch (error) {
-            toast.error("Xóa thương hiệu thất bại!", { position: "top-right" });
-          }
-      }
-    };
-
 
   return (
     <>
@@ -120,7 +112,7 @@ const BrandManagement = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{zIndex: 99999 }}
+        style={{ zIndex: 99999 }}
       />
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
@@ -132,20 +124,20 @@ const BrandManagement = () => {
               onClick={() => setIsAddModalOpen(true)}
             >
               <FontAwesomeIcon icon={faPlus} />{" "}
-                            Tạo mới
+              Tạo mới
             </Button>
           </div>
 
           {/* Search Bar */}
           <div className="p-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm thương hiệu..."
-            className="w-full p-2 border border-gray-300 rounded"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+            <input
+              type="text"
+              placeholder="Tìm kiếm thương hiệu..."
+              className="w-full p-2 border border-gray-300 rounded"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
           {loading ? (
             <div className="flex justify-center p-4">
@@ -161,8 +153,9 @@ const BrandManagement = () => {
                 <thead>
                   <tr className="bg-gray-100 text-left">
                     <th className="p-4 border-b">#</th>
-                    <th className="p-4 border-b">Tên thương hiệu</th>
+                    <th className="p-4 border-b">Tên Thương Hiệu</th>
                     <th className="p-4 border-b">Logo</th>
+                    <th className="p-4 border-b">Trạng Thái</th>
                     <th className="p-4 border-b"></th>
                   </tr>
                 </thead>
@@ -179,13 +172,23 @@ const BrandManagement = () => {
                         />
                       </td>
                       <td className="p-4 border-b">
+                        <ChangeBrandStatusButton
+                          brand={brand}
+                          isActive={brand.status}
+                          setIsReload={setIsReload}
+                        />
+                      </td>
+                      <td className="p-4 border-b">
                         <BrandActions
                           brand={brand}
                           onEdit={() => {
                             setSelectedBrand(brand);
                             setIsEditModalOpen(true);
                           }}
-                          onDelete={() => handleDeleteBrand(brand.id)}
+                          onDelete={() => {
+                            setSelectedBrand(brand);
+                            setIsConfirmDeleteBrandModalOpen(true);
+                          }}
                         />
                       </td>
                     </tr>
@@ -199,9 +202,8 @@ const BrandManagement = () => {
                   <button
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
-                    className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
-                    }`}
+                    className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                      }`}
                   >
                     {number + 1}
                   </button>
@@ -216,7 +218,7 @@ const BrandManagement = () => {
           <AddBrandModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onAddBrand={handleAddBrand}
+            setIsReload={setIsReload}
           />
         )}
 
@@ -225,8 +227,18 @@ const BrandManagement = () => {
           <EditBrandModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onEditBrand={handleEditBrand}
             brand={selectedBrand}
+            setIsReload={setIsReload}
+          />
+        )}
+
+        {/* Delete Brand Modal */}
+        {isConfirmDeleteBrandModalOpen && selectedBrand && (
+          <ConfirmDeleteBrandModal
+            isOpen={isConfirmDeleteBrandModalOpen}
+            onClose={() => setIsConfirmDeleteBrandModalOpen(false)}
+            brand={selectedBrand}
+            setIsReload={setIsReload}
           />
         )}
       </div>

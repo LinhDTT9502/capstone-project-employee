@@ -131,3 +131,12 @@ export const addProductAPI = async (productData, token) => {
     throw new Error(`Failed to update product: ${error.message}`);
   }
 };
+
+// Delete product by ID
+export const deleteProductAPI = (productId) => {
+  return axios.delete(`${API_BASE_URL}/delete-product/${productId}`, {
+    headers: {
+      "accept": "*/*",
+    },
+  });
+};

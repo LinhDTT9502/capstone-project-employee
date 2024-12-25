@@ -18,28 +18,41 @@ export const getBranchDetail = (branchId) => {
 };
 
 export const createBranch = async (branchData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/add-branch`, {
-      method: 'POST',
-      body: branchData, // Gửi formData trực tiếp
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create branch');
+  return axios.post(`${API_BASE_URL}/add-branch/`, branchData, {
+    headers: {
+      'accept': '*/*',
+      'Content-Type': 'multipart/form-data',
     }
-
-    // Trả về dữ liệu JSON nếu yêu cầu thành công
-    return response.json();
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  });
 };
 
-export const deleteBranch = (branchId) => {
-  const response = axios.post(`${API_BASE_URL}/delete-branch/${branchId}`, {
+export const deleteBranchByIdApi = (branchId) => {
+  const response = axios.delete(`${API_BASE_URL}/delete-branch/${branchId}`, {
     headers: {
       'accept': '*/*'
     }
   });
   return response;
+};
+
+// Change branch status
+export const changeBranchStatusApi = (branchId) => {
+  return axios.put(`${API_BASE_URL}/edit-status/${branchId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const updateBranchAPI = async (branchId, branchData) => {
+  try {
+    return axios.put(`${API_BASE_URL}/update-branch/${branchId}`, branchData, {
+      headers: {
+        'accept': '*/*',
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+  } catch (error) {
+    throw new Error(`Failed to update branch: ${error.message}`);
+  }
 };

@@ -1,31 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Switch } from "@material-tailwind/react";
+import { changeProductStatus } from "../../services/productService";
+import { toast } from "react-toastify";
 
-const ChangeProductStatusButton = ({ productId, isActive, onChangeStatus }) => {
-  const handleToggle = () => {
-    const confirmationMessage = isActive
-      ? "Bạn có chắc chắn muốn vô hiệu hóa sản phẩm này không?"
-      : "Bạn có chắc chắn muốn kích hoạt sản phẩm này không?";
+const ChangeProductStatusButton = ({ product, isActive: initialStatus }) => {
+  const [isActive, setIsActive] = useState(initialStatus); // Local state to manage the toggle status
 
-    if (window.confirm(confirmationMessage)) {
-      console.log('change status')
-      onChangeStatus(productId, !isActive);
+  const handleToggle = async () => {
+    try {
+      const response = await changeProductStatus(product.id);
+
+      if (response.status === 200) {
+        setIsActive((prev) => !prev); // Toggle the local state
+        toast.success("Thay đổi trạng thái thành công!");
+      } else {
+        toast.error("Thay đổi trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error changing status:", error);
+      toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
     }
   };
 
   return (
-    // <Button
-    //   size="sm"
-    //   className={isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}
-    //   onClick={handleClick}
-    // >
-    //   {isActive ? "Hoạt động" : "Vô hiệu hóa"}
-    // </Button>
     <div className="flex items-center gap-4">
       <Switch
         className={isActive ? "bg-green-500" : "bg-red-500"} // Conditional class
         checked={isActive}
-        onChange={handleToggle}
+        onChange={handleToggle} // Trigger toggle handler
       />
     </div>
   );

@@ -103,8 +103,6 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error fetching branches:', error);
       setError('Failed to fetch branches');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -112,7 +110,6 @@ export default function Dashboard() {
     try {
       console.log(branchId);
 
-      setLoading(true);
       const data = await getOrderbyBranch(branchId);
 
       // Sort the data by createdAt in descending order
@@ -132,9 +129,6 @@ export default function Dashboard() {
 
   const fetchRentalOrderByBranch = async (branchId) => {
     try {
-      console.log(branchId);
-
-      setLoading(true);
       const data = await getRentalbyBranch(branchId);
 
       // Sort the data by createdAt in descending order
@@ -157,7 +151,7 @@ export default function Dashboard() {
     fetchSaleOrderByBranch(selectedBranch);
     fetchRentalOrderByBranch(selectedBranch);
     fetchBranches();
-  }, []);
+  }, [selectedBranch]);
 
   useEffect(() => {
     if (branches.length > 0 && selectedBranch === null) {
@@ -170,14 +164,9 @@ export default function Dashboard() {
 
   const handleBranchSelect = async (branchId) => {
     setSelectedBranch(branchId);
-
-    if (branchId) {
-      fetchSaleOrderByBranch(branchId)
-      fetchRentalOrderByBranch(branchId)
-    } else {
-      fetchSaleOrderByBranch(branches[0].id)
-      fetchRentalOrderByBranch(branches[0].id)
-    }
+    setOrders(null)
+    setRentalOrders(null)
+    setLoading(true)
   };
   console.log(selectedBranch);
 
@@ -329,7 +318,7 @@ export default function Dashboard() {
               <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
                 Đang tải dữ liệu...
               </div>
-            ) : orders && orders.length > 0 ? (
+            ) : (orders && orders.length > 0 ? (
               <tbody>
                 {orders
                   .slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
@@ -364,7 +353,7 @@ export default function Dashboard() {
               <div className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
                 Hiện tại không có đơn hàng nào cả
               </div>
-            )}
+            ))}
           </>
         ) : (
           <>

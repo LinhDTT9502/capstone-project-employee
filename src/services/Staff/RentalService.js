@@ -3,7 +3,7 @@ import { approveExtensionAPI, approveRentalAPI, getListExtension, getRentalbyBra
 export const getRentalsList = async () => {
   try {
     const response = await getRentalsListAPI();
-    return response.data.data.$values; 
+    return response.data.data.$values;
   } catch (error) {
     console.error('Error fetching orders list:', error);
     throw error;
@@ -11,29 +11,35 @@ export const getRentalsList = async () => {
 };
 
 export const getRentalbyStatus = async (orderStatus) => {
-    try {
-      const response = await getRentalbyStatusAPI(orderStatus);
-      return response.data.data.$values; 
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      throw error;
-    }
-  };
+  try {
+    const response = await getRentalbyStatusAPI(orderStatus);
+    return response.data.data.$values;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
+};
 
-  export const getRentalDetail = async (orderCode) => {
-    try {
-      const response = await getRentalDetailAPI(orderCode);
-      return response.data; 
-    } catch (error) {
-      console.error('Error fetching orders list:', error);
-      throw error;
-    }
-  };
-  
+export const getRentalDetail = async (orderCode) => {
+  try {
+    const response = await getRentalDetailAPI(orderCode);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching orders list:', error);
+    throw error;
+  }
+};
+
 export const getRentalbyBranch = async (branchId) => {
   try {
     const response = await getRentalbyBranchAPI(branchId);
-    return response.data.data.$values; 
+
+    // Safely access the `data` field
+    if (response.data && response.data.data) {
+
+      return response.data.data.$values || null;
+    }
+
   } catch (error) {
     console.error('Error fetching orders list:', error);
     throw error;
@@ -43,7 +49,7 @@ export const getRentalbyBranch = async (branchId) => {
 export const approveRental = async (orderId) => {
   try {
     const response = await approveRentalAPI(orderId);
-    return response.data.data; 
+    return response.data.data;
   } catch (error) {
     console.error('Error approve:', error);
     throw error;
@@ -53,7 +59,7 @@ export const approveRental = async (orderId) => {
 export const rejectRental = async (orderId) => {
   try {
     const response = await rejectRentalAPI(orderId);
-    return response.data.data; 
+    return response.data.data;
   } catch (error) {
     console.error('Error approve:', error);
     throw error;
@@ -63,7 +69,7 @@ export const rejectRental = async (orderId) => {
 export const removeRental = async (orderId) => {
   try {
     const response = await removeRentalAPI(orderId);
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error('Error remove:', error);
     throw error;
@@ -73,7 +79,7 @@ export const removeRental = async (orderId) => {
 export const fetchListExtension = async (extensionStatus, branchId) => {
   try {
     const response = await getListExtension(extensionStatus, branchId);
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error('Error :', error);
     throw error;
@@ -83,7 +89,7 @@ export const fetchListExtension = async (extensionStatus, branchId) => {
 export const approveExtension = async (rentalOrderCode) => {
   try {
     const response = await approveExtensionAPI(rentalOrderCode);
-    return response.data.data; 
+    return response.data.data;
   } catch (error) {
     console.error('Error approve:', error);
     throw error;

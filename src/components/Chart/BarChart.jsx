@@ -10,9 +10,10 @@ const BarChart = ({ branchId }) => {
       { name: "Tổng số đơn đặt hàng (Cho Thuê)", data: [] },
     ],
     categories: [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12",
     ],
   });
+  const [isDataAvailable, setIsDataAvailable] = useState(false); // Track data availability
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,32 +25,36 @@ const BarChart = ({ branchId }) => {
 
         // Fetch Rental Orders
         const rentalResponse = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-orders-by-branch?branchId=2`
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-orders-by-branch?branchId=${branchId}`
         );
 
-        if (saleResponse.data.data !== null && rentalResponse.data.data !== null) {
-          console.log(saleResponse);
-
-          const saleOrders = saleResponse.data.data.$values;
-          const rentalOrders = rentalResponse.data.data.$values;
+        if (saleResponse.data.data || rentalResponse.data.data) {
+          const saleOrders = saleResponse.data.data?.$values || [];
+          const rentalOrders = rentalResponse.data.data?.$values || [];
 
           // Initialize arrays for totals
           const totalSaleOrders = Array(12).fill(0);
           const totalRentalOrders = Array(12).fill(0);
 
-          // Process Sale Orders (no need to check for COMPLETED status)
+          // Process Sale Orders
           saleOrders.forEach((order) => {
             const createdAt = new Date(order.createdAt);
             const month = createdAt.getMonth();
-            totalSaleOrders[month] += 1; // Count all orders
+            totalSaleOrders[month] += 1;
           });
 
-          // Process Rental Orders (no need to check for orderStatus)
+          // Process Rental Orders
           rentalOrders.forEach((order) => {
             const createdAt = new Date(order.createdAt);
             const month = createdAt.getMonth();
-            totalRentalOrders[month] += 1; // Count all orders
+            totalRentalOrders[month] += 1;
           });
+
+          const hasData =
+            totalSaleOrders.some((count) => count > 0) ||
+            totalRentalOrders.some((count) => count > 0);
+
+          setIsDataAvailable(hasData); // Check if there's any data to display
 
           // Update chart data
           setChartData({
@@ -62,20 +67,21 @@ const BarChart = ({ branchId }) => {
             ],
           });
         } else {
-          console.error("Failed to fetch data from APIs.");
+          setIsDataAvailable(false); // No data
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setIsDataAvailable(false); // Handle API failure
       }
     };
 
     fetchData();
-  }, []);
+  }, [branchId]);
 
   const chartConfig = {
     type: "bar",
     height: 240,
-    series: chartData.series,
+    series: isDataAvailable ? chartData.series : [], // No series if no data
     options: {
       chart: { toolbar: { show: false } },
       title: { show: false },
@@ -116,7 +122,11 @@ const BarChart = ({ branchId }) => {
         Tổng số đơn hàng theo tháng
       </CardHeader>
       <CardBody className="px-2 pb-0">
-        <Chart {...chartConfig} />
+        {isDataAvailable ? (
+          <Chart {...chartConfig} />
+        ) : (
+          <p className="my-8 text-center text-gray-500">Không có dữ liệu doanh thu để hiển thị.</p>
+        )}
       </CardBody>
     </Card>
   );

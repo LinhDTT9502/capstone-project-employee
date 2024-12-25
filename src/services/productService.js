@@ -1,4 +1,4 @@
-import { addProductAPI, changeProductStatusAPI, getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize, updateProductAPI } from "../api/apiProduct";
+import { addProductAPI, changeProductStatusAPI, deleteProductAPI, getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize, updateProductAPI } from "../api/apiProduct";
 
 export const fetchProductColor = async (productCode) => {
   try {
@@ -71,13 +71,24 @@ export const updateProductById = async (productId, productData, token) => {
   }
 };
 
-// Update product by ID
+// Add product
 export const addProduct = async (productData, token) => {
   try {
     const response = await addProductAPI(productData, token);
     return response.data;
   } catch (error) {
     console.error(`Error adding product:`, error);
+    throw error;
+  }
+};
+
+// Delete product by ID
+export const deleteProductById = async (productId) => {
+  try {
+    const response = await deleteProductAPI(productId);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting product with ID ${productId}:`, error);
     throw error;
   }
 };

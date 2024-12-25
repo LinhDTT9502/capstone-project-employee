@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { Switch } from "@material-tailwind/react";
+import { changeUserStatus } from "../../services/ManageUserService";
+import { toast } from "react-toastify";
 
-const ChangeStatusButton = ({ userId, isActive, onChangeStatus }) => {
-  const handleToggle = () => {
-    const confirmationMessage = isActive
-      ? "Bạn có chắc chắn muốn vô hiệu hóa người dùng này không?"
-      : "Bạn có chắc chắn muốn kích hoạt người dùng này không?";
+const ChangeStatusButton = ({ user, isActive: initialStatus }) => {
 
-    if (window.confirm(confirmationMessage)) {
-      onChangeStatus(userId, !isActive);
+  const [isActive, setIsActive] = useState(initialStatus); // Local state to manage the toggle status
+
+  const handleToggle = async () => {
+    try {
+      console.log(user);
+
+      const response = await changeUserStatus(user.id, user.isActived);
+      console.log(response);
+
+      if (response.isSuccess) {
+        setIsActive((prev) => !prev); // Toggle the local state
+        toast.success("Thay đổi trạng thái thành công!");
+      } else {
+        toast.error("Thay đổi trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error changing status:", error);
+      toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
     }
   };
 
@@ -24,7 +38,7 @@ const ChangeStatusButton = ({ userId, isActive, onChangeStatus }) => {
       <Switch
         className={isActive ? "bg-green-500" : "bg-red-500"} // Conditional class
         checked={isActive}
-        onChange={handleToggle}
+        onChange={handleToggle} // Trigger toggle handler
       />
     </div>
   );

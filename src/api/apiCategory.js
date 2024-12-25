@@ -56,3 +56,13 @@ export const deleteCategory = (categoryId) => {
     },
   });
 };
+
+// Change category status
+export const changeCategoryStatusApi = (categoryId) => {
+  return axios.put(`${API_BASE_URL}/edit-status/${categoryId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+

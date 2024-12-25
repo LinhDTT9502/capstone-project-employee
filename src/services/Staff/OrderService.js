@@ -34,7 +34,7 @@ export const getOrderbyBranch = async (branchId) => {
     const response = await getOrderbyBranchAPI(branchId);
 
     // Debugging: Log the full response to understand its structure
-    console.log('API response:', response);
+    console.log('order API response:', response.data.data);
 
     // Safely access the `data` field
     if (response.data && response.data.data) {

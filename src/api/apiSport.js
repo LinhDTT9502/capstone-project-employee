@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://capstone-project-703387227873.asia-southeast1.run.
 // Get all sports
 export const getAllSports = () => {
   return axios.get(`${API_BASE_URL}/list-sports`, {
-    params: { status: true } ,
+    params: { status: true },
     headers: {
       'accept': '*/*'
     }
@@ -45,5 +45,14 @@ export const removeSport = (sportId) => {
     headers: {
       'accept': '*/*'
     }
+  });
+};
+
+// Change sport status
+export const changeSportStatusApi = (sportId) => {
+  return axios.put(`${API_BASE_URL}/edit-status/${sportId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 };

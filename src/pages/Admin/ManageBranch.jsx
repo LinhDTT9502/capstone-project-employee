@@ -11,17 +11,21 @@ import BranchActions from "../../components/Admin/BranchActions.jsx";
 import AddBranchModal from "../../components/Admin/AddBranchModal.jsx";
 import { createBranch } from "../../api/apiBranch.js";
 import ChangeBranchStatusButton from "../../components/Admin/ChangeBranchStatusButton.jsx";
+import EditBranchModal from "../../components/Admin/EditBranchModal.jsx";
+import ConfirmDeleteBranchModal from "../../components/Admin/ConfirmDeleteBranchModal.jsx";
 
 const ManageBranch = () => {
   const [branchs, setBranchs] = useState([]);
   const [filteredBranches, setFilteredBranchs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [confirmDeleteBranchModalOpen, setConfirmDeleteBranchModalOpen] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -32,7 +36,6 @@ const ManageBranch = () => {
 
       const response = await getBranchs(); // Sửa ở đây
       const branches = response
-        .filter(b => b.status === true)
         .sort((a, b) => b.id - a.id);
 
       setBranchs(branches);
@@ -52,7 +55,8 @@ const ManageBranch = () => {
 
   useEffect(() => {
     fetchBranchs();
-  }, []);
+    setIsReload(false)
+  }, [isReload]);
 
   // Filter brands based on search term
   useEffect(() => {
@@ -83,15 +87,7 @@ const ManageBranch = () => {
     }
   };
 
-  //   const handleEditBrand = async (brandId, formData) => {
-  //     try {
-  //       await updateBrand(brandId, formData);
-  //       fetchBranchs();
-  //       toast.success("Cập nhật thương hiệu thành công!", { position: "top-right" });
-  //     } catch (error) {
-  //       toast.error("Cập nhật thương hiệu thất bại!", { position: "top-right" });
-  //     }
-  //   };
+
 
   const handleDeleteBranch = async (branchId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa chi nhánh này không?")) {
@@ -105,28 +101,6 @@ const ManageBranch = () => {
       }
     }
   };
-
-  // const handleChangeStatus = async (userId, newStatus) => {
-  //     // if (
-  //     //   !window.confirm(
-  //     //     "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
-  //     //   )
-  //     // )
-  //     //   return;
-
-  //     try {
-  //       const response = await changeUserStatus(userId, newStatus);
-  //       if (response.isSuccess) {
-  //         fetchBranchs();
-  //         toast.success("Thay đổi trạng thái thành công!");
-  //       } else {
-  //         toast.error("Thay đổi trạng thái thất bại!");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error changing status:", error);
-  //       toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
-  //     }
-  //   };
 
   return (
     <>
@@ -206,9 +180,9 @@ const ManageBranch = () => {
                       <td className="p-4 border-b">{branch.hotline}</td>
                       <td className="p-4 border-b">
                         <ChangeBranchStatusButton
-                          branchId={branch.id}
+                          branch={branch}
                           isActive={branch.status}
-                        // onChangeStatus={handleChangeStatus}
+                          setIsReload={setIsReload}
                         />
 
                       </td>
@@ -217,10 +191,13 @@ const ManageBranch = () => {
                         <BranchActions
                           branch={branch}
                           onEdit={() => {
-                            setSelectedBrand(branch);
+                            setSelectedBranch(branch);
                             setIsEditModalOpen(true);
                           }}
-                          onDelete={() => handleDeleteBranch(branch.id)}
+                          onDelete={() => {
+                            setSelectedBranch(branch);
+                            setConfirmDeleteBranchModalOpen(true);
+                          }}
                         />
                       </td>
                     </tr>
@@ -245,24 +222,34 @@ const ManageBranch = () => {
           )}
         </Card>
 
-        {/* Add Brand Modal */}
+        {/* Add Branch Modal */}
         {isAddModalOpen && (
           <AddBranchModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onAddBranch={handleAddBranch}
+            setIsReload={setIsReload}
           />
         )}
 
-        {/* Edit Brand Modal */}
-        {/* {isEditModalOpen && selectedBrand && (
-          <EditBrandModal
+        {/* Edit Branch Modal */}
+        {isEditModalOpen && selectedBranch && (
+          <EditBranchModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onEditBrand={handleEditBrand}
-            brand={selectedBrand}
+            branch={selectedBranch}
+            setIsReload={setIsReload}
           />
-        )} */}
+        )}
+
+        {/* Delete Branch Modal */}
+        {confirmDeleteBranchModalOpen && selectedBranch && (
+          <ConfirmDeleteBranchModal
+            isOpen={confirmDeleteBranchModalOpen}
+            onClose={() => setConfirmDeleteBranchModalOpen(false)}
+            branch={selectedBranch}
+            setIsReload={setIsReload}
+          />
+        )}
       </div>
     </>
   );

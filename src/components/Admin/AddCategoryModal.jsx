@@ -10,13 +10,6 @@ const AddCategoryModal = ({ isOpen, onClose, onAddCategory }) => {
   const [uploadFile, setUploadFile] = useState(null); // For file upload
   const [errors, setErrors] = useState({}); // For validation errors
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadFile(file);
-    }
-  };
-
 
   const removeMainImage = () => {
     setUploadFile(null);

@@ -13,13 +13,15 @@ import EditCategoryModal from "../../components/Admin/EditCategoryModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { fetchProductsbyBranch } from "../../services/warehouseService.js";
-import { addProduct, changeProductStatus, fetchAllProducts, updateProductById } from "../../services/productService.js";
+import { addProduct, changeProductStatus, deleteProductById, fetchAllProducts, updateProductById } from "../../services/productService.js";
 import ProductActions from "../../components/Admin/ProductActions.jsx";
 import ChangeStatusButton from "../../components/Admin/ChangeStatusButton.jsx";
 import ChangeProductStatusButton from "../../components/Admin/ChangeProductStatusButton.jsx";
 import EditProductModal from "../../components/Admin/EditProductModal.jsx";
 import AddProductModal from "../../components/Admin/AddProductModal.jsx";
 import { updateProductAPI } from "../../api/apiProduct.js";
+import ConfirmDeleteModal from "../../components/Admin/ConfirmDeleteProductModal.jsx";
+import ConfirmDeleteProductModal from "../../components/Admin/ConfirmDeleteProductModal.jsx";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -31,11 +33,15 @@ const ProductManagement = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [isEditModal, setIsEditModal] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const token = localStorage.getItem("token");
+  const [isReload, setIsReload] = useState(false); // Add reload state
+
 
   // Fetch products
   const fetchProductData = async () => {
@@ -61,7 +67,7 @@ const ProductManagement = () => {
 
   useEffect(() => {
     fetchProductData();
-  }, []);
+  }, [isReload]);
 
 
 
@@ -83,67 +89,6 @@ const ProductManagement = () => {
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleAddProduct = async (productData) => {
-    try {
-      console.log(productData);
-
-      await addProduct(productData, token);
-      fetchProductData();
-      toast.success("Thêm sản phẩm thành công!", { position: "top-right" });
-    } catch (error) {
-      toast.error("Thêm sản phẩm thất bại!", { position: "top-right" });
-    }
-  };
-
-  const token = localStorage.getItem("token");
-
-  const handleEditProduct = async (productId, updatedData) => {
-    try {
-      console.log(updatedData);
-      console.log(token);
-
-      await updateProductById(productId, updatedData, token);
-      fetchProductData();
-      toast.success("Cập nhật sản phẩm thành công!", { position: "top-right" });
-    } catch (error) {
-      toast.error("Cập nhật sản phẩm thất bại!", { position: "top-right" });
-    }
-  };
-
-  const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-      try {
-        await deleteCategoryById(categoryId);
-        fetchProductData();
-        toast.success("sản phẩm đã được xóa!", { position: "top-right" });
-      } catch (error) {
-        toast.error("Xóa sản phẩm thất bại!", { position: "top-right" });
-      }
-    }
-  };
-
-  const handleChangeStatus = async (productId) => {
-    // if (
-    //   !window.confirm(
-    //     "Bạn có chắc chắn muốn thay đổi trạng thái người dùng này?"
-    //   )
-    // )
-    //   return;
-
-    try {
-      const response = await changeProductStatus(productId);
-      if (response.status === 200) {
-        fetchProductData();
-        toast.success("Thay đổi trạng thái thành công!");
-      } else {
-        toast.error("Thay đổi trạng thái thất bại!");
-      }
-    } catch (error) {
-      console.error("Error changing status:", error);
-      toast.error("Lỗi xảy ra khi thay đổi trạng thái.");
-    }
-  };
 
   return (
     <>
@@ -224,9 +169,8 @@ const ProductManagement = () => {
                       <td className="p-4 border-b">{product.rentPrice === 0 ? "" : product.rentPrice.toLocaleString('vi-VN')}</td>
                       <td className="p-4 border-b">
                         <ChangeProductStatusButton
-                          productId={product.id}
+                          product={product}
                           isActive={product.status}
-                          onChangeStatus={handleChangeStatus}
                         />
                       </td>
                       <td className="p-4 border-b">
@@ -244,7 +188,7 @@ const ProductManagement = () => {
                           }}
                           onDelete={() => {
                             setSelectedProduct(product);
-                            setIsEditModalOpen(true);
+                            setIsConfirmDeleteModalOpen(true);
                           }}
                         />
                       </td>
@@ -275,7 +219,9 @@ const ProductManagement = () => {
           <AddProductModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onAddProduct={handleAddProduct}
+            // onAddProduct={handleAddProduct}
+            setIsReload={setIsReload}
+
           />
         )}
 
@@ -285,8 +231,18 @@ const ProductManagement = () => {
             isEdit={isEditModal}
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onEditProduct={handleEditProduct}
             product={selectedProduct}
+            setIsReload={setIsReload}
+          />
+        )}
+
+        {/* Confirm Delete Product Modal */}
+        {isConfirmDeleteModalOpen && selectedProduct && (
+          <ConfirmDeleteProductModal
+            isOpen={isConfirmDeleteModalOpen}
+            onClose={() => setIsConfirmDeleteModalOpen(false)}
+            product={selectedProduct}
+            setIsReload={setIsReload}
           />
         )}
       </div>

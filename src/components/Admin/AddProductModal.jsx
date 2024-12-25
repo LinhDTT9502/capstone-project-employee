@@ -10,8 +10,9 @@ import { getBrandDetails } from "../../services/brandService";
 import { CategorySelect } from "../Product/CategorySelect";
 import { BrandSelect } from "../Product/BrandSelect";
 import { toast } from "react-toastify";
+import { addProduct } from "../../services/productService";
 
-const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
+const AddProductModal = ({ isOpen, onClose, setIsReload }) => {
   const [productName, setProductName] = useState("");
   const [productCode, setProductCode] = useState("");
   const [price, setPrice] = useState(0);
@@ -26,21 +27,17 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   const [isRent, setIsRent] = useState(false);
   const [productMainImage, setProductMainImage] = useState("");
   const [productImages, setProductImages] = useState([]);
-  const [category, setCategory] = useState(0);
-  const [brand, setBrand] = useState(0);
-  const [sport, setSport] = useState(0);
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
+  const [sport, setSport] = useState("");
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("token");
 
   const removeMainImage = () => {
-    // setFormData((prev) => ({ ...prev, mainImage: null }));
     setProductMainImage(null);
   };
 
   const removeProductImage = (index) => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   productImages: prev.productImages.filter((_, i) => i !== index),
-    // }));
     setProductImages((prev) =>
       prev.filter((_, i) => i !== index)
     );
@@ -49,7 +46,6 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // setFormData((prev) => ({ ...prev, mainImage: file }));
       setProductMainImage(file);
     }
   };
@@ -58,12 +54,6 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
     const files = Array.from(e.target.files || []);
     const previews = files.map((file) => URL.createObjectURL(file));
     setProductImages((prev) => [...prev, ...files]);
-    console.log(files);
-
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   productImages: [...prev.productImages, ...files],
-    // }));
   };
 
   const validateProduct = () => {
@@ -111,9 +101,9 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
       length: parseFloat(length),
       width: parseFloat(width),
       weight: parseFloat(weight),
-      sport: sport,
-      category: category,
-      brand: brand,
+      sportId: sport,
+      categoryId: category,
+      brandId: brand,
       isRent,
     };
 
@@ -128,15 +118,13 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
     });
 
     try {
-      console.log(payload);
-      await onAddProduct(payload);
-      onClose(); // Close the modal on success
-    } catch (error) {
-      toast.error("Thêm sản phẩm thất bại. Vui lòng thử lại!", error); // Handle error
-      console.log(error);
 
-    } finally {
-      setLoading(false); // Hide loading screen
+      await addProduct(payload, token);
+      toast.success("Thêm sản phẩm thành công!", { position: "top-right" });
+      setIsReload(true);
+      onClose();
+    } catch (error) {
+      toast.error("Thêm sản phẩm thất bại!", { position: "top-right" });
     }
   };
 

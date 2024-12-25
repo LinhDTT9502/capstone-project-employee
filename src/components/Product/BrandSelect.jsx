@@ -20,7 +20,7 @@ export function BrandSelect({ isEdit, brand, setBrand }) {
   useEffect(() => {
 
     loadBrands();
-  }, [brand, setBrand]);
+  }, []);
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">
