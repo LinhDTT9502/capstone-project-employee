@@ -80,25 +80,6 @@ const BrandManagement = () => {
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleAddBrand = async (formData) => {
-    try {
-      await createBrand(formData);
-      toast.success("Thêm thương hiệu thành công!", { position: "top-right" });
-    } catch (error) {
-      toast.error("Thêm thương hiệu thất bại!", { position: "top-right" });
-    }
-  };
-
-  const handleEditBrand = async (brandId, formData) => {
-    try {
-      await updateBrand(brandId, formData);
-      fetchBrands();
-      toast.success("Cập nhật thương hiệu thành công!", { position: "top-right" });
-    } catch (error) {
-      toast.error("Cập nhật thương hiệu thất bại!", { position: "top-right" });
-    }
-  };
-
 
   return (
     <>

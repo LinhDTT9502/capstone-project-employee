@@ -26,11 +26,41 @@ export const getCommentByIdAPI = (commentId) => {
   });
 };
 
+export const getChildCommentByParentIdAPI = (parentCommentId) => {
+  return axios.get(`${API_BASE_URL}/get-child-comments/${parentCommentId}`, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};
+
 export const getAllCommentsAPI = () => {
   return axios.get(`${API_BASE_URL}/get-all-comments/`, {
     headers: {
       'accept': '*/*'
     }
+  });
+};
+
+export const replyCommentAPI = (productCode, parentCommentId, content, token) => {
+  return axios.post(`${API_BASE_URL}/reply-comment/${productCode}?parentCommentId=${parentCommentId}`,
+    { content },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+// Delete comment by ID
+export const deleteCommentAPI = (commentId, token) => {
+  return axios.delete(`${API_BASE_URL}/remove-comment/${commentId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
   });
 };
 

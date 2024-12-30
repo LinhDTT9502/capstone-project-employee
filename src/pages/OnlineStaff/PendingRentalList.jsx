@@ -13,10 +13,10 @@ const PendingRentalList = () => {
   const [selectedOrderCode, setSelectedOrderCode] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [reload, setReload] = useState(false);
-  const [sortOrder, setSortOrder] = useState('latest');
+  const [sortOrder, setSortOrder] = useState('earliest');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ordersPerPage = 30;
+  const ordersPerPage = 15;
 
   const statusStyles = {
     CANCELLED: 'bg-red-100 text-red-600',
@@ -36,7 +36,9 @@ const PendingRentalList = () => {
         const data = await getRentalbyStatus(1);
         console.log(data);
 
-        const pendingOrders = data.filter(order => order.branchId === null && order.parentOrderCode === null);
+        const pendingOrders = data
+          .filter(order => order.branchId === null && order.parentOrderCode === null)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setOrders(pendingOrders);
         console.log(orders);
 
@@ -74,17 +76,13 @@ const PendingRentalList = () => {
     setOrders(sortedOrders);
   };
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * ordersPerPage;
+  const indexOfFirstItem = indexOfLastItem - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(orders.length / ordersPerPage);
-  const currentOrders = orders.slice(
-    (currentPage - 1) * ordersPerPage,
-    currentPage * ordersPerPage
-  );
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   if (loading) return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
@@ -108,8 +106,8 @@ const PendingRentalList = () => {
             onChange={handleSortChange}
             value={sortOrder}
           >
-            <option value="latest">Đơn cũ nhất</option>
             <option value="earliest">Đơn mới nhất</option>
+            <option value="latest">Đơn cũ nhất</option>
           </select>
         </div>
       </div>
@@ -196,32 +194,17 @@ const PendingRentalList = () => {
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 border ${currentPage === 1 ? 'text-gray-400 border-gray-300' : 'text-gray-600 hover:border-gray-400'}`}
-        >
-          Previous
-        </button>
-        <div className="flex gap-2">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 border ${currentPage === totalPages ? 'text-gray-400 border-gray-300' : 'text-gray-600 hover:border-gray-400'}`}
-        >
-          Next
-        </button>
+      <div className="flex justify-center mt-4">
+        {[...Array(totalPages).keys()].map((number) => (
+          <button
+            key={number + 1}
+            onClick={() => handlePageChange(number + 1)}
+            className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+              }`}
+          >
+            {number + 1}
+          </button>
+        ))}
       </div>
 
       {modalOpen && (
