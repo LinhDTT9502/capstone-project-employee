@@ -19,6 +19,12 @@ const SearchBar = ({ onSelect }) => {
     }
   };
 
+  const handleSelect = (product) => {
+    onSelect(product); 
+    setQuery(""); 
+    setResults([]); 
+  };
+
   return (
     <div className="relative">
       <input
@@ -31,15 +37,11 @@ const SearchBar = ({ onSelect }) => {
       {results.length > 0 && (
         <div className="absolute z-10 w-full bg-white border rounded shadow-lg mt-1 max-h-56 overflow-y-auto">
           {results.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => {
-                onSelect(product);
-                setQuery("");
-                setResults([]);
-              }}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-100 flex items-center"
-            >
+             <div
+             key={product.id}
+             onClick={() => handleSelect(product)} 
+             className="cursor-pointer px-4 py-2 hover:bg-gray-100 flex items-center"
+           >
               <img
                 src={product.imgAvatarPath}
                 alt={product.productName}

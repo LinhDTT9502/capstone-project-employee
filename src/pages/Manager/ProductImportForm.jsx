@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faSpinner, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
-import { CategorySelect } from '../../components/Product/CategorySelect';
-import { BrandSelect } from '../../components/Product/BrandSelect';
-import { SportSelect } from '../../components/Product/SportSelect';
-import SearchBar from '../../components/Admin/SearchBar';
-import ImportFileExcel from './ImportFileExcel';
-import TemplateFile from './TemplateFile';
-import { toast, ToastContainer } from 'react-toastify';
-import { getAllImagesVideosByProductId } from '../../services/imageVideosService';
-import { fetchSportDetails } from '../../services/sportService';
-import { fetchCategoryDetails } from '../../services/categoryService';
-import { getBrandDetails } from '../../services/brandService';
+import React, { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTimes,
+  faSpinner,
+  faCloudUploadAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { CategorySelect } from "../../components/Product/CategorySelect";
+import { BrandSelect } from "../../components/Product/BrandSelect";
+import { SportSelect } from "../../components/Product/SportSelect";
+import SearchBar from "../../components/Admin/SearchBar";
+import ImportFileExcel from "./ImportFileExcel";
+import TemplateFile from "./TemplateFile";
+import { toast, ToastContainer } from "react-toastify";
+import { getAllImagesVideosByProductId } from "../../services/imageVideosService";
+import { fetchSportDetails } from "../../services/sportService";
+import { fetchCategoryDetails } from "../../services/categoryService";
+import { getBrandDetails } from "../../services/brandService";
+
 const ImportProduct = () => {
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
@@ -19,50 +24,50 @@ const ImportProduct = () => {
   const [brand, setBrand] = useState("");
   const [sport, setSport] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isImportExcel, setIsImportExcel] = useState(false)
-  const [isImportDirectly, setIsImportDirectly] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isImportExcel, setIsImportExcel] = useState(false);
+  const [isImportDirectly, setIsImportDirectly] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFromSearch, setIsFromSearch] = useState(false);
 
   const selectedSport = async () => {
     try {
       const data = await fetchSportDetails(selectedProduct.sportId);
       console.log(data.id);
-      setSport(data.id)
+      setSport(data.id);
     } catch (error) {
       console.error("Failed to fetch sport", error);
     }
-  }
+  };
 
   const selectedCategory = async () => {
     try {
       const data = await fetchCategoryDetails(selectedProduct.categoryID);
       console.log(data.id);
-      setCategory(data.id)
+      setCategory(data.id);
     } catch (error) {
       console.error("Failed to fetch category", error);
     }
-  }
+  };
 
   const selectedBrand = async () => {
     try {
       const data = await getBrandDetails(selectedProduct.brandId);
       console.log(data);
-      setBrand(data.id)
+      setBrand(data.id);
     } catch (error) {
       console.error("Failed to fetch brand", error);
     }
-  }
+  };
 
   console.log(brand);
 
-
   useEffect(() => {
     if (selectedProduct) {
-      selectedSport()
-      selectedCategory()
-      selectedBrand()
+      selectedSport();
+      selectedCategory();
+      selectedBrand();
     }
-  }, selectedProduct)
+  }, [selectedProduct]);
 
   const [formData, setFormData] = useState({
     categoryId: "",
@@ -106,6 +111,7 @@ const ImportProduct = () => {
   };
 
   const handleMainImageUpload = (e) => {
+    if (isFromSearch) return;
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, mainImage: file }));
@@ -114,6 +120,7 @@ const ImportProduct = () => {
   };
 
   const handleProductImagesUpload = (e) => {
+    if (isFromSearch) return;
     const files = Array.from(e.target.files || []);
     const previews = files.map((file) => URL.createObjectURL(file));
     setProductImagesPreview((prev) => [...prev, ...previews]);
@@ -135,9 +142,7 @@ const ImportProduct = () => {
       ...prev,
       productImages: prev.productImages.filter((_, i) => i !== index),
     }));
-    setProductImagesPreview((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
+    setProductImagesPreview((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -216,7 +221,7 @@ const ImportProduct = () => {
       } else {
         const errorData = await response.json();
         console.error("Error response:", errorData);
-        toast.error('Nhập kho thất bại!')
+        toast.error("Nhập kho thất bại!");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -262,24 +267,68 @@ const ImportProduct = () => {
       console.log(data);
 
       // Extract imageUrl and set them to productImagesPreview
-      const imageUrls = data.map(item => item.imageUrl);
+      const imageUrls = data.map((item) => item.imageUrl);
       setProductImagesPreview(imageUrls);
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error:", error);
     }
-  }
-
-
-  const handleSelectProduct = (product) => {
-    setSelectedProduct(product);
   };
 
-  return (
+  const handleSelectProduct = (product) => {
+    setMainImagePreview(null);
+    setProductImagesPreview([]);
+  
+    setSelectedProduct(product);
+    setIsFromSearch(true);
+    setMainImagePreview(product.imgAvatarPath || null);
+    setProductImagesPreview(product.listImages?.$values || []);
+  };
+  
+  const handleClearSelectedProduct = () => {
+    setSelectedProduct(null);
+    setIsFromSearch(false);
+    setMainImagePreview(null);
+    setProductImagesPreview([]);
+  };
 
+  const handleResetForm = () => {
+    setFormData({
+      categoryId: "",
+      brandId: "",
+      sportId: "",
+      productCode: "",
+      mainImage: null,
+      productImages: [],
+      quantity: 0,
+      productName: "",
+      listedPrice: 0,
+      price: 0,
+      size: "",
+      description: "",
+      color: "",
+      condition: 0,
+      height: 0,
+      length: 0,
+      width: 0,
+      weight: 0,
+      offers: "",
+      discount: 0,
+    });
+    setMainImagePreview(null);
+    setProductImagesPreview([]);
+    setSelectedProduct(null);
+    setIsFromSearch(false);
+    setIsImportDirectly(false);
+  };
+  
+  
+
+  return (
     <div className="container mx-auto p-6 space-y-8">
-      <div className='bg-white border border-gray-300 shadow-md rounded-lg p-6'>
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Nhập kho từ file Excel</h3>
+      <div className="bg-white border border-gray-300 shadow-md rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">
+          Nhập kho từ file Excel
+        </h3>
         <button
           onClick={() => setIsImportExcel(!isImportExcel)}
           className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-500 transition-colors"
@@ -293,8 +342,10 @@ const ImportProduct = () => {
           </div>
         )}
       </div>
-      <div className='bg-white border border-gray-300 shadow-md rounded-lg p-6'>
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Nhập kho trực tiếp</h3>
+      <div className="bg-white border border-gray-300 shadow-md rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">
+          Nhập kho trực tiếp
+        </h3>
         <button
           onClick={() => setIsImportDirectly(!isImportDirectly)}
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
@@ -306,13 +357,24 @@ const ImportProduct = () => {
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200 space-y-4">
                 <SearchBar onSelect={handleSelectProduct} />
+                {selectedProduct && (
+    <button
+      onClick={handleClearSelectedProduct}
+      className="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+    >
+      Hủy chọn sản phẩm
+    </button>
+  )}
               </div>
               <form onSubmit={handleSubmit} className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Column - Product Information */}
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="productName">
+                      <label
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                        htmlFor="productName"
+                      >
                         Tên sản phẩm
                       </label>
                       <input
@@ -332,24 +394,20 @@ const ImportProduct = () => {
                           category={category}
                           setCategory={setCategory}
                         />
-
                       </div>
                       <div>
-                        <BrandSelect
-                          brand={brand}
-                          setBrand={setBrand}
-                        />
+                        <BrandSelect brand={brand} setBrand={setBrand} />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <SportSelect
-                        sport={sport}
-                        setSport={setSport}
-                      />
+                      <SportSelect sport={sport} setSport={setSport} />
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="productCode">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="productCode"
+                        >
                           Mã sản phẩm
                         </label>
                         <input
@@ -366,7 +424,10 @@ const ImportProduct = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quantity">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="quantity"
+                        >
                           Số lượng
                         </label>
                         <input
@@ -380,7 +441,10 @@ const ImportProduct = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="price">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="price"
+                        >
                           Giá bán
                         </label>
                         <input
@@ -397,7 +461,10 @@ const ImportProduct = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="size">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="size"
+                        >
                           Size
                         </label>
                         <input
@@ -410,7 +477,10 @@ const ImportProduct = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="color">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="color"
+                        >
                           Màu sắc
                         </label>
                         <input
@@ -492,7 +562,6 @@ const ImportProduct = () => {
                           </span>
                         </div>
                       </div>
-
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -540,7 +609,6 @@ const ImportProduct = () => {
                         </div>
                       </div>
                     </div>
-
                   </div>
 
                   {/* Right Column - Image Upload */}
@@ -557,36 +625,53 @@ const ImportProduct = () => {
                               alt="Main product"
                               className="max-h-48 rounded-md"
                             />
-                            <button
-                              type="button"
-                              onClick={removeMainImage}
-                              className="absolute top-1 right-1 -mt-2 -mr-2 text-black p-1 hover:text-red-500"
-                            >
-                              <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
-                            </button>
+                            {!isFromSearch && (
+                              <button
+                                type="button"
+                                onClick={removeMainImage}
+                                className="absolute top-1 right-1 -mt-2 -mr-2 text-black p-1 hover:text-red-500"
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTimes}
+                                  className="h-4 w-4"
+                                />
+                              </button>
+                            )}
                           </div>
                         ) : (
                           <div className="space-y-1 text-center">
-                            <FontAwesomeIcon icon={faCloudUploadAlt} className="mx-auto h-12 w-12 text-gray-400" />
-                            <div className="flex text-sm text-gray-600">
-                              <label
-                                htmlFor="main-image-upload"
-                                className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                              >
-                                <span>Tải ảnh lên</span>
-                                <input
-                                  id="main-image-upload"
-                                  name="main-image-upload"
-                                  type="file"
-                                  className="sr-only"
-                                  onChange={handleMainImageUpload}
+                            {!isFromSearch ? (
+                              <>
+                                <FontAwesomeIcon
+                                  icon={faCloudUploadAlt}
+                                  className="mx-auto h-12 w-12 text-gray-400"
                                 />
-                              </label>
-                              <p className="pl-1">hoặc kéo và thả</p>
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              PNG, JPG, GIF
-                            </p>
+                                <div className="flex text-sm text-gray-600">
+                                  <label
+                                    htmlFor="main-image-upload"
+                                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                                  >
+                                    <span>Tải ảnh lên</span>
+                                    <input
+                                      id="main-image-upload"
+                                      name="main-image-upload"
+                                      type="file"
+                                      className="sr-only"
+                                      onChange={handleMainImageUpload}
+                                    />
+                                  </label>
+                                  <p className="pl-1">hoặc kéo và thả</p>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  PNG, JPG, GIF
+                                </p>
+                              </>
+                            ) : (
+                              <p className="text-gray-500 text-sm">
+                                Không thể chỉnh sửa ảnh với sản phẩm từ tìm
+                                kiếm.
+                              </p>
+                            )}
                           </div>
                         )}
                       </div>
@@ -597,32 +682,46 @@ const ImportProduct = () => {
                         Đăng ảnh sản phẩm
                       </label>
                       <div className="mt-1 flex items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative h-40">
-                        {/* If no files are selected */}
+                        {/* Nếu không có ảnh nào */}
                         {productImagesPreview.length === 0 ? (
                           <div className="flex flex-col items-center justify-center flex-grow text-center">
-                            <FontAwesomeIcon icon={faCloudUploadAlt} className="h-12 w-12 text-gray-400 mb-2" />
-                            <div className="flex text-sm text-gray-600">
-                              <label
-                                htmlFor="gallery-upload"
-                                className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                              >
-                                <span>Tải ảnh</span>
-                                <input
-                                  id="gallery-upload"
-                                  name="gallery-upload"
-                                  type="file"
-                                  className="sr-only"
-                                  multiple
-                                  onChange={handleProductImagesUpload}
+                            {!isFromSearch ? (
+                              <>
+                                <FontAwesomeIcon
+                                  icon={faCloudUploadAlt}
+                                  className="h-12 w-12 text-gray-400 mb-2"
                                 />
-                              </label>
-                              <p className="pl-1">hoặc kéo và thả</p>
-                            </div>
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+                                <div className="flex text-sm text-gray-600">
+                                  <label
+                                    htmlFor="gallery-upload"
+                                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                                  >
+                                    <span>Tải ảnh</span>
+                                    <input
+                                      id="gallery-upload"
+                                      name="gallery-upload"
+                                      type="file"
+                                      className="sr-only"
+                                      multiple
+                                      onChange={handleProductImagesUpload}
+                                    />
+                                  </label>
+                                  <p className="pl-1">hoặc kéo và thả</p>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  PNG, JPG, GIF
+                                </p>
+                              </>
+                            ) : (
+                              <p className="text-gray-500 text-sm">
+                                Không thể chỉnh sửa ảnh với sản phẩm từ tìm
+                                kiếm.
+                              </p>
+                            )}
                           </div>
                         ) : (
                           <div className="flex items-center justify-between w-full">
-                            {/* File upload text and icon pushed to the right */}
+                            {/* Hiển thị các ảnh đã tải lên */}
                             <div className="flex-grow">
                               <div className="flex gap-2 overflow-x-auto">
                                 {productImagesPreview.map((img, index) => (
@@ -635,49 +734,57 @@ const ImportProduct = () => {
                                       alt={`Product ${index + 1}`}
                                       className="h-full w-full object-cover"
                                     />
-                                    <button
-                                      type="button"
-                                      className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
-                                      onClick={() => removeProductImage(index)}
-                                    >
-                                      <FontAwesomeIcon icon={faTimes} className="h-4 w-4" />
-                                    </button>
+                                    {!isFromSearch && (
+                                      <button
+                                        type="button"
+                                        className="absolute top-1 right-1 p-1 text-black hover:text-red-500 focus:outline-none"
+                                        onClick={() =>
+                                          removeProductImage(index)
+                                        }
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faTimes}
+                                          className="h-4 w-4"
+                                        />
+                                      </button>
+                                    )}
                                   </div>
                                 ))}
                               </div>
                             </div>
 
-                            {/* Upload button pushed to the right */}
-                            <label
-                              htmlFor="gallery-upload"
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ml-4"
-                            >
-                              <span>Thêm ảnh</span>
-                              <input
-                                id="gallery-upload"
-                                name="gallery-upload"
-                                type="file"
-                                className="sr-only"
-                                multiple
-                                onChange={handleProductImagesUpload}
-                              />
-                            </label>
+                            {/* Nút thêm ảnh */}
+                            {!isFromSearch && (
+                              <label
+                                htmlFor="gallery-upload"
+                                className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ml-4"
+                              >
+                                <span>Thêm ảnh</span>
+                                <input
+                                  id="gallery-upload"
+                                  name="gallery-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  multiple
+                                  onChange={handleProductImagesUpload}
+                                />
+                              </label>
+                            )}
                           </div>
                         )}
                       </div>
                     </div>
-
-
                   </div>
                 </div>
 
                 <div className="mt-8 flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Hủy bỏ
-                  </button>
+                <button
+    type="button"
+    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    onClick={handleResetForm}
+  >
+    Hủy bỏ
+  </button>
                   <button
                     type="submit"
                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus-ring-offset-2 focus:ring-blue-500"
@@ -702,7 +809,6 @@ const ImportProduct = () => {
           </>
         )}
       </div>
-
     </div>
   );
 };
