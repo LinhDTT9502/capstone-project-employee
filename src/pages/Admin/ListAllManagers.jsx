@@ -17,7 +17,7 @@ const ListAllManagers = () => {
   const [filteredManagers, setFilteredManagers] = useState([]); // State for filtered managers
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const fetchManagerData = async () => {

@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Dialog } from "@material-tailwind/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faPlus, faCloudUploadAlt, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { createBranch } from '../../api/apiBranch';
-import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTimes,
+  faPlus,
+  faCloudUploadAlt,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
+import { createBranch } from "../../api/apiBranch";
+import { toast } from "react-toastify";
 
 const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
   const [branchName, setBranchName] = useState("");
@@ -17,6 +22,11 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
     setUploadFile(null);
   };
 
+  const isValidHotline = (hotline) => {
+    const hotlineRegex = /^(0|\+84)(3|5|7|8|9)\d{8}$/;
+    return hotlineRegex.test(hotline);
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -25,13 +35,31 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
   };
 
   const handleSubmit = async () => {
-    if (!branchName.trim() || !location.trim() || !hotline.trim() || !uploadFile) {
-      setErrors({
-        branchName: !branchName.trim() ? "Tên chi nhánh là bắt buộc." : "",
-        location: !location.trim() ? "Địa điểm là bắt buộc." : "",
-        hotline: !hotline.trim() ? "Hotline là bắt buộc." : "",
-        branchImage: !uploadFile ? "Hình ảnh là bắt buộc." : "",
+    const newErrors = {};
+
+    if (!branchName.trim()) {
+      newErrors.branchName = "Tên chi nhánh là bắt buộc.";
+    }
+
+    if (!location.trim()) {
+      newErrors.location = "Địa điểm là bắt buộc.";
+    }
+
+    if (!uploadFile) {
+      newErrors.branchImage = "Hình ảnh là bắt buộc.";
+    }
+
+    if (!hotline.trim()) {
+      newErrors.hotline = "Hotline là bắt buộc.";
+    } else if (!isValidHotline(hotline)) {
+      setLoading(false);
+      toast.error("Hotline không hợp lệ. Vui lòng nhập số điện thoại hợp lệ.", {
+        position: "top-right",
       });
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -42,38 +70,45 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
     formData.append("ImageURL", uploadFile);
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await createBranch(formData);
-      console.log(response);
-
       toast.success("Thêm chi nhánh thành công!", { position: "top-right" });
       setIsReload(true);
       onClose();
     } catch (error) {
       toast.error("Thêm chi nhánh thất bại!", { position: "top-right" });
-      setLoading(false)
-
+      setLoading(false);
     }
   };
-  useEffect(() => {
-  }, [isOpen, onClose]);
+
+  useEffect(() => {}, [isOpen, onClose]);
   return (
     <Dialog open={isOpen} onClose={onClose}>
       {loading && (
         <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-          <FontAwesomeIcon icon={faSpinner} spin className="text-white text-4xl" />
+          <FontAwesomeIcon
+            icon={faSpinner}
+            spin
+            className="text-white text-4xl"
+          />
           <span className="text-white ml-4">Đang xử lý...</span>
         </div>
       )}
       <div className="p-6 bg-white rounded shadow-lg">
         <div className="flex justify-between items-center border-b pb-2">
           <h3 className="text-lg font-semibold">Thêm Chi Nhánh</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500"
+          >
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
         <div className="mt-4">
-          <label htmlFor="branchName" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="branchName"
+            className="block text-sm font-medium text-gray-700"
+          >
             Tên Chi Nhánh
           </label>
           <input
@@ -83,10 +118,15 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
             onChange={(e) => setBranchName(e.target.value)}
             className="w-full mt-2 border rounded px-3 py-2"
           />
-          {errors.branchName && <p className="text-sm text-red-500">{errors.branchName}</p>}
+          {errors.branchName && (
+            <p className="text-sm text-red-500">{errors.branchName}</p>
+          )}
         </div>
         <div className="mt-4">
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
             Địa Điểm
           </label>
           <input
@@ -96,10 +136,15 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
             onChange={(e) => setLocation(e.target.value)}
             className="w-full mt-2 border rounded px-3 py-2"
           />
-          {errors.location && <p className="text-sm text-red-500">{errors.location}</p>}
+          {errors.location && (
+            <p className="text-sm text-red-500">{errors.location}</p>
+          )}
         </div>
         <div className="mt-4">
-          <label htmlFor="hotline" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="hotline"
+            className="block text-sm font-medium text-gray-700"
+          >
             Hotline
           </label>
           <input
@@ -109,15 +154,23 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
             onChange={(e) => setHotline(e.target.value)}
             className="w-full mt-2 border rounded px-3 py-2"
           />
-          {errors.hotline && <p className="text-sm text-red-500">{errors.hotline}</p>}
+          {errors.hotline && (
+            <p className="text-sm text-red-500">{errors.hotline}</p>
+          )}
         </div>
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700">Hình Ảnh</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Hình Ảnh
+          </label>
           <div className="mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-md">
             {uploadFile ? (
               <div className="relative">
                 <img
-                  src={uploadFile instanceof File ? URL.createObjectURL(uploadFile) : uploadFile}
+                  src={
+                    uploadFile instanceof File
+                      ? URL.createObjectURL(uploadFile)
+                      : uploadFile
+                  }
                   alt="Main product"
                   className="max-h-32 rounded-md"
                 />
@@ -131,7 +184,10 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
               </div>
             ) : (
               <div className="space-y-1 text-center">
-                <FontAwesomeIcon icon={faCloudUploadAlt} className="mx-auto h-12 w-12 text-gray-400" />
+                <FontAwesomeIcon
+                  icon={faCloudUploadAlt}
+                  className="mx-auto h-12 w-12 text-gray-400"
+                />
                 <div className="flex text-sm text-gray-600">
                   <label
                     htmlFor="main-image-upload"
@@ -148,13 +204,13 @@ const AddBranchModal = ({ isOpen, onClose, setIsReload }) => {
                   </label>
                   <p className="pl-1">hoặc kéo và thả</p>
                 </div>
-                <p className="text-xs text-gray-500">
-                  PNG, JPG, GIF
-                </p>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
               </div>
             )}
           </div>
-          {errors.branchImage && <p className="text-sm text-red-500">{errors.branchImage}</p>}
+          {errors.branchImage && (
+            <p className="text-sm text-red-500">{errors.branchImage}</p>
+          )}
         </div>
         <div className="mt-6 flex justify-end gap-3">
           <button

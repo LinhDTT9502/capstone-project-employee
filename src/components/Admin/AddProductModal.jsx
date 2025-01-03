@@ -139,7 +139,7 @@ const AddProductModal = ({ isOpen, onClose, setIsReload }) => {
         )}
         <div className="p-6 bg-white rounded shadow-lg h-screen overflow-y-auto">
           <div className="flex justify-between items-center border-b pb-2">
-            <h3 className="text-lg font-semibold">Chỉnh Sửa Sản Phẩm</h3>
+            <h3 className="text-lg font-semibold">Thêm sản phẩm</h3>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
               <FontAwesomeIcon icon={faTimes} />
             </button>

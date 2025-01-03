@@ -1,27 +1,10 @@
 // src/pages/Dashboard.jsx
 import { useEffect, useState } from "react";
-import {
-  Card,
-  Breadcrumbs,
-  CardBody,
-  Typography,
-  Avatar,
-  Checkbox,
-} from "@material-tailwind/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEllipsisVertical,
-  faArrowUp,
-  faCalendar,
-  faBagShopping,
-} from "@fortawesome/free-solid-svg-icons";
+
 import { fetchOrders } from "../../services/DashboardService";
 import { selectUser } from "../../redux/slices/authSlice";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import RecentOrder from "./RecentOrder";
-import HeaderStaff from "../../layouts/HeaderStaff";
-import SidebarStaff from "../../layouts/SidebarStaff";
+
 import PieChart from "../../components/Chart/PieChart";
 import BarChart from "../../components/Chart/BarChart";
 import { getOrderbyBranch } from "../../services/Staff/OrderService";
@@ -43,8 +26,9 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [sortOrder, setSortOrder] = useState('latest');
   const [currentPage, setCurrentPage] = useState(1);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const ordersPerPage = 15;
+  const ordersPerPage = 10;
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [orderType, setOrderType] = useState(1);
@@ -250,9 +234,11 @@ export default function Dashboard() {
         </div>
 
       </div>
+      <hr className="mb-8 flex justify-between items-center mx-10 my-4" />
       {/* <RecentOrder/> */}
 
-      <div className="flex items-center justify-between my-2">
+<div className="mx-10">
+      <div className="flex items-center justify-between my-2 ">
         <div className="flex gap-1 p-1 bg-gray-200 rounded-full w-fit transition-all duration-300">
           <button
             onClick={() => setOrderType(1)}
@@ -415,7 +401,7 @@ export default function Dashboard() {
           </>
         )}
       </table>
-
+</div>
 
 
 
