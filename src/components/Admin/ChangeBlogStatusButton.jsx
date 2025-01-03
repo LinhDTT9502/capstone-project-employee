@@ -5,14 +5,14 @@ import { changeSportStatus } from "../../services/sportService";
 import { changeCategoryStatus } from "../../services/categoryService";
 import { changeBrandStatus } from "../../services/brandService";
 
-const ChangeBrandStatusButton = ({ brand, isActive: initialStatus }) => {
+const ChangeBlogStatusButton = ({ blog, isActive: initialStatus }) => {
   const [isActive, setIsActive] = useState(initialStatus);
   const handleToggle = async () => {
     try {
-      console.log(brand);
-      // console.log(brand.id);
+      console.log(blog);
+      // console.log(blog.id);
 
-      const response = await changeBrandStatus(brand.id);
+      const response = await changeBlogStatus(blog.id);
       console.log(response);
 
       if (response.status === 200) {
@@ -45,4 +45,4 @@ const ChangeBrandStatusButton = ({ brand, isActive: initialStatus }) => {
   );
 };
 
-export default ChangeBrandStatusButton;
+export default ChangeBlogStatusButton;

@@ -11,6 +11,8 @@ import RentalDetail from '../pages/Staff/RentalDetail';
 import ListRefund from '../pages/Staff/ListRefund';
 import ListExtension from '../pages/Staff/ListExtension';
 import Invoice from '../pages/Staff/Invoice';
+import ManageImageFolder from '../pages/Manager/ManageImageFolder';
+import ListImagebyFolder from '../pages/Manager/ListImagebyFolder';
 
 const ManagerRoutes = () => {
   const token = localStorage.getItem('token');
@@ -33,6 +35,8 @@ const ManagerRoutes = () => {
       <Route path="/list-refund" element={<ListRefund />} />
       <Route path="/list-extension" element={<ListExtension />} />
       <Route path="/invoice" element={<Invoice />} />
+      <Route path="/manage-image-folder" element={<ManageImageFolder />} />
+      <Route path="/manage-image-folder/:folderName" element={<ListImagebyFolder />} />
     </Routes>
   );
 };

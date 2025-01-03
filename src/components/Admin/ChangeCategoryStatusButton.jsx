@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Switch } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 import { changeSportStatus } from "../../services/sportService";
+import { changeCategoryStatus } from "../../services/categoryService";
 
-const ChangeSportStatusButton = ({ sport, isActive: initialStatus }) => {
+const ChangeCategoryStatusButton = ({ category, isActive: initialStatus }) => {
   const [isActive, setIsActive] = useState(initialStatus);
   const handleToggle = async () => {
     try {
-      console.log(sport);
-      console.log(sport.id);
+      console.log(category);
+      // console.log(category.id);
 
-      const response = await changeSportStatus(sport.id);
+      const response = await changeCategoryStatus(category.id);
       console.log(response);
 
       if (response.status === 200) {
@@ -43,4 +44,4 @@ const ChangeSportStatusButton = ({ sport, isActive: initialStatus }) => {
   );
 };
 
-export default ChangeSportStatusButton;
+export default ChangeCategoryStatusButton;

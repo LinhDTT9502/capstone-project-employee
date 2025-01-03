@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 import { useSelector } from "react-redux";
-import { selectUser } from "../redux/slices/authSlice";
+import { selectUser } from "../../redux/slices/authSlice";
 import {
   createBlog,
   deleteBlog,
   getAllBlog,
   updateBlog,
-} from "../api/Blog/apiBlog";
+} from "../../api/Blog/apiBlog";
 import { useRef } from 'react';
 import axios from "axios";
-const Blog = () => {
+const CreateUpdateBlog = () => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [content, setContent] = useState("");
@@ -157,7 +157,7 @@ const Blog = () => {
       setSubTitle(blog.subTitle);
       setContent(blog.content);
       setViewImg(blog.coverImgPath);
-      
+
       setCoverImage(null);
     }
   };
@@ -167,9 +167,9 @@ const Blog = () => {
       <div className="flex-grow border-l-2">
         <div className="container p-4 mx-auto">
           <h1 className="mb-4 text-2xl font-bold">
-            {blogId ? "Edit Blog" : "Create a New Blog"}
+            {blogId ? "Chỉnh sửa bài viết" : "Tạo một bài viết"}
           </h1>{viewImg && <img src={viewImg} alt="view" className="w-20 h-20 object-contain" />}
-          
+
           <form onSubmit={handleSubmit} className="mb-6">
             <div className="flex flex-col">
               Chọn ảnh bìa
@@ -182,14 +182,14 @@ const Blog = () => {
             </div>
             <input
               type="text"
-              placeholder="Blog Title"
+              placeholder="Tiêu đề"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full p-3 mb-4 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="text"
-              placeholder="Subtitle"
+              placeholder="Tiêu đề phụ"
               value={subTitle}
               onChange={(e) => setSubTitle(e.target.value)}
               className="w-full p-3 mb-4 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -296,35 +296,35 @@ const Blog = () => {
               type="submit"
               className="p-3 text-white transition duration-300 bg-blue-500 rounded-lg hover:bg-blue-600"
             >
-              {blogId ? "Update Blog" : "Publish Blog"}
+              {blogId ? "Lưu bài viết" : "Tạo bài viết"}
             </button>
           </form>
 
-          <h2 className="mb-2 text-xl font-semibold">My Blogs</h2>
+          <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg table-auto">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Blog ID
+                    #
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Cover Image
+                    Ảnh bìa
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Title
+                    Tiêu đề
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Subtitle
+                    Tiêu đề phụ
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Content
+                    Nội dung
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Created At
+                    Ngày tạo
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-left text-gray-500">
-                    Actions
+
                   </th>
                 </tr>
               </thead>
@@ -385,4 +385,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default CreateUpdateBlog;

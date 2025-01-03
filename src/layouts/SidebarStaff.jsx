@@ -27,7 +27,10 @@ import {
   faToolbox,
   faHouse,
   faPrint,
-  faExchange
+  faExchange,
+  faBriefcase,
+  faPercent,
+  faFolder
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -229,13 +232,16 @@ export default function SidebarStaff() {
   const renderContentStaffLinks = () => (
     <>
       <SidebarLink to="/content-staff/blogs" icon={faBlog}>
-        Blog
+        Danh sách bài viết
       </SidebarLink>
-      <SidebarLink to="/content-staff/edit-product" icon={faVial}>
-        Chỉnh sửa nội dung sản phẩm
+      <SidebarLink to="/content-staff/create-update-blog" icon={faBlog}>
+        Bài viết
       </SidebarLink>
-      <SidebarLink to="/content-staff/edit-offer" icon={faVial}>
-        Chỉnh sửa ưu đãi của sản phẩm
+      <SidebarLink to="/content-staff/edit-product" icon={faBriefcase}>
+        Mô tả sản phẩm
+      </SidebarLink>
+      <SidebarLink to="/content-staff/edit-offer" icon={faPercent}>
+        Ưu đãi của sản phẩm
       </SidebarLink>
     </>
   );
@@ -264,6 +270,9 @@ export default function SidebarStaff() {
     </SidebarLink>
     <SidebarLink to="/manager/invoice" icon={faPrint}>
       In hóa đơn
+    </SidebarLink>
+    <SidebarLink to="/manager/manage-image-folder" icon={faFolder}>
+      Thư mục ảnh
     </SidebarLink>
   </>
   );

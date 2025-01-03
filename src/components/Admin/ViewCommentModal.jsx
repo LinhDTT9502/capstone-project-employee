@@ -9,7 +9,7 @@ import { BrandSelect } from "../Product/BrandSelect";
 import { toast } from "react-toastify";
 import { fetchAllProducts, updateProductById } from "../../services/productService";
 
-const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => {
+const ViewCommentModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => {
   const [productName, setProductName] = useState("");
   const [productCode, setProductCode] = useState("");
   const [price, setPrice] = useState(0);
@@ -639,4 +639,4 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
   );
 };
 
-export default EditProductModal;
+export default ViewCommentModal;
