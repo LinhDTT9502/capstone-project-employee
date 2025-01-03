@@ -14,6 +14,8 @@ import {
 } from "../../services/feedbackService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { toast,ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ListAllFeedback = () => {
   const [feedbackData, setFeedbackData] = useState([]);
@@ -69,8 +71,10 @@ const ListAllFeedback = () => {
         setFilteredFeedbacks((prevData) =>
           prevData.filter((feedback) => feedback.id !== id)
         );
+        toast.success("Xóa phản hồi thành công!", { position: "top-right" });
       } catch (error) {
         console.error("Error deleting feedback:", error);
+        toast.error("Xóa phản hồi thất bại!", { position: "top-right" });
       }
     }
   };
@@ -91,6 +95,7 @@ const ListAllFeedback = () => {
   };
 
   return (
+    <><ToastContainer />
     <div className="container mx-auto p-4">
       <Card className="shadow-lg">
         <div className="flex justify-between items-center p-4">
@@ -204,7 +209,7 @@ const ListAllFeedback = () => {
           </div>
         </Dialog>
       )}
-    </div>
+    </div></>
   );
 };
 

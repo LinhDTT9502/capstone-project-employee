@@ -55,7 +55,7 @@ const CreateStaffModal = ({ onClose }) => {
       toast.success('Tạo nhân viên mới thành công!')
       onClose(true);
     } else {
-      toast.error("Failed to create staff");
+      toast.error("Tạo nhân viên thất bại.");
     }
   };
 
