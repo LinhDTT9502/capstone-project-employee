@@ -4,6 +4,7 @@ import {
     uploadImagesAPI,
     getAllImagesInFolderAPI,
     deleteAnImageInFolderAPI,
+    deleteAFolderAPI,
 } from "../../api/Manager/apiManageImages";
 
 /**
@@ -84,6 +85,21 @@ export const deleteImageInFolder = async (folderName, imageUrl) => {
         return response; // Return the response as it is from the API
     } catch (error) {
         console.error(`Error deleting image:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Delete a specific image in a folder
+ * @param {string} folderName - ID of the folder containing the image
+ * @returns {Promise<Object>} - Response data after deleting the image
+ */
+export const deleteFolder = async (folderName) => {
+    try {
+        const response = await deleteAFolderAPI(folderName);
+        return response; // Return the response as it is from the API
+    } catch (error) {
+        console.error(`Error deleting folder:`, error);
         throw error;
     }
 };

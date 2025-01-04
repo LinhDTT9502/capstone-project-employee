@@ -7,6 +7,7 @@ import { faPlus, faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import AddImageModal from "../../components/Admin/AddImageModal";
 import ConfirmDeleteImageModal from "../../components/Admin/ConfirmDeleteImageModal";
+import Breadcrumb from "../../components/Manager/FolderBreadcrumb";
 
 const ListImagebyFolder = () => {
     const { folderName } = useParams(); // Get folderName from URL params
@@ -46,6 +47,8 @@ const ListImagebyFolder = () => {
 
     return (
         <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+            {/* Breadcrumb Navigation */}
+            <Breadcrumb />
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Danh sách hình ảnh trong thư mục: {folderName}</h2>
                 <Button onClick={() => setIsAddModalOpen(true)}>
@@ -63,7 +66,7 @@ const ListImagebyFolder = () => {
                     {images.map((image, index) => (
                         <div
                             key={index}
-                            className="relative flex flex-col items-center justify-center p-4 shadow-md rounded-lg hover:bg-gray-300 shadow-lg transition cursor-pointer group"
+                            className="relative flex flex-col items-center justify-center p-4 shadow-md rounded-lg hover:shadow-lg transition cursor-pointer group"
                         >
                             {/* Image */}
                             <div className="w-full h-full mb-2 hover:bg-gray-300">

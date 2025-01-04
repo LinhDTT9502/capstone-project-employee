@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import { fetchAllFolders } from "../../services/Manager/imageManagementService";
 import { Button } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import AddFolderModal from "../../components/Admin/AddFolderModal";
 import { useNavigate } from "react-router-dom";
+import ConfirmDeleteFolderModal from "../../components/Admin/ConfirmDeleteFolderModal";
 
 const ManageImageFolder = () => {
     const [folders, setFolders] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isReload, setIsReload] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isConfirmDeleteFolder, setIsConfirmDeleteFolder] = useState(false);
+    const [selectedFolder, setSelectedFolder] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,6 +37,7 @@ const ManageImageFolder = () => {
             }
         };
 
+        setIsReload(false)
         fetchFolders();
     }, [isReload]);
 
@@ -61,7 +65,7 @@ const ManageImageFolder = () => {
                     {folders.map((folder) => (
                         <div
                             key={folder.id}
-                            className="flex flex-col items-center justify-center p-4 bg-gray-100 shadow-md rounded-lg hover:shadow-lg transition cursor-pointer"
+                            className="relative flex flex-col items-center justify-center p-4 bg-gray-100 shadow-md rounded-lg hover:shadow-lg transition cursor-pointer group"
                             onClick={() => navigate(`/manager/manage-image-folder/${folder.name}`)}
                         >
                             {/* Folder Image */}
@@ -71,6 +75,23 @@ const ManageImageFolder = () => {
                                     alt={folder.name}
                                     className="w-full h-full object-cover rounded"
                                 />
+                                {/* Buttons (hidden by default and shown on hover) */}
+                                <div className="absolute top-0 right-0 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {/* Delete Button */}
+                                    <Button
+                                        size="md"
+                                        color="red"
+                                        variant="text"
+                                        className="flex items-center gap-2 px-2 py-2"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevent parent click
+                                            setIsConfirmDeleteFolder(folder.name);
+                                            setSelectedFolder(folder.name);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faTrash} className="text-sm" />
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Folder Name */}
@@ -87,6 +108,16 @@ const ManageImageFolder = () => {
                 <AddFolderModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
+                    setIsReload={setIsReload}
+                />
+            )}
+
+            {/* Confirm Delete Folder Modal */}
+            {isConfirmDeleteFolder && (
+                <ConfirmDeleteFolderModal
+                    isOpen={isConfirmDeleteFolder}
+                    onClose={() => setIsConfirmDeleteFolder(false)}
+                    folder={selectedFolder}
                     setIsReload={setIsReload}
                 />
             )}

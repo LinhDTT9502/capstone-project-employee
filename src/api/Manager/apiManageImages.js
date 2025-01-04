@@ -111,3 +111,22 @@ export const deleteAnImageInFolderAPI = async (folderName, imageURL) => {
 		throw new Error(`Failed to delete image: ${error.message}`);
 	}
 };
+
+/**
+ * Delete a specific image in a folder via API
+ * @param {string} folderName - ID of the folder containing the image
+ * @returns {Promise<Object>} - Response data from the API
+ */
+export const deleteAFolderAPI = async (folderName) => {
+	try {
+		const url = `${API_BASE_URL}/delete-a-folder?folderName=${folderName}`;
+		const response = await axios.delete(url, {
+			headers: {
+				Accept: '*/*',
+			},
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(`Failed to delete folder: ${error.message}`);
+	}
+};
