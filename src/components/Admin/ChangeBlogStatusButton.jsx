@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Switch } from "@material-tailwind/react";
 import { toast } from "react-toastify";
-import { changeSportStatus } from "../../services/sportService";
-import { changeCategoryStatus } from "../../services/categoryService";
-import { changeBrandStatus } from "../../services/brandService";
+import { changeStatusBlog } from "../../api/Blog/apiBlog";
 
 const ChangeBlogStatusButton = ({ blog, isActive: initialStatus }) => {
   const [isActive, setIsActive] = useState(initialStatus);
@@ -12,7 +10,7 @@ const ChangeBlogStatusButton = ({ blog, isActive: initialStatus }) => {
       console.log(blog);
       // console.log(blog.id);
 
-      const response = await changeBlogStatus(blog.id);
+      const response = await changeStatusBlog(blog.blogId);
       console.log(response);
 
       if (response.status === 200) {

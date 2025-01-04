@@ -1,4 +1,14 @@
-import { addProductAPI, changeProductStatusAPI, deleteProductAPI, getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize, updateProductAPI } from "../api/apiProduct";
+import { addProductAPI, changeProductStatusAPI, deleteProductAPI, filterProductsByCategoryApi, getAllProductsAPI, getProductByProductCode, getProductByProductCodeAPI, getProductColor, getProductSize, updateProductAPI } from "../api/apiProduct";
+
+export const filterProductsByCategory = async (categoryId) => {
+  try {
+    const response = await filterProductsByCategoryApi(categoryId);
+    return response.data.data.$values;
+  } catch (error) {
+    console.error(`Error fetching product:`, error);
+    throw error;
+  }
+};
 
 export const fetchProductColor = async (productCode) => {
   try {

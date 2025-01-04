@@ -16,13 +16,14 @@ import ChangeBlogStatusButton from "../../components/Admin/ChangeBlogStatusButto
 import { Button, Typography } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 const Blogs = () => {
   const [selectedBlog, setSelectedBlog] = useState([]);
-  const [isConfirmDeleteBlogModalOpen, setIsConfirmDeleteBlogModalOpen] = useState([]);
+  const [isConfirmDeleteBlogModalOpen, setIsConfirmDeleteBlogModalOpen] = useState(false);
   const [isReload, setIsReload] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const user = useSelector(selectUser);
-
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -37,24 +38,10 @@ const Blogs = () => {
         alert("Failed to fetch blogs.");
       }
     };
+    setIsReload(false);
     fetchBlogs();
-  }, []);
+  }, [isReload]);
 
-  const handleDeleteBlog = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this blog? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
-
-    try {
-      await deleteBlog(id);
-      alert("Blog deleted successfully.");
-      setBlogs(blogs.filter((blog) => blog.blogId !== id));
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-      alert("Failed to delete the blog.");
-    }
-  };
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -73,7 +60,7 @@ const Blogs = () => {
               Danh sách <span className="text-orange-500">[Bài viết]</span> ({blogs.length})
             </Typography>
             <Button
-              onClick={() => alert("click add")}
+              onClick={() => navigate(`/content-staff/create-blog`)}
             >
               <FontAwesomeIcon icon={faPlus} />{" "}
               Tạo mới
@@ -138,19 +125,16 @@ const Blogs = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {new Date(blog.createAt).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4">
                       <ChangeBlogStatusButton
                         blog={blog}
                         isActive={blog.status}
-                        setIsReload={setIsReload}
                       />
                     </td>
                     <td className="px-6 py-4">
                       <BlogActions
                         blog={blog}
-                        onEdit={() => {
-                          setSelectedBlog(blog);
-                        }}
+                        onEdit={() => navigate(`/content-staff/update-blog/${blog.blogId}`)}
                         onDelete={() => {
                           setSelectedBlog(blog);
                           setIsConfirmDeleteBlogModalOpen(true);

@@ -21,6 +21,16 @@ export const getProductColor = (productCode) => {
   });
 };
 
+export const filterProductsByCategoryApi = (categoryId) => {
+  const url = `${API_BASE_URL}/filter-sort-products?categoryIds=${categoryId}`;
+  return axios.get(url, {
+    headers: {
+      'accept': '*/*'
+    }
+  });
+};
+
+
 export const getProductSize = (productCode, color) => {
   const url = `${API_BASE_URL}/list-sizes-of-product/${productCode}?color=${color}`;
   return axios.get(url, {

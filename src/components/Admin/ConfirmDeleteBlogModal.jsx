@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { removeBrand } from "../../services/brandService";
+import { deleteBlog } from "../../api/Blog/apiBlog";
 
 const ConfirmDeleteBlogModal = ({ isOpen, onClose, blog, setIsReload }) => {
     console.log(blog);
@@ -11,12 +12,13 @@ const ConfirmDeleteBlogModal = ({ isOpen, onClose, blog, setIsReload }) => {
     const handleConfirmDeleteBlog = async () => {
         try {
 
-            await removeBlog(blog.id);
-            toast.success("Xóa bài viếtthành công!", { position: "top-right" });
+            await deleteBlog(blog.blogId);
+            toast.success("Xóa bài viết thành công!", { position: "top-right" });
             setIsReload(true);
-            onClose();
         } catch (error) {
-            toast.error("Xóa bài viếtthất bại!", { position: "top-right" });
+            toast.error("Xóa bài viết thất bại!", { position: "top-right" });
+        } finally {
+            onClose();
         }
     }
 

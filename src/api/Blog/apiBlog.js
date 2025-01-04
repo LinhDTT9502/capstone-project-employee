@@ -39,3 +39,11 @@ export const updateBlog = (blogId, formData) => {
 		},
 	});
 };
+
+export const changeStatusBlog = (blogId) => {
+	return api.put(`/Blog/hide-show-blog/${blogId}`, {
+		headers: {
+			accept: '*/*',
+		},
+	});
+};

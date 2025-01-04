@@ -234,9 +234,9 @@ export default function SidebarStaff() {
       <SidebarLink to="/content-staff/blogs" icon={faBlog}>
         Danh sách bài viết
       </SidebarLink>
-      <SidebarLink to="/content-staff/create-update-blog" icon={faBlog}>
+      {/* <SidebarLink to="/content-staff/create-update-blog" icon={faBlog}>
         Bài viết
-      </SidebarLink>
+      </SidebarLink> */}
       <SidebarLink to="/content-staff/edit-product" icon={faBriefcase}>
         Mô tả sản phẩm
       </SidebarLink>

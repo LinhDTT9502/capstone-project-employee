@@ -10,7 +10,7 @@ import {
 } from "../../api/Blog/apiBlog";
 import { useRef } from 'react';
 import axios from "axios";
-const CreateUpdateBlog = () => {
+const UpdateBlog = (selectedBlog) => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [content, setContent] = useState("");
@@ -385,4 +385,4 @@ const CreateUpdateBlog = () => {
   );
 };
 
-export default CreateUpdateBlog;
+export default UpdateBlog;
