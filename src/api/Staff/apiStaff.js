@@ -39,7 +39,7 @@ export const createNewStaff = (newStaff) => {
 };
 
 export const deleteStaff = (id) => {
-  return axios.delete (`${API_BASE_URL}/delete?staffId=${id}`, {
+  return axios.delete(`${API_BASE_URL}/delete?staffId=${id}`, {
     headers: {
       'accept': '*/*'
     }
@@ -47,18 +47,19 @@ export const deleteStaff = (id) => {
 };
 
 export const updateStaff = (staff) => {
-  return axios.put (`${API_BASE_URL}/update?staffId=${staff.staffId}`,
+  return axios.put(`${API_BASE_URL}/update?staffId=${staff.staffId}`,
     {
       userId: staff.userId,
       branchId: staff.branchId,
       managerId: staff.managerId,
       startDate: staff.startDate,
+      endDate: staff.endDate,
       position: staff.position,
       isActive: staff.isActive
     },
     {
-    headers: {
-      'accept': '*/*'
-    }
-  });
+      headers: {
+        'accept': '*/*'
+      }
+    });
 };

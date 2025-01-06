@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Switch } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -8,31 +7,45 @@ import {
   Typography,
   Spinner,
   Button,
-  Input,
 } from "@material-tailwind/react";
-import CreateStaffModal from "../../components/Admin/CreateStaffModal";
-import { editStaff, fetchAllStaff, removeStaff } from "../../services/Staff/StaffService";
+import { fetchAllStaff } from "../../services/Staff/StaffService";
 import StaffActions from "../../components/Admin/StaffActions";
-import { toast } from "react-toastify";
 import EditStaffModal from "../../components/Admin/EditStaffModal";
+import ConfirmDeleteStaffModal from "../../components/Admin/ConfirmDeleteStaffModal";
+import AddStaffModal from "../../components/Admin/AddStaffModal";
 
 const ListAllStaff = () => {
   const [staffData, setStaffData] = useState([]);
   const [filteredStaffData, setFilteredStaffData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteStaffModalOpen, setIsConfirmDeleteStaffModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const fetchStaffData = async () => {
     try {
       const result = await fetchAllStaff();
+
       if (result) {
-        setStaffData(result);
-        setFilteredStaffData(result);
+        // Sort by branchName and startDate
+        const sortedData = result.sort((a, b) => {
+          // Compare branchName (case-insensitive)
+          const branchComparison = b.branchName.localeCompare(a.branchName, undefined, { sensitivity: 'base' });
+          if (branchComparison !== 0) return branchComparison;
+
+          // If branchName is the same, compare startDate
+          return new Date(a.startDate) - new Date(b.startDate);
+        });
+
+        setStaffData(sortedData);
+        setFilteredStaffData(sortedData);
       } else {
         setError("Failed to fetch data");
       }
@@ -43,9 +56,11 @@ const ListAllStaff = () => {
     }
   };
 
+
   useEffect(() => {
     fetchStaffData();
-  }, []);
+    setIsReload(false);
+  }, [isReload]);
 
   // Filter staff data based on the search term
   useEffect(() => {
@@ -58,47 +73,13 @@ const ListAllStaff = () => {
     setFilteredStaffData(filtered);
   }, [searchTerm, staffData]);
 
-  const handleCreateStaff = () => {
-    setIsModalOpen(true);
-  };
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentStaffs = filteredStaffData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredStaffData.length / itemsPerPage);
 
-  const handleModalClose = (newStaff) => {
-    setIsModalOpen(false);
-    if (newStaff) {
-      fetchStaffData();
-    }
-  };
-
-  const handleEditStaff = (selectedStaff) => {
-    setSelectedStaff(selectedStaff);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDeleteStaff = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) {
-      try {
-        console.log(id)
-        await removeStaff(id);
-        fetchStaffData();
-        toast.success("Xóa nhân viên thành công!", { position: "top-right" });
-      } catch (error) {
-        toast.error("Xóa nhân viên thất bại!", { position: "top-right" });
-      }
-    }
-  };
-
-  const handleUpdateStaff = async (staff) => {
-    try {
-      console.log(staff)
-      await editStaff(staff);
-      fetchStaffData();
-      toast.success("Nhân viên được cập nhật thành công!", {
-        position: "top-right",
-      });
-    } catch (error) {
-      toast.error("Cập nhật nhân viên thất bại!", { position: "top-right" });
-    }
-  };
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="container mx-auto p-4">
@@ -107,7 +88,7 @@ const ListAllStaff = () => {
           <Typography variant="h4" color="blue-gray" className="p-4 text-center">
             Danh sách <span className="text-orange-500">[Nhân Viên]</span> ({filteredStaffData.length})
           </Typography>
-          <Button onClick={handleCreateStaff}>
+          <Button onClick={() => setIsAddModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} />{" "}
             Tạo mới
           </Button>
@@ -144,12 +125,12 @@ const ListAllStaff = () => {
                   <th className="p-4 border-b">Chi nhánh</th>
                   <th className="p-4 border-b">Chức vụ</th>
                   <th className="p-4 border-b">Ngày bắt đầu</th>
-                  <th className="p-4 border-b">Trạng thái</th>
+                  <th className="p-4 border-b">Ngày kết thúc</th>
                   <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStaffData.map((staff, index) => (
+                {currentStaffs.map((staff, index) => (
 
                   <tr key={staff.staffId} className="hover:bg-gray-50">
                     <td className="p-4 border-b">{index + 1}</td>
@@ -172,40 +153,74 @@ const ListAllStaff = () => {
                       })}
                     </td>
                     <td className="p-4 border-b">
-                      <Switch
-                        color="green"
-                        checked={staff.isActive}
-                      />
-                      {/* {staff.isActive ? (
-                        // <span className="text-green-600 font-semibold">
-                        //   Hoạt động
-                        // </span>
-                    
-                      ) : (
-                        <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
-                      )} */}
+                      {new Date(staff.endDate).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
                     </td>
                     <td className="p-4 border-b">
                       <StaffActions
                         staff={staff}
-                        onEdit={handleEditStaff}
-                        onDelete={handleDeleteStaff}
+                        onEdit={() => {
+                          setSelectedStaff(staff);
+                          setIsEditModalOpen(true);
+                        }}
+                        onDelete={() => {
+                          setSelectedStaff(staff);
+                          setIsConfirmDeleteStaffModalOpen(true);
+                        }}
                       />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {/* Pagination */}
+            <div className="flex justify-center mt-4 pb-4">
+              {[...Array(totalPages).keys()].map((number) => (
+                <button
+                  key={number + 1}
+                  onClick={() => handlePageChange(number + 1)}
+                  className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                    }`}
+                >
+                  {number + 1}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </Card>
-      {isModalOpen && <CreateStaffModal onClose={handleModalClose} />}
-      <EditStaffModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSave={handleUpdateStaff}
-        staff={selectedStaff}
-      />
+
+      {/* Add Staff Modal */}
+      {isAddModalOpen && (
+        <AddStaffModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          setIsReload={setIsReload}
+        />
+      )}
+
+      {/* Edit Staff Modal */}
+      {isEditModalOpen && selectedStaff && (
+        <EditStaffModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          staff={selectedStaff}
+          setIsReload={setIsReload}
+        />
+      )}
+
+      {/* Delete Staff Modal */}
+      {isConfirmDeleteStaffModalOpen && selectedStaff && (
+        <ConfirmDeleteStaffModal
+          isOpen={isConfirmDeleteStaffModalOpen}
+          onClose={() => setIsConfirmDeleteStaffModalOpen(false)}
+          staff={selectedStaff}
+          setIsReload={setIsReload}
+        />
+      )}
     </div>
 
   );

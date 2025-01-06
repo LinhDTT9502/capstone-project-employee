@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { fetchBranchs } from "../../services/branchService";
+import React, { useEffect, useState } from "react";
+import { Dialog } from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faSave, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
 import { createStaff, fetchAllStaffWithoutBranch } from "../../services/Staff/StaffService";
-import { toast } from "react-toastify";
+import { fetchBranchs } from "../../services/branchService";
 
-const CreateStaffModal = ({ onClose }) => {
-  const [branches, setBranches] = useState([]);
+const AddStaffModal = ({ isOpen, onClose, setIsReload }) => {
   const [managers, setManagers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [selectedBranch, setSelectedBranch] = useState(null);
-  const [selectedManager, setSelectedManager] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedManager, setSelectedManager] = useState(null);
   const [position, setPosition] = useState("");
   const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [branches, setBranches] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchBranches = async () => {
@@ -42,27 +49,52 @@ const CreateStaffModal = ({ onClose }) => {
   };
 
   const handleSubmit = async () => {
+    // if (!staffName.trim() || !uploadFile) {
+    //   setErrors({
+    //     staffName: !staffName.trim() ? "Vui lòng nhập tên nhân viên" : "",
+    //     staffImage: !uploadFile ? "Hình ảnh là bắt buộc." : "",
+    //   });
+    //   return;
+    // }
+
     const newStaff = {
       userId: selectedUser,
       branchId: selectedBranch,
       managerId: selectedManager || null,
       startDate,
+      endDate,
       position,
     };
-
-    const data = await createStaff(newStaff)
-    if (data.isSuccess) {
-      toast.success('Tạo nhân viên mới thành công!')
-      onClose(true);
-    } else {
-      toast.error("Tạo nhân viên thất bại.");
+    setLoading(true)
+    try {
+      const data = await createStaff(newStaff)
+      if (data.isSuccess) {
+        toast.success('Tạo nhân viên mới thành công!')
+      } else {
+        toast.error("Tạo nhân viên thất bại.");
+      }
+    } catch (error) {
+      toast.error("Tạo nhân viên thất bại.", { position: "top-right" });
+    } finally {
+      setIsReload(true)
+      setLoading(false)
     }
+    onClose()
+
+    setErrors({});
   };
+
 
   return (
     <Dialog open={isOpen} handler={onClose}>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-md">
+      {loading && (
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+          <FontAwesomeIcon icon={faSpinner} spin className="text-white text-4xl" />
+          <span className="text-white ml-4">Đang xử lý...</span>
+        </div>
+      )}
+      <div className=" fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="w-1/3 bg-white p-6 rounded-md">
           <h2 className="text-xl font-bold mb-4">Tạo nhân viên mới</h2>
           <div className="mb-4">
             <label className="block text-sm font-medium">Chi nhánh</label>
@@ -129,18 +161,28 @@ const CreateStaffModal = ({ onClose }) => {
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
-          <div className="flex justify-end">
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Ngày kết thúc</label>
+            <input
+              type="date"
+              className="w-full p-2 border rounded"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          <div className="mt-6 flex justify-end gap-3">
             <button
-              onClick={() => onClose(false)}
-              className="px-4 py-2 bg-gray-300 rounded mr-2"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border rounded hover:bg-gray-50"
             >
-              Đóng
+              Hủy
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
             >
-              Tạo mới
+              <FontAwesomeIcon icon={faPlus} className="mr-1" />
+              Thêm
             </button>
           </div>
         </div>
@@ -149,4 +191,4 @@ const CreateStaffModal = ({ onClose }) => {
   );
 };
 
-export default CreateStaffModal;
+export default AddStaffModal;

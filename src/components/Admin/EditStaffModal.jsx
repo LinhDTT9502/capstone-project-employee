@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { fetchBranchs } from "../../services/branchService";
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
+import { editStaff } from "../../services/Staff/StaffService";
+import { toast } from "react-toastify";
 
-const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
+const EditStaffModal = ({ isOpen, onClose, staff, setIsReload }) => {
     const [branches, setBranches] = useState([]);
     const [branchId, setBranchId] = useState(0);
     const [managers, setManagers] = useState([]);
@@ -14,6 +16,7 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
     const [position, setPosition] = useState("");
     const [endDate, setEndDate] = useState("");
     const [isActive, setIsActive] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const fetchBranches = async () => {
         const fetchedBranchs = await fetchBranchs();
@@ -22,11 +25,13 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
 
     useEffect(() => {
         if (staff) {
+            console.log(staff);
+
             setBranchId(staff.branchId || 0);
             setManagerId(staff.managerId || 0);
             setStartDate(staff.startDate ? staff.startDate.split("T")[0] : "");
+            setEndDate(staff.endDate ? staff.endDate.split("T")[0] : "");
             setPosition(staff.position || "");
-            setEndDate(staff.endDate || "");
             setIsActive(staff.isActive ?? true);
             // console.log(staff);
             if (staff.branchId) {
@@ -37,7 +42,7 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
         fetchBranches();
     }, [staff]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!position.trim()) {
             alert("Các trường branchId, managerId và vị trí không được để trống.");
             return;
@@ -49,13 +54,25 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
             branchId: branchId === 0 ? null : parseInt(branchId, 10),
             managerId: managerId === 0 ? null : parseInt(managerId, 10),
             startDate,
-            position ,
+            position,
             endDate: endDate === "" ? null : endDate,
             isActive,
         };
         console.log(updatedStaff)
-        onSave(updatedStaff);
-        onClose();
+        try {
+            setLoading(true)
+            console.log(updatedStaff)
+            await editStaff(updatedStaff);
+            toast.success("Nhân viên được cập nhật thành công!", {
+                position: "top-right",
+            });
+        } catch (error) {
+            toast.error("Cập nhật nhân viên thất bại!", { position: "top-right" });
+        } finally {
+            setLoading(false)
+            setIsReload(true)
+            onClose();
+        }
     };
     const handleBranchChange = (branchId) => {
         setBranchId(branchId);
@@ -70,6 +87,12 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
 
     return (
         <Dialog open={isOpen} handler={onClose} size="sm" className="bg-white shadow-none">
+            {loading && (
+                <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                    <FontAwesomeIcon icon={faSpinner} spin className="text-white text-4xl" />
+                    <span className="text-white ml-4">Đang xử lý...</span>
+                </div>
+            )}
             <DialogHeader className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-gray-900">Chỉnh sửa Thông Tin Nhân Viên</h3>
                 <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
@@ -95,9 +118,9 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
                     </div>
                     {managers.length > 0 && (
                         <div>
-                        <label htmlFor="managerId" className="block text-sm font-medium text-gray-700">
-                            Mã Quản Lý
-                        </label>
+                            <label htmlFor="managerId" className="block text-sm font-medium text-gray-700">
+                                Tên Quản Lý
+                            </label>
                             <select
                                 className="w-full p-2 border rounded"
                                 value={managerId || ""} // Hiển thị giá trị manager hiện tại
@@ -110,7 +133,7 @@ const EditStaffModal = ({ isOpen, onClose, onSave, staff }) => {
                                     </option>
                                 ))}
                             </select>
-                    </div>
+                        </div>
 
                     )}
 
