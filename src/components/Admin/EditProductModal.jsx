@@ -12,7 +12,7 @@ import { fetchAllProducts, updateProductById } from "../../services/productServi
 const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => {
   const [productName, setProductName] = useState("");
   const [productCode, setProductCode] = useState("");
-  const [price, setPrice] = useState(0);
+  const [listedPrice, setListedPrice] = useState(0);
   const [rentPrice, setRentPrice] = useState(0);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
@@ -40,7 +40,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     if (product) {
       setProductName(product.productName || "");
       setProductCode(product.productCode || "");
-      setPrice(product.price || 0);
+      setListedPrice(product.listedPrice || 0);
       setRentPrice(product.rentPrice || 0);
       setColor(product.color || "");
       setSize(product.size || "");
@@ -131,8 +131,8 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
 
     if (!productName.trim()) errors.push("Product name is required.");
     if (!productCode.trim()) errors.push("Product code is required.");
-    if (price <= 0) errors.push("Price must be greater than 0.");
-    if (rentPrice <= 0) errors.push("Rent Price must be greater than 0.");
+    if (listedPrice <= 0) errors.push("Listed Price must be greater than 0.");
+    // if (rentPrice <= 0) errors.push("Rent Price must be greater than 0.");
     if (!color.trim()) errors.push("Color is required.");
     if (!size.trim()) errors.push("Size is required.");
     if (condition <= 0) errors.push("Condition must be a positive number.");
@@ -183,7 +183,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     const payload = {
       productName: productName.trim(),
       productCode: productCode.trim(),
-      price: parseFloat(price),
+      listedPrice: parseFloat(listedPrice),
       rentPrice: parseFloat(rentPrice),
       color: color.trim(),
       size: size.trim(),
@@ -272,15 +272,15 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
 
           <div className="flex">
             <div className="mr-2 w-1/3 mt-4">
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="listedPrice" className="block text-sm font-medium text-gray-700">
                 Giá Bán
               </label>
               <div className="relative">
                 <input
                   type="number"
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+                  id="listedPrice"
+                  value={listedPrice}
+                  onChange={(e) => setListedPrice(parseFloat(e.target.value) || 0)}
                   disabled={!isEdit} // Disable when not in edit mode
                   className={`w-full mt-2 border rounded px-3 py-2 ${!isEdit ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 />
