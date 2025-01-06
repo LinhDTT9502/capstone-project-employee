@@ -11,12 +11,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { fetchAllManagers } from "../../services/Manager/ManagerService";
+import ManagerActions from "../../components/Admin/ManagerActions";
+import AddManagerModal from "../../components/Admin/AddManagerModal";
+import EditManagerModal from "../../components/Admin/EditManagerModal";
+import ConfirmDeleteManagerModal from "../../components/Admin/ConfirmDeleteManagerModal";
 
 const ListAllManagers = () => {
   const [managerData, setManagerData] = useState([]);
   const [filteredManagers, setFilteredManagers] = useState([]); // State for filtered managers
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedManager, setSelectedManager] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteManagerModalOpen, setIsConfirmDeleteManagerModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
@@ -26,8 +35,11 @@ const ListAllManagers = () => {
       const response = await fetchAllManagers();
 
       if (response) {
-        setManagerData(response);
-        setFilteredManagers(response); // Initialize filtered managers
+        // Sort the response data by startDate in descending order
+        const sortedData = response.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+        setManagerData(sortedData);
+        setFilteredManagers(sortedData); // Initialize filtered managers with sorted data
       } else {
         setError("Failed to fetch data");
       }
@@ -38,9 +50,11 @@ const ListAllManagers = () => {
     }
   };
 
+
   useEffect(() => {
     fetchManagerData();
-  }, []);
+    setIsReload(false)
+  }, [isReload]);
 
   // Filter managers based on the search term
   useEffect(() => {
@@ -65,10 +79,10 @@ const ListAllManagers = () => {
           >
             Danh sách <span className="text-orange-500">[Quản Lý]</span> ({filteredManagers.length})
           </Typography>
-          <Button onClick={() => setIsModalOpen(true)}>
-          <FontAwesomeIcon icon={faPlus} />{" "}
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} />{" "}
             Tạo mới
-            </Button>
+          </Button>
         </div>
 
         <div className="p-4">
@@ -99,7 +113,8 @@ const ListAllManagers = () => {
                   <th className="p-4 border-b">Email</th>
                   <th className="p-4 border-b">Chi nhánh</th>
                   <th className="p-4 border-b">Ngày bắt đầu</th>
-                  <th className="p-4 border-b">Trạng thái</th>
+                  <th className="p-4 border-b">Ngày kết thúc</th>
+                  <th className="p-4 border-b"></th>
                 </tr>
               </thead>
               <tbody>
@@ -124,17 +139,26 @@ const ListAllManagers = () => {
                       })}
                     </td>
                     <td className="p-4 border-b">
-                      <Switch
-                        color="green"
-                        checked={manager.isActive}
+                      {manager.endDate
+                        ? new Date(manager.endDate).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        : ""}
+                    </td>
+                    <td className="p-4 border-b">
+                      <ManagerActions
+                        manager={manager}
+                        onEdit={() => {
+                          setSelectedManager(manager);
+                          setIsEditModalOpen(true);
+                        }}
+                        onDelete={() => {
+                          setSelectedManager(manager);
+                          setIsConfirmDeleteManagerModalOpen(true);
+                        }}
                       />
-                      {/* {manager.isActive ? (
-                        <span className="text-green-600 font-semibold">
-                          Hoạt động
-                        </span>
-                      ) : (
-                        <span className="text-red-600 font-semibold">Vô hiệu hóa</span>
-                      )} */}
                     </td>
                   </tr>
                 ))}
@@ -143,7 +167,38 @@ const ListAllManagers = () => {
           </div>
         )}
       </Card>
+
+      {/* Add Manager Modal */}
+      {isAddModalOpen && (
+        <AddManagerModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          setIsReload={setIsReload}
+        />
+      )}
+
+      {/* Edit Manager Modal */}
+      {isEditModalOpen && selectedManager && (
+        <EditManagerModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          manager={selectedManager}
+          setIsReload={setIsReload}
+        />
+      )}
+
+      {/* Delete Manager Modal */}
+      {isConfirmDeleteManagerModalOpen && selectedManager && (
+        <ConfirmDeleteManagerModal
+          isOpen={isConfirmDeleteManagerModalOpen}
+          onClose={() => setIsConfirmDeleteManagerModalOpen(false)}
+          manager={selectedManager}
+          setIsReload={setIsReload}
+        />
+      )}
     </div>
+
+
   );
 };
 

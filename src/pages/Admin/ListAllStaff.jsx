@@ -153,11 +153,13 @@ const ListAllStaff = () => {
                       })}
                     </td>
                     <td className="p-4 border-b">
-                      {new Date(staff.endDate).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })}
+                      {staff.endDate
+                        ? new Date(staff.endDate).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        : ""}
                     </td>
                     <td className="p-4 border-b">
                       <StaffActions
