@@ -43,59 +43,79 @@ const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
 
   return (
     <Dialog open={open} handler={onClose} size="lg">
-      <DialogHeader>
-        Chi tiết đơn hàng: {orderCode}
+      <DialogHeader className="bg-gray-100 text-gray-800 px-6 py-4 rounded-t-lg">
+        <h2 className="text-2xl font-bold">Chi tiết đơn hàng: #{orderCode || rentalCode}</h2>
       </DialogHeader>
-      <DialogBody divider className="max-h-[70vh] overflow-y-auto">
-        {error && <p className="text-red-500">{error}</p>}
+      <DialogBody divider className="max-h-[70vh] overflow-y-auto px-6 py-4">
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         {orderDetails ? (
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <p><strong>Họ và tên:</strong> {orderDetails.fullName}</p>
-              <p><strong>Giới tính:</strong> {orderDetails.gender}</p>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-3 text-gray-700">Thông tin khách hàng</h3>
+                <p><span className="font-medium">Họ và tên:</span> {orderDetails.fullName}</p>
+                <p><span className="font-medium">Giới tính:</span> {orderDetails.gender}</p>
+                <p><span className="font-medium">Địa chỉ:</span> {orderDetails.address}</p>
+                <p><span className="font-medium">Số điện thoại:</span> {orderDetails.contactPhone}</p>
+                <p><span className="font-medium">Email:</span> {orderDetails.email}</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-3 text-gray-700">Thông tin đơn hàng</h3>
+                <p><span className="font-medium">Chi nhánh:</span> {orderDetails.branchName}</p>
+                <p><span className="font-medium">Trạng thái:</span> <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{orderDetails.orderStatus}</span></p>
+                <p><span className="font-medium">Ngày tạo:</span> {new Date(orderDetails.createdAt).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}</p>
+                <p><span className="font-medium">Phương thức giao hàng:</span> {orderDetails.deliveryMethod}</p>
+                <p><span className="font-medium">Tình trạng thanh toán:</span> <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">{orderDetails.paymentStatus}</span></p>
+                <p><span className="font-medium">Phương thức thanh toán:</span> {orderDetails.paymentMethod || "Không xác định"}</p>
+              </div>
             </div>
-            <p><strong>Địa chỉ:</strong> {orderDetails.address}</p>
-            <p><strong>Số điện thoại:</strong> {orderDetails.contactPhone}</p>
-            <p><strong>Email:</strong> {orderDetails.email}</p>
-            <p><strong>Chi nhánh:</strong> {orderDetails.branchName}</p>
-            <p><strong>Trạng thái đơn hàng:</strong> {orderDetails.orderStatus}</p>
-            <p><strong>Ngày tạo:</strong> {new Date(orderDetails.createdAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })}</p>
-            <p><strong>Phương thức giao hàng:</strong> {orderDetails.deliveryMethod}</p>
-            <p><strong>Tình trạng thanh toán:</strong> {orderDetails.paymentStatus}</p>
-            <p><strong>Phương thức thanh toán:</strong> {orderDetails.paymentMethod || "Không xác định"}</p>
-            <p><strong>Ghi chú:</strong> {orderDetails.note || "Không có"}</p>
+            
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-3 text-gray-700">Ghi chú</h3>
+              <p className="italic text-gray-600">{orderDetails.note || "Không có ghi chú"}</p>
+            </div>
 
-            <div className="border-t pt-4">
-              <h3 className="text-lg font-medium">Chi tiết chi phí:</h3>
-              <p><strong>Giá thuê:</strong> {orderDetails.rentPrice || 0} VND</p>
-              <p><strong>Phí trễ hạn:</strong> {orderDetails.lateFee} VND</p>
-              <p><strong>Phí vận chuyển:</strong> {orderDetails.tranSportFee} VND</p>
-              <p><strong>Tổng cộng:</strong> {orderDetails.totalAmount} VND</p>
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-3 text-gray-700">Chi tiết chi phí</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <p><span className="font-medium">Giá thuê:</span> {orderDetails.rentPrice?.toLocaleString('vi-VN') || 0} VND</p>
+                <p><span className="font-medium">Phí trễ hạn:</span> {orderDetails.lateFee?.toLocaleString('vi-VN')} VND</p>
+                <p><span className="font-medium">Phí vận chuyển:</span> {orderDetails.tranSportFee?.toLocaleString('vi-VN')} VND</p>
+                <p className="col-span-2"><span className="font-medium text-lg">Tổng cộng:</span> <span className="text-xl font-bold text-green-600">{orderDetails.totalAmount?.toLocaleString('vi-VN')} VND</span></p>
+              </div>
             </div>
 
             {orderDetails.childOrders && (
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-medium">Chi tiết sản phẩm:</h3>
-                {orderDetails.childOrders.$values.map((child, index) => (
-                  <div key={index} className="p-2 border rounded-md mb-2">
-                    <p><strong>Tên sản phẩm:</strong> {child.productName || "Không xác định"}</p>
-                    <p><strong>Số lượng:</strong> {child.quantity}</p>
-                    <p><strong>Mã sản phẩm:</strong> {child.productCode}</p>
-                  </div>
-                ))}
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-3 text-gray-700">Chi tiết sản phẩm</h3>
+                <div className="grid gap-4">
+                  {orderDetails.childOrders.$values.map((child, index) => (
+                    <div key={index} className="p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-150">
+                      <p><span className="font-medium">Tên sản phẩm:</span> {child.productName || "Không xác định"}</p>
+                      <p><span className="font-medium">Số lượng:</span> {child.quantity}</p>
+                      <p><span className="font-medium">Mã sản phẩm:</span> {child.productCode}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         ) : (
-          <p>Đang tải thông tin...</p>
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         )}
       </DialogBody>
-      <DialogFooter>
-        <Button color="red" onClick={onClose}>
+      <DialogFooter className="px-6 py-4">
+        <Button 
+          color="red" 
+          onClick={onClose}
+          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-150"
+        >
           Đóng
         </Button>
       </DialogFooter>

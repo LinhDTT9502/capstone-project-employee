@@ -97,7 +97,7 @@ const ViewCommentModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     if (file) {
       const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        alert("Invalid file type. Please upload a PNG, JPG, GIF, or WEBP file.");
+        alert("Loại tệp không hợp lệ. Vui lòng tải lên tệp PNG, JPG, GIF hoặc WEBP.");
         return;
       }
 

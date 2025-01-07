@@ -66,45 +66,44 @@ const UpdateRefundModal = ({ open, onClose, orderCode, rentalCode, id }) => {
 
   return (
     <Dialog open={open} handler={onClose} size="lg">
-      <DialogHeader>Update Refund: {orderCode}</DialogHeader>
+      <DialogHeader>Cập nhật hoàn tiền cho đơn #{orderCode}</DialogHeader>
       <DialogBody divider className="max-h-[70vh] overflow-y-auto">
         <div className="flex flex-col gap-4">
           {/* Staff Notes Input */}
           <Textarea
-            label="Staff Notes"
+            label="Ghi chú từ nhân viên"
             value={staffNotes}
             onChange={(e) => setStaffNotes(e.target.value)}
-            placeholder="Enter staff notes"
             className="w-full"
           />
 
           {/* Status Select */}
           <Select
-            label="Status"
+            label="Chọn trạng thái hoàn tiền"
             value={status}
             onChange={(value) => setStatus(value)}
           >
-            <Option value="Pending">Pending</Option>
-            <Option value="Approved">Approved</Option>
-            <Option value="Rejected">Rejected</Option>
+            <Option value="Pending">Chờ xử lý</Option>
+            <Option value="Approved">Chấp nhận yêu cầu</Option>
+            <Option value="Rejected">Từ chối yêu cầu</Option>
           </Select>
 
           {/* Refund Method (optional) */}
           <Input
-            label="Refund Method"
+            label="Phương pháp hoàn tiền"
             value={refundMethod}
             onChange={(e) => setRefundMethod(e.target.value)}
-            placeholder="Enter refund method (optional)"
+            placeholder="Nhập phương thức hoàn tiền (Không bắt buộc)"
             className="w-full"
           />
         </div>
       </DialogBody>
       <DialogFooter>
         <Button color="red" onClick={onClose} className="mr-2">
-          Close
+          Đóng
         </Button>
         <Button color="green" onClick={handleUpdateRefund}>
-          Update Refund
+          Hoàn tất yêu cầu
         </Button>
       </DialogFooter>
     </Dialog>

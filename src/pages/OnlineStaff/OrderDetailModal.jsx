@@ -33,7 +33,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
 
   const handleAssignBranch = async () => {
     if (!selectedBranchId) {
-      alert('Please select a branch first!');
+      alert('Vui lòng chọn chi nhánh cho đơn hàng');
       return;
     }
 
