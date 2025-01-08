@@ -34,12 +34,13 @@ import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
 import TransportFee from "./TransportFee";
 import RentalTransportFee from "./RentalTransportFee";
+import { toast } from "react-toastify";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
-  { id: 2, label: "Đã xác nhận đơn" },
+  { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
-  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
+  { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Hoàn thành" },
 ];
@@ -76,51 +77,24 @@ const RentalDetail = () => {
   };
 
   const statusOptions = [
-    { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
-    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
-    { label: "Đã xác nhận đơn", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
-    { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" }, // PROCESSING
-    { label: "Đã giao cho đơn vị vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
-    { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" }, // DELIVERED
-    { label: "Bị từ chối", value: 6, color: "bg-red-200 text-red-700" }, // DECLINED
-    {
-      label: "Chờ khách nhận hàng",
-      value: 7,
-      color: "bg-yellow-200 text-yellow-700",
-    }, // AWAITING_PICKUP
-    { label: "Đang thuê", value: 8, color: "bg-blue-200 text-blue-700" }, // RENTED
-    {
-      label: "Yêu cầu gia hạn",
-      value: 9,
-      color: "bg-orange-200 text-orange-700",
-    }, // EXTENSION_REQUESTED
-    { label: "Bị trì hoãn", value: 10, color: "bg-orange-100 text-orange-800" }, // DELAYED
-    {
-      label: "Yêu cầu trả sản phẩm",
-      value: 11,
-      color: "bg-gray-100 text-gray-800",
-    }, // RETURN_REQUESTED
-    {
-      label: "Đã trả sản phẩm",
-      value: 12,
-      color: "bg-green-100 text-green-800",
-    }, // RETURNED
-    {
-      label: "Đang kiểm tra sản phẩm trả",
-      value: 13,
-      color: "bg-blue-100 text-blue-700",
-    }, // INSPECTING
-    {
-      label: "Đơn thuê đã kết thúc",
-      value: 14,
-      color: "bg-gray-200 text-gray-700",
-    }, // COMPLETED
-    {
-      label: "Xử lý đơn thất bại",
-      value: 15,
-      color: "bg-red-300 text-red-700",
-    }, // FAILED
+    { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-600" }, // CANCELED
+    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-600" }, // PENDING
+    { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-600" }, // CONFIRMED
+    { label: "Đang xử lý", value: 3, color: "bg-indigo-100 text-indigo-600" }, // PROCESSING
+    { label: "Đã giao ĐVVC", value: 4, color: "bg-teal-100 text-teal-600" }, // SHIPPED
+    { label: "Đã giao hàng", value: 5, color: "bg-green-100 text-green-600" }, // DELIVERED
+    { label: "Bị từ chối", value: 6, color: "bg-red-100 text-red-600" }, // DECLINED
+    { label: "Chờ khách nhận hàng", value: 7, color: "bg-orange-100 text-orange-600" }, // AWAITING_PICKUP
+    { label: "Đang thuê", value: 8, color: "bg-purple-100 text-purple-600" }, // RENTED
+    { label: "Yêu cầu gia hạn", value: 9, color: "bg-indigo-100 text-indigo-600" }, // EXTENSION_REQUESTED
+    { label: "Bị trì hoãn", value: 10, color: "bg-orange-100 text-orange-600" }, // DELAYED
+    { label: "Yêu cầu trả sản phẩm", value: 11, color: "bg-purple-100 text-purple-600" }, // RETURN_REQUESTED
+    { label: "Đã trả sản phẩm", value: 12, color: "bg-gray-100 text-gray-600" }, // RETURNED
+    { label: "Đang kiểm tra sản phẩm trả", value: 13, color: "bg-gray-100 text-gray-600" }, // INSPECTING
+    { label: "Đơn thuê đã kết thúc", value: 14, color: "bg-green-100 text-green-600" }, // COMPLETED
+    { label: "Xử lý đơn thất bại", value: 15, color: "bg-orange-100 text-orange-600" }, // FAILED
   ];
+  
 
   const getCurrentStepIndex = (orderStatus) => {
     const step = ORDER_STEPS.find((step) => step.label === orderStatus);
@@ -199,12 +173,12 @@ const RentalDetail = () => {
         setOrder({ ...order, orderStatus: statusLabel });
         fetchOrderDetail()
 
-        alert("Order status updated successfully");
+        toast.success("Order status updated successfully");
       } else {
-        alert("Failed to update order status");
+        toast.error("Failed to update order status");
       }
     } catch (error) {
-      alert(error.response.data.message);
+      toast.error(error.response.data.message);
 
     } finally {
       setUpdating(false);
@@ -347,14 +321,14 @@ const RentalDetail = () => {
       if (response) {
         console.log(response);
 
-        alert("Cập nhật đơn hàng thành công");
+        toast.success("Cập nhật đơn hàng thành công");
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
       } else {
-        alert("Failed to update order");
+        toast.error("Failed to update order");
       }
     } catch (error) {
-      alert("Error updating order");
+      toast.error("Error updating order");
     }
   };
 
@@ -611,15 +585,14 @@ const RentalDetail = () => {
                               <p className="font-medium text-gray-900">
                                 {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
                                   "vi-VN"
-                                )}
-                                ₫
+                                )} ₫
                               </p>
                             </p>
                           </div>
                           
                         </div><div className="text-right">
                             <p className="font-medium text-gray-900">
-                              {child.rentPrice.toLocaleString('vi-VN')}₫
+                              {child.rentPrice.toLocaleString('vi-VN')} ₫
                             </p>
                           </div>
                       </li>
@@ -687,14 +660,12 @@ const RentalDetail = () => {
                     )
                   ) : (
                     0
-                  )}
-
-                  ₫</p>
+                  )} ₫</p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))}₫
+                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))} ₫
 
                 </p>
               </div>

@@ -12,6 +12,7 @@ import { useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
@@ -93,7 +94,7 @@ const CreateBlog = () => {
         setBlogs(response.data.data.$values);
       } catch (error) {
         console.error("Error fetching blogs:", error);
-        alert("Failed to fetch blogs.");
+        toast.warning("Failed to fetch blogs.");
       }
     };
     fetchBlogs();
@@ -103,7 +104,7 @@ const CreateBlog = () => {
     e.preventDefault();
 
     if (!title || !content) {
-      alert("Vui lòng điền tiêu đề và nội dung!");
+      toast.warning("Vui lòng điền tiêu đề và nội dung!");
       return;
     }
 
@@ -116,10 +117,10 @@ const CreateBlog = () => {
     try {
       if (blogId) {
         await updateBlog(blogId, formData);
-        alert("Blog đã được cập nhật thành công.");
+        toast.success("Blog đã được cập nhật thành công.");
       } else {
         await createBlog(formData);
-        alert("Blog đã được cập nhật thành công.");
+        toast.success("Blog đã được cập nhật thành công.");
       }
 
       // Reset fields and fetch updated blogs
@@ -132,7 +133,7 @@ const CreateBlog = () => {
       setBlogs(updatedBlogs.data.data.$values);
     } catch (error) {
       console.error("Error saving blog:", error);
-      alert("Failed to save the blog.");
+      toast.error("Failed to save the blog.");
     }
   };
 
@@ -144,11 +145,11 @@ const CreateBlog = () => {
 
     try {
       await deleteBlog(id);
-      alert("Blog đã được xóa thành công.");
+      toast.success("Blog đã được xóa thành công.");
       setBlogs(blogs.filter((blog) => blog.blogId !== id));
     } catch (error) {
       console.error("Error deleting blog:", error);
-      alert("Failed to delete the blog.");
+      toast.error("Failed to delete the blog.");
     }
   };
 

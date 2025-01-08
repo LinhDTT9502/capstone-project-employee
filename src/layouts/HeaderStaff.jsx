@@ -21,6 +21,7 @@ import { getNoti } from "../services/Notification/NotificationService";
 import { Link, useNavigate } from "react-router-dom";
 import { getOrderbyCode } from "../services/Staff/OrderService";
 import Profile from "../pages/Profile/Profile";
+import { toast } from "react-toastify";
 
 function HeaderStaff() {
   const [open, setOpen] = useState(false);
@@ -84,7 +85,7 @@ function HeaderStaff() {
     if (orderCode.startsWith("S-")) {
       if (user.role === "Coordinator") {
         if (data.branchId !== null) {
-          alert("Đơn hàng này đã được bàn giao!");
+          toast.warning("Đơn hàng này đã được bàn giao!");
           console.log(branchId);
 
           setBranchId(null);

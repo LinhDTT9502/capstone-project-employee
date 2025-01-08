@@ -44,7 +44,7 @@ const EditStaffModal = ({ isOpen, onClose, staff, setIsReload }) => {
 
     const handleSubmit = async () => {
         if (!position.trim()) {
-            alert("Các trường branchId, managerId và vị trí không được để trống.");
+            toast.warning("Các trường branchId, managerId và vị trí không được để trống.");
             return;
         }
 

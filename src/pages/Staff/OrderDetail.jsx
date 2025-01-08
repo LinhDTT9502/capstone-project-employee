@@ -29,6 +29,7 @@ import {
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
 import TransportFee from "./TransportFee";
+import { toast } from "react-toastify";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -121,12 +122,12 @@ const OrderDetail = () => {
         fetchOrderDetail()
         setUpdating(true);
 
-        alert("Cập nhật trạng thái thành công");
+        toast.success("Cập nhật trạng thái thành công");
       } else {
-        alert("Failed to update order status");
+        toast.error("Failed to update order status");
       }
     } catch (error) {
-      alert(error.response.data.message);
+      toast.error(error.response.data.message);
       
     } finally {
       setUpdating(false);
@@ -262,14 +263,14 @@ const OrderDetail = () => {
       );
 
       if (response.data.isSuccess) {
-        alert("Cập nhật đơn hàng thành công");
+        toast.success("Cập nhật đơn hàng thành công");
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
       } else {
-        alert("Failed to update order");
+        toast.error("Failed to update order");
       }
     } catch (error) {
-      alert("Error updating order");
+      toast.error("Error updating order");
     }
   };
 
@@ -502,7 +503,7 @@ const OrderDetail = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
-                        {item.unitPrice.toLocaleString('vi-VN')}₫
+                        {item.unitPrice.toLocaleString('vi-VN')} ₫
                       </p>
                     </div>
                   </li>
@@ -516,7 +517,7 @@ const OrderDetail = () => {
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Tạm tính</p>
               <p className="font-medium text-gray-900">
-                {order.subTotal.toLocaleString('vi-VN')}₫
+                {order.subTotal.toLocaleString('vi-VN')} ₫
               </p>
             </div>
             <div className="flex justify-between py-2">
@@ -536,9 +537,9 @@ const OrderDetail = () => {
 
             </div>
             <div className="flex justify-between py-3 pt-4 mt-2 border-t border-gray-200">
-              <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
+              <p className="text-lg font-semibold text-gray-900 ">Tổng cộng </p>
               <p className="text-lg font-semibold text-rose-700">
-                {(order.totalAmount + transportFee).toLocaleString('vi-VN')}₫
+                {(order.totalAmount + transportFee).toLocaleString('vi-VN')} ₫
               </p>
             </div>
           </div>

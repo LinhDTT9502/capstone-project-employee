@@ -170,27 +170,27 @@ export default function ManageUser() {
       !birthDate ||
       !roleId
     ) {
-      toast.error("All fields are required");
+      toast.warning("All fields are required");
       return;
     }
 
     if (!isValidEmail(email)) {
-      toast.error("Invalid email");
+      toast.warning("Invalid email");
       return;
     }
 
     if (!isValidPhoneNumber(phone)) {
-      toast.error("Invalid phone number");
+      toast.warning("Invalid phone number");
       return;
     }
 
     if (!isValidGender(gender)) {
-      toast.error("Invalid gender");
+      toast.warning("Invalid gender");
       return;
     }
 
     if (!isValidBirthdate(birthDate)) {
-      toast.error("Invalid birthdate");
+      toast.warning("Invalid birthdate");
       return;
     }
 

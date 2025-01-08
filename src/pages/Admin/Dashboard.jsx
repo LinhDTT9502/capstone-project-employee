@@ -174,7 +174,7 @@ export default function Dashboard() {
     return (
       new Intl.NumberFormat("en-US", { minimumFractionDigits: 0 }).format(
         value
-      ) + " VND"
+      ) + " ₫"
     );
   };
 

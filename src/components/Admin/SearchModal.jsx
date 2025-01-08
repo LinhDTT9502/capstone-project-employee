@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
 import SearchBar from "./SearchBar";
+import { toast } from "react-toastify";
 
 const SearchModal = ({ isOpen, onClose, onAddPromotion }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -12,7 +13,7 @@ const SearchModal = ({ isOpen, onClose, onAddPromotion }) => {
 
   const handleSubmit = () => {
     if (!selectedProduct || !discount) {
-      alert("Vui lòng chọn sản phẩm và nhập phần trăm khuyến mãi.");
+      toast.warning("Vui lòng chọn sản phẩm và nhập phần trăm khuyến mãi.");
       return;
     }
     onAddPromotion(selectedProduct.productName, discount);

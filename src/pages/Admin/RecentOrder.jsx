@@ -35,7 +35,7 @@ export default function RecentOrder() {
     };
 
     const formatPrice = (value) => {
-        return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(value) + ' VND';
+        return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(value) + ' ₫';
     };
 
     useEffect(() => {

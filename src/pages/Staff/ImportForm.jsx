@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchCategories } from '../../services/categoryService';
+import { toast } from 'react-toastify';
 const ProductForm = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
@@ -128,13 +129,13 @@ const ProductForm = () => {
       });
 
       if (response.ok) {
-        alert('Product imported successfully!');
+        toast.success('Product imported successfully!');
       } else {
-        alert('Failed to import product');
+        toast.error('Failed to import product');
       }
     } catch (error) {
       console.error('Error importing product:', error);
-      alert('Error importing product');
+      toast.error('Error importing product');
     }
   };
 

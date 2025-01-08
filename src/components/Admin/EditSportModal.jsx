@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 
 const EditSportModal = ({ isOpen, onClose, onEditSport, sport }) => {
   const [name, setName] = useState("");
@@ -14,7 +15,7 @@ const EditSportModal = ({ isOpen, onClose, onEditSport, sport }) => {
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      alert("Tên môn thể thao không được để trống.");
+      toast.warning("Tên môn thể thao không được để trống.");
       return;
     }
     const payload = {

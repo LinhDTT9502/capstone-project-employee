@@ -212,7 +212,7 @@ export default function SidebarStaff() {
   const renderStaffLinks = () => (
     <>
       <SidebarLink to="/staff/list-orders" icon={faClipboardList}>
-        Danh sách đơn hàng
+        Danh sách đơn mua
       </SidebarLink>
       <SidebarLink to="/staff/list-rentals" icon={faClipboardList}>
         Danh sách đơn cho thuê
@@ -257,7 +257,7 @@ export default function SidebarStaff() {
       Quản lý kho
     </SidebarLink>
     <SidebarLink to="/manager/list-orders" icon={faClipboardList}>
-      Danh sách đơn hàng
+      Danh sách đơn mua
     </SidebarLink>
     <SidebarLink to="/manager/list-rentals" icon={faClipboardList}>
       Danh sách đơn cho thuê

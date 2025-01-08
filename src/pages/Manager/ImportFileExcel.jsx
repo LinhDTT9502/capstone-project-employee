@@ -14,7 +14,7 @@ const ImportFileExcel = () => {
     // Handle API call
     const handleImport = async () => {
         if (!selectedFile) {
-            toast.error("Please select a file first!");
+            toast.warning("Please select a file first!");
             return;
         }
 

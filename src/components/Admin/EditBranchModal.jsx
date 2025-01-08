@@ -31,7 +31,7 @@ const EditBranchModal = ({ isOpen, onClose, branch, setIsReload }) => {
     if (file) {
       const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        alert("Loại tệp không hợp lệ. Vui lòng tải lên tệp PNG, JPG, GIF hoặc WEBP.");
+        toast.warning("Loại tệp không hợp lệ. Vui lòng tải lên tệp PNG, JPG, GIF hoặc WEBP.");
         return;
       }
 

@@ -10,6 +10,7 @@ import {
 } from "../../api/Blog/apiBlog";
 import { useRef } from 'react';
 import axios from "axios";
+import { toast } from "react-toastify";
 const UpdateBlog = (selectedBlog) => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
@@ -88,7 +89,7 @@ const UpdateBlog = (selectedBlog) => {
         setBlogs(response.data.data.$values);
       } catch (error) {
         console.error("Error fetching blogs:", error);
-        alert("Failed to fetch blogs.");
+        toast.error("Failed to fetch blogs.");
       }
     };
     fetchBlogs();
@@ -98,7 +99,7 @@ const UpdateBlog = (selectedBlog) => {
     e.preventDefault();
 
     if (!title || !content) {
-      alert("Vui lòng điền tiêu đề và nội dung!");
+      toast.warning("Vui lòng điền tiêu đề và nội dung!");
       return;
     }
 
@@ -111,10 +112,10 @@ const UpdateBlog = (selectedBlog) => {
     try {
       if (blogId) {
         await updateBlog(blogId, formData);
-        alert("Blog cập nhật thành công");
+        toast.success("Blog cập nhật thành công");
       } else {
         await createBlog(formData);
-        alert("Blog cập nhật thành công");
+        toast.success("Blog cập nhật thành công");
       }
 
       // Reset fields and fetch updated blogs
@@ -127,7 +128,7 @@ const UpdateBlog = (selectedBlog) => {
       setBlogs(updatedBlogs.data.data.$values);
     } catch (error) {
       console.error("Error saving blog:", error);
-      alert("Failed to save the blog.");
+      toast.error("Failed to save the blog.");
     }
   };
 
@@ -139,11 +140,11 @@ const UpdateBlog = (selectedBlog) => {
 
     try {
       await deleteBlog(id);
-      alert("Blog đã được xóa thành công");
+      toast.success("Blog đã được xóa thành công");
       setBlogs(blogs.filter((blog) => blog.blogId !== id));
     } catch (error) {
       console.error("Error deleting blog:", error);
-      alert("Failed to delete the blog.");
+      toast.error("Failed to delete the blog.");
     }
   };
 
