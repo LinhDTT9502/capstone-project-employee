@@ -12,9 +12,9 @@ const ListExtension = () => {
 
     // Chip filter options
     const statusChips = [
-        { label: "Pending", value: 1, color: "yellow" },
-        { label: "Approve", value: 2, color: "green" },
-        { label: "Cancel", value: 3, color: "red" },
+        { label: "Đang xử lý", value: 1, color: "yellow" },
+        { label: "Chấp thuận", value: 2, color: "green" },
+        { label: "Từ chối", value: 3, color: "red" },
     ];
 
     // Fetch extension requests
@@ -45,8 +45,8 @@ const ListExtension = () => {
     return (
         <div className="p-6 space-y-4">
             {/* Title */}
-            <Typography variant="h4" className="text-center font-bold">
-                Extension Order Requests
+            <Typography variant="h4" className="font-bold">
+            Yêu cầu gia hạn
             </Typography>
 
             {/* Filter Chips */}
@@ -68,13 +68,13 @@ const ListExtension = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-blue-500">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Order Code</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Customer</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Product</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Extension Days</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Rent Price</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Mã đơn hàng</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Khách hàng</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Sản phẩm</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Ngày gia hạn</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Giá thuê</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Trạng thái</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"></th>
                         </tr>
                     </thead>
@@ -82,8 +82,8 @@ const ListExtension = () => {
                         {extensionRequests && extensionRequests.length > 0 ? (
                             extensionRequests.map((request, index) => (
                                 <tr key={request.id} className="hover:bg-gray-100">
-                                    <td className="px-6 py-4 text-sm text-gray-900">{index + 1}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">{request.rentalOrderCode}</td>
+                                    <td className="px-3 py-4 text-sm text-gray-900">{index + 1}</td>
+                                    <td className="px-4  py-4 text-sm text-gray-900">{request.rentalOrderCode}</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
                                         {request.fullName}
                                         <br />
@@ -103,15 +103,15 @@ const ListExtension = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">{request.extensionDays}</td>
+                                    <td className="px-4 py-4 text-sm text-gray-900">{request.extensionDays}</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">{request.rentPrice.toLocaleString()} VND</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">{request.extensionStatus}</td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
                                         <div className="flex items-center gap-4">
                                             <button
                                                 onClick={(e) => handleApprove(request.rentalOrderCode)}
-                                                className="bg-green-500 text-white p-2 rounded">approve</button>
-                                            <button className="bg-red-500 text-white p-2 rounded">reject</button>
+                                                className="bg-green-500 text-white p-2 rounded">Chấp nhận</button>
+                                            <button className="bg-red-500 text-white p-2 rounded">Từ chối</button>
                                         </div>
                                     </td>
                                 </tr>

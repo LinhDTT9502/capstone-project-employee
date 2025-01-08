@@ -98,7 +98,7 @@ const UpdateBlog = (selectedBlog) => {
     e.preventDefault();
 
     if (!title || !content) {
-      alert("Please fill in the title and content!");
+      alert("Vui lòng điền tiêu đề và nội dung!");
       return;
     }
 
@@ -111,10 +111,10 @@ const UpdateBlog = (selectedBlog) => {
     try {
       if (blogId) {
         await updateBlog(blogId, formData);
-        alert("Blog updated successfully.");
+        alert("Blog cập nhật thành công");
       } else {
         await createBlog(formData);
-        alert("Blog created successfully.");
+        alert("Blog cập nhật thành công");
       }
 
       // Reset fields and fetch updated blogs
@@ -133,13 +133,13 @@ const UpdateBlog = (selectedBlog) => {
 
   const handleDeleteBlog = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this blog? This action cannot be undone."
+      "Bạn có chắc chắn muốn xóa blog này không?"
     );
     if (!confirmDelete) return;
 
     try {
       await deleteBlog(id);
-      alert("Blog deleted successfully.");
+      alert("Blog đã được xóa thành công");
       setBlogs(blogs.filter((blog) => blog.blogId !== id));
     } catch (error) {
       console.error("Error deleting blog:", error);

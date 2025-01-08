@@ -378,23 +378,30 @@ const OrderDetail = () => {
               </h3>
               {/* edit productInformations and saleCosts part */}
               {editingSection === "productInformations" ? (
-                <div>
-                  <button onClick={handleCancel}>Hủy</button>
-                  <button
-                    onClick={handleSave}
-                    className="text-green-500 hover:text-green-700"
-                  >
-                    <FontAwesomeIcon icon={faSave} /> Lưu
-                  </button>
-                </div>
-              ) : (
+                <div className="flex space-x-1">
                 <button
-                  onClick={() => handleEditClick("productInformations")}
-                  className="text-gray-500 hover:text-black"
+                  onClick={handleCancel}
+                  className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
                 >
-                  <FontAwesomeIcon icon={faEdit} />
+                  Hủy
                 </button>
-              )}
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faSave} className="mr-2" />
+                  Lưu
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleEditClick("productInformations")}
+                className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+              >
+                <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                Chỉnh sửa
+              </button>
+            )}
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -420,7 +427,7 @@ const OrderDetail = () => {
                           {item.quantity}
 
                         </p>
-                        <p className="text-sm flex text-gray-500">
+                        <p className="text-sm text-gray-500">
                           <b>Màu sắc: </b>
                           {editingSection === "productInformations" ? (
                             <ProductColor
@@ -491,6 +498,7 @@ const OrderDetail = () => {
                           %
                         </p>{" "}
                       </div>
+                      
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
@@ -562,7 +570,7 @@ const OrderDetail = () => {
             <select
               onChange={(e) => setNewStatus(e.target.value)}
               value={newStatus || order.orderStatus}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option>Chọn tình trạng đơn</option>
               {statusOptions.map((status) => (
@@ -584,23 +592,31 @@ const OrderDetail = () => {
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
               {/* edit customerInformation part */}
               {editingSection === "customerInformation" ? (
-                <div>
-                  <button onClick={handleCancel}>Hủy</button>
-                  <button
-                    onClick={handleSave}
-                    className="text-green-500 hover:text-green-700"
-                  >
-                    <FontAwesomeIcon icon={faSave} /> Lưu
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => handleEditClick("customerInformation")}
-                  className="text-gray-500 hover:text-black"
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
-              )}
+  <div className="flex space-x-1">
+    <button
+      onClick={handleCancel}
+      className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+    >
+      Hủy
+    </button>
+    <button
+      onClick={handleSave}
+      className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+    >
+      <FontAwesomeIcon icon={faSave} className="mr-2" />
+      Lưu
+    </button>
+  </div>
+) : (
+  <button
+    onClick={() => handleEditClick("customerInformation")}
+    className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+  >
+    <FontAwesomeIcon icon={faEdit} className="mr-2" />
+    Chỉnh sửa
+  </button>
+)}
+
             </div>
             <div className="space-y-3">
               <div>
@@ -676,23 +692,30 @@ const OrderDetail = () => {
               <h3 className="text-lg font-semibold">Thông tin khác</h3>
               {/* edit addition infor */}
               {editingSection === "additionInfor" ? (
-                <div>
-                  <button onClick={handleCancel}>Hủy</button>
-                  <button
-                    onClick={handleSave}
-                    className="text-green-500 hover:text-green-700"
-                  >
-                    <FontAwesomeIcon icon={faSave} /> Lưu
-                  </button>
-                </div>
-              ) : (
+                <div className="flex space-x-1">
                 <button
-                  onClick={() => handleEditClick("additionInfor")}
-                  className="text-gray-500 hover:text-black"
+                  onClick={handleCancel}
+                  className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
                 >
-                  <FontAwesomeIcon icon={faEdit} />
+                  Hủy
                 </button>
-              )}
+                <button
+                  onClick={handleSave}
+                  className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faSave} className="mr-2" />
+                  Lưu
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleEditClick("additionInfor")}
+                className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+              >
+                <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                Chỉnh sửa
+              </button>
+            )}
             </div>
             <div className="space-y-3">
               <div>
@@ -719,7 +742,7 @@ const OrderDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Chi nhánh</p>
-                <p className="font-medium">{order.branchId}</p>
+                <p className="font-medium">{order.branchName || "KH chọn giao tận nơi"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Phương thức thanh toán</p>

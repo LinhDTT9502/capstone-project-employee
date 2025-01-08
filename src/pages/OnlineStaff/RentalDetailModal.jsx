@@ -66,7 +66,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
 
   const handleAssignBranch = async () => {
     if (!selectedBranchId) {
-      alert("Please select a branch first!");
+      alert("Vui lòng chọn chi nhánh cho đơn hàng");
       return;
     }
 
@@ -86,7 +86,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
         throw new Error("Failed to assign branch. Please try again.");
       }
 
-      alert("Branch assigned successfully!");
+      alert("Đã phân nhánh thành công!");
       onClose(); // Close the modal after successful assignment
     } catch (error) {
       console.error(error);
