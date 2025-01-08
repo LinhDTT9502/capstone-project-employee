@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 
-const Breadcrumb = () => {
+const BlogBreadcrumb = () => {
     const { folderName } = useParams(); // Dynamic folder name from URL params
 
     return (
@@ -18,4 +18,4 @@ const Breadcrumb = () => {
     );
 };
 
-export default Breadcrumb;
+export default BlogBreadcrumb;
