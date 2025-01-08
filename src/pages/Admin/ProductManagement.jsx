@@ -67,6 +67,7 @@ const ProductManagement = () => {
 
   useEffect(() => {
     fetchProductData();
+    setIsReload(false);
   }, [isReload]);
 
 
@@ -146,6 +147,7 @@ const ProductManagement = () => {
                     <th className="p-4 border-b">Ảnh</th>
                     <th className="p-4 border-b">Tên sản phẩm</th>
                     <th className="p-4 border-b">Thuộc tính</th>
+                    <th className="p-4 border-b">Giá niêm yết</th>
                     <th className="p-4 border-b">Giá bán</th>
                     <th className="p-4 border-b">Giá thuê</th>
                     <th className="p-4 border-b">Trạng thái</th>
@@ -165,6 +167,7 @@ const ProductManagement = () => {
                       </td>
                       <td className="p-4 border-b">{product.productName}</td>
                       <td className="p-4 border-b">{product.color} - {product.size} - {product.condition}</td>
+                      <td className="p-4 border-b">{product.listedPrice ? product.listedPrice.toLocaleString('vi-VN') : 0}</td>
                       <td className="p-4 border-b">{product.price.toLocaleString('vi-VN')}</td>
                       <td className="p-4 border-b">{product.rentPrice === 0 ? "" : product.rentPrice.toLocaleString('vi-VN')}</td>
                       <td className="p-4 border-b">

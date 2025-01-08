@@ -49,7 +49,7 @@ export default function Invoice() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full border-2 border-gray-300 bg-white h-10 px-5 pr-10 rounded-lg text-sm focus:outline-none focus:border-blue-500"
             />
-            <button className="absolute right-0 top-0 mt-3 mr-4">
+            <button className="absolute right-0 top-0 mt-2 mr-4">
               <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
             </button>
           </div>

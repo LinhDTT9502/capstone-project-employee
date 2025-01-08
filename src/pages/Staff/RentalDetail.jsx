@@ -391,7 +391,10 @@ console.log(formData);
                   >
                     {order.orderStatus}
                   </span>
-                  <div className="flex items-center gap-2">
+                  
+                </div>              </div>
+
+                <div className="flex items-center gap-2">
                     <Button
                       variant="outlined"
                       color="blue"
@@ -402,8 +405,6 @@ console.log(formData);
                       Quay lại
                     </Button>
                   </div>
-                </div>
-              </div>
             </div>
 
             {/* Order Progress */}
@@ -466,27 +467,30 @@ console.log(formData);
                   Sản phẩm đã mua
                 </h3>
                 {editingSection === "productInformations" ? (
-                  <div>
-                    <button
-                      onClick={handleCancel}
-                    >
-                      Hủy
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      className="text-green-500 hover:text-green-700"
-                    >
-                      <FontAwesomeIcon icon={faSave} /> Lưu
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleEditClick("productInformations")}
-                    className="text-gray-500 hover:text-black"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </button>
-                )}
+                                <div className="flex space-x-1">
+                                <button
+                                  onClick={handleCancel}
+                                  className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                                >
+                                  Hủy
+                                </button>
+                                <button
+                                  onClick={handleSave}
+                                  className="px-4 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                                >
+                                  <FontAwesomeIcon icon={faSave} className="mr-2" />
+                                  Lưu
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleEditClick("productInformations")}
+                                className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+                              >
+                                <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                                Chỉnh sửa
+                              </button>
+                            )}
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <ul className="divide-y divide-gray-200">
@@ -605,7 +609,7 @@ console.log(formData);
                                 setTransportFee={(fee) => updateTransportFee(child.id, fee)}
                               /> }
 
-                              <span className="font-semibold">Tổng cộng:</span>{" "}
+                              <span className="font-semibold"> Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
                                 {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
                                   "vi-VN"
@@ -614,12 +618,12 @@ console.log(formData);
                               </p>
                             </p>
                           </div>
-                          <div className="text-right">
+                          
+                        </div><div className="text-right">
                             <p className="font-medium text-gray-900">
                               {child.rentPrice.toLocaleString('vi-VN')}₫
                             </p>
                           </div>
-                        </div>
                       </li>
                     ))
                   ) : (
@@ -635,12 +639,12 @@ console.log(formData);
                             {productName}
                           </h4>
                           <p>
-                            <span className="font-semibold">Rent Price:</span>{" "}
+                            <span className="font-semibold">Giá thuê:</span>{" "}
                             {rentPrice || "N/A"} ₫
                           </p>
                           <p className="mt-2">
                             <span className="font-semibold">
-                              Rental Period:
+                            Thời gian thuê:
                             </span>{" "}
                             {new Date(rentalStartDate).toLocaleDateString('en-GB', {
                               day: '2-digit',
@@ -720,13 +724,12 @@ console.log(formData);
         <div className="w-full md:w-1/3 p-4">
           <div className="sticky top-4">
             {/* Right Side - Customer Info & Summary */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-                <>
+            <div className="flex items-center justify-end space-x-4 mt-6 mb-3">                
                   <select
                     onChange={(e) => setNewStatus(e.target.value)}
                     value={newStatus || order.orderStatus}
-                    className="w-36 px-2 py-1 border rounded"
-                  >
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
                     <option>{order.orderStatus}</option>
                     {statusOptions.map((status) => (
                       <option key={status.value} value={status.value}>
@@ -738,30 +741,40 @@ console.log(formData);
                   <Button
                     onClick={handleStatusChange}
                     disabled={updating}
-                    color="blue"
+                    className="bg-blue-500 hover:bg-blue-600"
+
                   >
                     {updating ? "Đang cập nhật..." : "Cập nhật"}
                   </Button>
-                </>
+                  </div>
+                  <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
                 {/* edit customerInformation part */}
                 {editingSection === "customerInformation" ? (
-                  <div>
-                    <button onClick={handleCancel}>Hủy</button>
+                  <div className="flex space-x-1">
+                    <button
+                      onClick={handleCancel}
+                      className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                    >
+                      Hủy
+                    </button>
                     <button
                       onClick={handleSave}
-                      className="text-green-500 hover:text-green-700"
+                      className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
                     >
-                      <FontAwesomeIcon icon={faSave} /> Lưu
+                      <FontAwesomeIcon icon={faSave} className="mr-2" />
+                      Lưu
                     </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => handleEditClick("customerInformation")}
-                    className="text-gray-500 hover:text-black"
+                    className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
                   >
-                    <FontAwesomeIcon icon={faEdit} />
+                    <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                    Chỉnh sửa
                   </button>
                 )}
               </div>
@@ -832,30 +845,37 @@ console.log(formData);
                   </p>
                 </div>
               </div>
-            </div>
+              </div>
 
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Thông tin khác</h3>
                 {/* edit addition infor */}
                 {editingSection === "additionInfor" ? (
-                  <div>
-                    <button onClick={handleCancel}>Hủy</button>
-                    <button
-                      onClick={handleSave}
-                      className="text-green-500 hover:text-green-700"
-                    >
-                      <FontAwesomeIcon icon={faSave} /> Lưu
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleEditClick("additionInfor")}
-                    className="text-gray-500 hover:text-black"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </button>
-                )}
+                                <div className="flex space-x-1">
+                                <button
+                                  onClick={handleCancel}
+                                  className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                                >
+                                  Hủy
+                                </button>
+                                <button
+                                  onClick={handleSave}
+                                  className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                                >
+                                  <FontAwesomeIcon icon={faSave} className="mr-2" />
+                                  Lưu
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleEditClick("additionInfor")}
+                                className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+                              >
+                                <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                                Chỉnh sửa
+                              </button>
+                            )}
               </div>
               <div className="space-y-3">
                 <div>
@@ -882,7 +902,7 @@ console.log(formData);
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chi nhánh</p>
-                  <p className="font-medium">{order.branchId}</p>
+                  <p className="font-medium">{order.branchName || "KH chọn giao tận nơi"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Phương thức thanh toán</p>

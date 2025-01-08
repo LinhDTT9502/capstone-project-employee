@@ -66,10 +66,10 @@ const ListImagebyFolder = () => {
                     {images.map((image, index) => (
                         <div
                             key={index}
-                            className="relative flex flex-col items-center justify-center p-4 shadow-md rounded-lg hover:shadow-lg transition cursor-pointer group"
+                            className="relative flex flex-col items-center justify-center p-4 shadow-md rounded-lg hover:bg-gray-300 shadow-lg transition cursor-pointer group"
                         >
                             {/* Image */}
-                            <div className="w-full h-full mb-2 hover:bg-gray-300">
+                            <div className="w-full h-full mb-2">
                                 <img
                                     src={image} // Assuming each image has a 'url' field
                                     alt={`Image ${index + 1}`}

@@ -104,7 +104,7 @@ const UpdateBlog = () => {
     e.preventDefault();
 
     if (!title || !content) {
-      alert("Please fill in the title and content!");
+      alert("Vui lòng điền tiêu đề và nội dung!");
       return;
     }
 
@@ -117,10 +117,10 @@ const UpdateBlog = () => {
     try {
       if (blogID) {
         await updateBlog(blogID, formData);
-        alert("Blog updated successfully.");
+        alert("Blog cập nhật thành công");
       } else {
         await createBlog(formData);
-        alert("Blog created successfully.");
+        alert("Blog cập nhật thành công");
       }
 
       // Reset fields and fetch updated blogs

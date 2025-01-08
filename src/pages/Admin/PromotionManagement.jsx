@@ -11,14 +11,17 @@ import PromotionActions from "../../components/Admin/PromotionActions.jsx";
 import EditPromotionModal from "../../components/Admin/EditPromotionModal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import ConfirmDeletePromotionModal from "../../components/Admin/ConfirmDeletePromotionModal.jsx";
 
 export default function PromotionManagement() {
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +45,8 @@ export default function PromotionManagement() {
 
   useEffect(() => {
     fetchPromotions();
-  }, []);
+    setIsReload(false);
+  }, [isReload]);
 
   const handleAddPromotion = async (productName, discount) => {
     try {
@@ -109,14 +113,14 @@ export default function PromotionManagement() {
       <div className="container mx-auto p-4">
         <Card className="shadow-lg">
           <div className="flex justify-between items-center p-4">
-            <Typography variant="h4"  className="p-4 text-center">
-                Quản lý <span className="text-orange-500">[Khuyến Mãi]</span>
+            <Typography variant="h4" className="p-4 text-center">
+              Quản lý <span className="text-orange-500">[Khuyến Mãi]</span>
             </Typography>
             <Button
               onClick={() => setIsModalOpen(true)}
             >
-             <FontAwesomeIcon icon={faPlus} />{" "}
-                                         Tạo mới
+              <FontAwesomeIcon icon={faPlus} />{" "}
+              Tạo mới
             </Button>
           </div>
 
@@ -169,7 +173,10 @@ export default function PromotionManagement() {
                           <PromotionActions
                             promotion={promotion}
                             onEdit={handleEditPromotion}
-                            onDelete={handleDeletePromotion}
+                            onDelete={() => {
+                              setSelectedPromotion(promotion);
+                              setIsConfirmDeleteModalOpen(true);
+                            }}
                           />
                         </td>
                       </tr>
@@ -189,11 +196,10 @@ export default function PromotionManagement() {
                   <button
                     key={number + 1}
                     onClick={() => handlePageChange(number + 1)}
-                    className={`px-3 py-1 mx-1 border rounded ${
-                      currentPage === number + 1
-                        ? "bg-black text-white"
-                        : "bg-gray-200"
-                    }`}
+                    className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1
+                      ? "bg-black text-white"
+                      : "bg-gray-200"
+                      }`}
                   >
                     {number + 1}
                   </button>
@@ -216,6 +222,16 @@ export default function PromotionManagement() {
         onSave={handleSavePromotion}
         promotion={selectedPromotion}
       />
+
+      {/* Confirm Delete Promotion Modal */}
+      {isConfirmDeleteModalOpen && selectedPromotion && (
+        <ConfirmDeletePromotionModal
+          isOpen={isConfirmDeleteModalOpen}
+          onClose={() => setIsConfirmDeleteModalOpen(false)}
+          promotion={selectedPromotion}
+          setIsReload={setIsReload}
+        />
+      )}
     </>
   );
 }

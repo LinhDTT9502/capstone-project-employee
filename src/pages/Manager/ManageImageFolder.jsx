@@ -14,6 +14,7 @@ const ManageImageFolder = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isConfirmDeleteFolder, setIsConfirmDeleteFolder] = useState(false);
     const [selectedFolder, setSelectedFolder] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(""); // State for search query
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,32 +38,47 @@ const ManageImageFolder = () => {
             }
         };
 
-        setIsReload(false)
+        setIsReload(false);
         fetchFolders();
     }, [isReload]);
 
-    const handleSelectFolder = (folder) => {
-        console.log("Selected folder:", folder);
+    const handleSearch = (event) => {
+        setSearchQuery(event.target.value);
     };
+
+    // Filter folders based on search query
+    const filteredFolders = folders.filter((folder) =>
+        folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Danh sách thư mục</h2>
                 <Button onClick={() => setIsAddModalOpen(true)}>
-                    <FontAwesomeIcon icon={faPlus} />{" "}
-                    Tạo thư mục
+                    <FontAwesomeIcon icon={faPlus} /> Tạo thư mục
                 </Button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Tìm kiếm thư mục..."
+                    className="w-full p-2 border rounded-md"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                />
             </div>
 
             {/* Loading State */}
             {isLoading ? (
                 <p>Đang tải danh sách thư mục...</p>
-            ) : folders.length === 0 ? (
-                <p>Không có thư mục nào tồn tại.</p>
+            ) : filteredFolders.length === 0 ? (
+                <p>Không có thư mục nào phù hợp với tìm kiếm.</p>
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-                    {folders.map((folder) => (
+                    {filteredFolders.map((folder) => (
                         <div
                             key={folder.id}
                             className="relative flex flex-col items-center justify-center p-4 bg-gray-100 shadow-md rounded-lg hover:shadow-lg transition cursor-pointer group"
@@ -122,7 +138,6 @@ const ManageImageFolder = () => {
                 />
             )}
         </div>
-
     );
 };
 
