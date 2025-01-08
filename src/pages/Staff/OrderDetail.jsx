@@ -52,6 +52,8 @@ const OrderDetail = () => {
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
   const [transportFee, setTransportFee] = useState(0);
+  console.log(transportFee);
+  
 
 
   const statusOptions = [
@@ -233,7 +235,7 @@ const OrderDetail = () => {
         cartItemId: null, // You can set this dynamically if available
         productId: item.productId,
         productName: item.productName,
-        productCode: item.productCode || "BAYORA88SS", // Handle null values
+        productCode: item.productCode || "", // Handle null values
         size: item.size || "", // Handle null values
         color: item.color || "", // Handle null values
         condition: item.condition,
@@ -514,8 +516,8 @@ const OrderDetail = () => {
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Phí vận chuyển</p>
               {
-                order.totalAmount >= 2000000 ? 0 :
-                  order.deliveryMethod === "Giao hàng tận nơi" &&
+                (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? 0 :
+                  
                   <TransportFee
                     address={order.address}
                     product={order.saleOrderDetailVMs.$values}

@@ -12,6 +12,8 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
     const [products, setProducts] = useState([]);
     const [shippingFee, setShippingFee] = useState(0);
     const [loading, setLoading] = useState(false);
+    console.log(address, product, branchId);
+    
 
     const handleBranch = async () => {
         const data = await fetchBranchDetail(branchId);

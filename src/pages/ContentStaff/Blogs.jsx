@@ -42,6 +42,7 @@ const Blogs = () => {
     fetchBlogs();
   }, [isReload]);
 
+console.log(blogs);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -118,7 +119,7 @@ const Blogs = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div
-                        className="prose-sm prose"
+                        className="prose-sm prose line-clamp-3"
                         dangerouslySetInnerHTML={{ __html: blog.content }}
                       />
                     </td>

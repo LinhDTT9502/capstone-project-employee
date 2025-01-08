@@ -10,12 +10,15 @@ import {
 } from "../../api/Blog/apiBlog";
 import { useRef } from 'react';
 import axios from "axios";
-const UpdateBlog = (selectedBlog) => {
+import { useNavigate, useParams } from "react-router-dom";
+const UpdateBlog = () => {
+  const { blogId: paramBlogId } = useParams();
+  const blogId = Number(paramBlogId);
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [content, setContent] = useState("");
   const [coverImage, setCoverImage] = useState(null);
-  const [blogId, setBlogId] = useState(null);
+  const [blogID, setBlogID] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const user = useSelector(selectUser);
   const [viewImg, setViewImg] = useState('');
@@ -24,6 +27,9 @@ const UpdateBlog = (selectedBlog) => {
   const [callback, setCallback] = useState(null); // File picker callback
   const [selectedImage, setSelectedImage] = useState(''); // Selected image URL
   const editorRef = useRef(null);
+  const navigate = useNavigate();
+  console.log(blogId);
+  
 
   // Fetch images when opening the modal
   const fetchImages = async () => {
@@ -109,8 +115,8 @@ const UpdateBlog = (selectedBlog) => {
     if (coverImage) formData.append("coverImage", coverImage);
 
     try {
-      if (blogId) {
-        await updateBlog(blogId, formData);
+      if (blogID) {
+        await updateBlog(blogID, formData);
         alert("Blog updated successfully.");
       } else {
         await createBlog(formData);
@@ -122,7 +128,7 @@ const UpdateBlog = (selectedBlog) => {
       setSubTitle("");
       setContent("");
       setCoverImage(null);
-      setBlogId(null);
+      setBlogID(null);
       const updatedBlogs = await getAllBlog();
       setBlogs(updatedBlogs.data.data.$values);
     } catch (error) {
@@ -131,28 +137,28 @@ const UpdateBlog = (selectedBlog) => {
     }
   };
 
-  const handleDeleteBlog = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this blog? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
+  // const handleDeleteBlog = async (id) => {
+  //   const confirmDelete = window.confirm(
+  //     "Are you sure you want to delete this blog? This action cannot be undone."
+  //   );
+  //   if (!confirmDelete) return;
 
-    try {
-      await deleteBlog(id);
-      alert("Blog deleted successfully.");
-      setBlogs(blogs.filter((blog) => blog.blogId !== id));
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-      alert("Failed to delete the blog.");
-    }
-  };
+  //   try {
+  //     await deleteBlog(id);
+  //     alert("Blog deleted successfully.");
+  //     setBlogs(blogs.filter((blog) => blog.blogID !== id));
+  //   } catch (error) {
+  //     console.error("Error deleting blog:", error);
+  //     alert("Failed to delete the blog.");
+  //   }
+  // };
 
-  const handleEdit = (id) => {
-    const blog = blogs.find((blog) => blog.blogId === id);
+  const handleEdit = () => {
+    const blog = blogs.find((blog) => blog.blogId === blogId);
     console.log(blog);
 
     if (blog) {
-      setBlogId(id);
+      setBlogID(blogId);
       setTitle(blog.title);
       setSubTitle(blog.subTitle);
       setContent(blog.content);
@@ -162,12 +168,23 @@ const UpdateBlog = (selectedBlog) => {
     }
   };
 
+  useEffect(() => {
+  handleEdit()
+  }, [blogId]);
+
   return (
     <div className="flex h-full">
       <div className="flex-grow border-l-2">
+         <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
+                  >
+               
+                    Quay lại
+                  </button>
         <div className="container p-4 mx-auto">
           <h1 className="mb-4 text-2xl font-bold">
-            {blogId ? "Chỉnh sửa bài viết" : "Tạo một bài viết"}
+            {blogID ? "Chỉnh sửa bài viết" : "Tạo một bài viết"}
           </h1>{viewImg && <img src={viewImg} alt="view" className="w-20 h-20 object-contain" />}
 
           <form onSubmit={handleSubmit} className="mb-6">
@@ -296,11 +313,11 @@ const UpdateBlog = (selectedBlog) => {
               type="submit"
               className="p-3 text-white transition duration-300 bg-blue-500 rounded-lg hover:bg-blue-600"
             >
-              {blogId ? "Lưu bài viết" : "Tạo bài viết"}
+              {blogID ? "Lưu bài viết" : "Tạo bài viết"}
             </button>
           </form>
 
-          <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
+          {/* <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg table-auto">
               <thead>
@@ -332,7 +349,7 @@ const UpdateBlog = (selectedBlog) => {
                 {blogs.map((blog) => (
                   <tr key={blog.$id} className="border-b">
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {blog.blogId}
+                      {blog.blogID}
                     </td>
                     <td className="px-6 py-4">
                       {blog.coverImgPath && (
@@ -361,13 +378,13 @@ const UpdateBlog = (selectedBlog) => {
                     <td className="px-6 py-4">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleEdit(blog.blogId)}
+                          onClick={() => handleEdit(blog.blogID)}
                           className="px-4 py-2 text-white transition duration-200 bg-yellow-500 rounded-lg hover:bg-yellow-600"
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteBlog(blog.blogId)}
+                          onClick={() => handleDeleteBlog(blog.blogID)}
                           className="px-4 py-2 text-white transition duration-200 bg-red-500 rounded-lg hover:bg-red-600"
                         >
                           Delete
@@ -378,7 +395,7 @@ const UpdateBlog = (selectedBlog) => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

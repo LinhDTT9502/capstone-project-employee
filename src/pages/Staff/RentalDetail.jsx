@@ -270,6 +270,7 @@ const RentalDetail = () => {
     });
     console.log(formData);
   };
+console.log(formData);
 
   // Submit updates to the API
   const handleSave = async () => {
@@ -331,7 +332,8 @@ const RentalDetail = () => {
         },
       })),
     };
-    console.log(payload);
+ console.log(payload);
+ 
 
     try {
       const response = await axios.put(
@@ -595,13 +597,13 @@ const RentalDetail = () => {
                               })}
                             </p>
                             <p>
-                              {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? (<TransportFee
+                              {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? 0 : <TransportFee
                                 address={child.address}
                                 product={order.childOrders.$values}
                                 branchId={order.branchId}
 
                                 setTransportFee={(fee) => updateTransportFee(child.id, fee)}
-                              />) : (0)}
+                              /> }
 
                               <span className="font-semibold">Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
@@ -673,16 +675,16 @@ const RentalDetail = () => {
                   {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ? (
                     children.length > 0 ? (
                       totalFees.toLocaleString('vi-VN')
-                    ) : (
+                    ) : 0
+                  ) : (
+                    
                       <RentalTransportFee
                         address={order.address}
                         product={order}
                         branchId={order.branchId}
                         setTransportFee={setTransportFee}
                       />
-                    )
-                  ) : (
-                    0
+                    
                   )}
 
                   ₫</p>

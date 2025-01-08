@@ -6,6 +6,7 @@ import EditProduct from '../pages/ContentStaff/EditProduct';
 import EditOffer from '../pages/ContentStaff/EditOffer';
 import Blogs from '../pages/ContentStaff/Blogs';
 import CreateBlog from '../pages/ContentStaff/CreateBlog';
+import UpdateBlog from '../pages/ContentStaff/UpdateBlog';
 
 const ContentStaffRoutes = () => {
   const token = localStorage.getItem('token');
@@ -21,6 +22,7 @@ const ContentStaffRoutes = () => {
       <Route path="/blogs" element={<Blogs />} />
       <Route path="/edit-product" element={<EditProduct />} />
       <Route path="/edit-offer" element={<EditOffer />} />
+      <Route path="/update-blog/:blogId" element={<UpdateBlog />} />
     </Routes>
   );
 };

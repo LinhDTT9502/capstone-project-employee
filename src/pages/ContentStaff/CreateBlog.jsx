@@ -10,6 +10,7 @@ import {
 } from "../../api/Blog/apiBlog";
 import { useRef } from 'react';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
@@ -24,6 +25,7 @@ const CreateBlog = () => {
   const [callback, setCallback] = useState(null); // File picker callback
   const [selectedImage, setSelectedImage] = useState(''); // Selected image URL
   const editorRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch images when opening the modal
   const fetchImages = async () => {
@@ -165,6 +167,13 @@ const CreateBlog = () => {
   return (
     <div className="flex h-full">
       <div className="flex-grow border-l-2">
+         <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
+                  >
+               
+                    Quay lại
+                  </button>
         <div className="container p-4 mx-auto">
           <h1 className="mb-4 text-2xl font-bold">
             {blogId ? "Chỉnh sửa bài viết" : "Tạo một bài viết"}
@@ -300,7 +309,7 @@ const CreateBlog = () => {
             </button>
           </form>
 
-          <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
+          {/* <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg table-auto">
               <thead>
@@ -378,7 +387,7 @@ const CreateBlog = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

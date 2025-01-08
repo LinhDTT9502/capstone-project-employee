@@ -19,6 +19,8 @@ function SignIn() {
         if (user) {
             if (user.role === "Admin") {
                 navigate("/admin/dashboard");
+            } else if (user.role === "Owner") {
+                navigate("/owner/dashboard");
             } else if (user.role === "Coordinator") {
                 navigate("/coordinator/assign-orders");
             } else if (user.role === "BranchStaff") {
