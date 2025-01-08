@@ -12,7 +12,7 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
     const [products, setProducts] = useState([]);
     const [shippingFee, setShippingFee] = useState(0);
     const [loading, setLoading] = useState(false);
-    console.log(address, product, branchId);
+    // console.log(address, product, branchId);
     
 
     const handleBranch = async () => {
@@ -23,6 +23,8 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
 
         try {
             const result = await fetchProvince();
+            // console.log(result);
+            
             if (result.code === 200 && result.data) {
                 const matchingProvince = result.data.find((province) =>
                     province.NameExtension.includes(BranchProvinceName)
@@ -170,8 +172,8 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
             setLoading(true);
             const shipFee = await fetchShippingFee(data);
             console.log(shipFee);
-            setShippingFee(shipFee.total);
-            setTransportFee(shipFee.total)
+            setShippingFee(shipFee.total+ 5000);
+            setTransportFee(shipFee.total + 5000)
         } catch (error) {
             console.error("Error while fetching fees:", error);
         } finally {

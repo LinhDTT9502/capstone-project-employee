@@ -7,7 +7,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
     const [branches, setBranches] = useState([]);
     const [branchStatus, setBranchStatus] = useState({});
     const [check, setCheck] = useState([]);
-    console.log(selectedProducts);
+    // console.log(selectedProducts);
 
 
     useEffect(() => {
@@ -24,7 +24,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                         const branchProduct = products.find(
                             (p) => Number(p.productId) === Number(selectedProduct.productId || selectedProduct.id)
                         );
-                        console.log(branchProduct);
+                        // console.log(branchProduct);
 
                         if (!branchProduct) {
                             // If branchProduct is null, the product is unavailable
