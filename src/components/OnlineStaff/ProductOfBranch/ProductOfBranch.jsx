@@ -3,12 +3,12 @@ import { Avatar, Card, List, ListItem, ListItemPrefix, Typography } from "@mater
 import { fetchProductsbyBranch } from "../../../services/warehouseService";
 import { fetchBranchs } from "../../../services/branchService";
 
-const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, orderId,selectedProducts }) => {
+const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, orderId, selectedProducts }) => {
     const [branches, setBranches] = useState([]);
     const [branchStatus, setBranchStatus] = useState({});
     const [check, setCheck] = useState([]);
     console.log(selectedProducts);
-    
+
 
     useEffect(() => {
         const loadBranchesWithStatus = async () => {
@@ -21,27 +21,36 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                     // Track unavailable products for each branch
                     const unavailableProducts = selectedProducts.map((selectedProduct) => {
                         // Find the branch product by matching selected product id
-                        const branchProduct = products.find((p) => p.productId === Number(selectedProduct.id)); // Use Number to ensure type consistency
-      
+                        const branchProduct = products.find(
+                            (p) => Number(p.productId) === Number(selectedProduct.productId || selectedProduct.id)
+                        );
+                        console.log(branchProduct);
+
+                        if (!branchProduct) {
+                            // If branchProduct is null, the product is unavailable
+                            return {
+                                productName: selectedProduct.productName,
+                                productId: selectedProduct.id,
+                                availableQuantity: 0, // Indicate no stock
+                            };
+                        }
+
                         // If the branch product exists and selected product quantity exceeds available quantity
-                        if (branchProduct && selectedProduct.quantity > branchProduct.availableQuantity) {
-         
+                        if (branchProduct.availableQuantity != null && selectedProduct.quantity > branchProduct.availableQuantity) {
                             return {
                                 productName: selectedProduct.productName,
                                 productId: selectedProduct.id,
                                 availableQuantity: branchProduct.availableQuantity,
                             };
-                            
-                            
                         }
 
-                        // If product is available or not selected for out of stock, return null
+                        // Otherwise, the product is available
                         return null;
                     }).filter(product => product !== null); // Filter out null values
 
                     // Determine branch status
                     const isAvailable = unavailableProducts.length === 0;
-                   setCheck(unavailableProducts)
+                    setCheck(unavailableProducts)
                     return {
                         branchId: branch.id,
                         status: isAvailable
@@ -65,7 +74,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
         };
 
         loadBranchesWithStatus();
-    }, [productIds,selectedProducts]);
+    }, [productIds, selectedProducts]);
 
     const handleBranchChange = (branchId) => {
         setSelectedBranchId(branchId);
@@ -78,7 +87,7 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                 <List>
                     {branches.map((branch) => (
                         <ListItem
-                        disabled={branchStatus[branch.id] !== "Còn hàng"}
+                            disabled={branchStatus[branch.id] !== "Còn hàng"}
                             key={branch.id}
                             className={`cursor-pointer hover:bg-gray-100 ${branchStatus[branch.id] === "Hết hàng" ? "opacity-50 cursor-not-allowed" : ""}`}
                             onClick={() => branchStatus[branch.id] !== "Hết hàng" && handleBranchChange(branch.id)}

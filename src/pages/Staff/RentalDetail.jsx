@@ -39,7 +39,7 @@ const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
   { id: 2, label: "Đã xác nhận đơn" },
   { id: 3, label: "Đang xử lý" },
-  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
+  { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Hoàn thành" },
 ];
@@ -213,7 +213,24 @@ const RentalDetail = () => {
 
   const handleApprove = async () => {
     const response = await approveRental(rentalId);
-    setReload((prev) => !prev);
+    console.log(response);
+    
+    if (response){
+    const statusLabel = statusOptions.find(option => option.value === 2)?.label;
+      const response = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status/${rentalId}?orderStatus=2`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setOrder({ ...order, orderStatus: statusLabel });
+      fetchOrderDetail()
+      setReload((prev) => !prev);
+    }
+   
     // setIsApproved(true);
   };
 
@@ -701,9 +718,7 @@ console.log(formData);
                 </p>
               </div>
             </div>
-            {(order.orderStatus === "Chờ xử lý" && order.branchId === null) &&
-              (order.deliveryMethod !== "Đến cửa hàng nhận" &&
-                order.deliveryMethod !== "STORE_PICKUP") && (
+            {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
                 <div className="mt-6 flex gap-3 justify-end">
                   <Button
                     onClick={handleReject}

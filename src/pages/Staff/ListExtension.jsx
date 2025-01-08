@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Chip, Typography } from "@material-tailwind/react";
-import { approveExtension, fetchListExtension } from "../../services/Staff/RentalService";
+import { approveExtension, fetchListExtension, rejectExtension } from "../../services/Staff/RentalService";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/authSlice";
 
@@ -9,6 +9,9 @@ const ListExtension = () => {
     const [extensionStatus, setExtensionStatus] = useState(1);
     const user = useSelector(selectUser)
     const [reload, setReload] = useState(false);
+    const [showModal, setShowModal] = useState(false)
+    const [rentalOrderCode, setRentalOrderCode] = useState(null)
+    const [reasonText, setReasonText] = useState('');
 
     // Chip filter options
     const statusChips = [
@@ -42,11 +45,18 @@ const ListExtension = () => {
         setReload((prev) => !prev);
     };
 
+    const handleReject = async () => {
+        const response = await rejectExtension(rentalOrderCode, reasonText);
+        console.log(response);
+        setShowModal(false)
+        setReload((prev) => !prev);
+    };
+
     return (
         <div className="p-6 space-y-4">
             {/* Title */}
             <Typography variant="h4" className="font-bold">
-            Yêu cầu gia hạn
+                Yêu cầu gia hạn
             </Typography>
 
             {/* Filter Chips */}
@@ -111,7 +121,12 @@ const ListExtension = () => {
                                             <button
                                                 onClick={(e) => handleApprove(request.rentalOrderCode)}
                                                 className="bg-green-500 text-white p-2 rounded">Chấp nhận</button>
-                                            <button className="bg-red-500 text-white p-2 rounded">Từ chối</button>
+                                            <button
+                                                onClick={() => {
+                                                    setRentalOrderCode(request.rentalOrderCode);
+                                                    setShowModal(true);
+                                                }}
+                                                className="bg-red-500 text-white p-2 rounded">Từ chối</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -126,6 +141,39 @@ const ListExtension = () => {
                     </tbody>
 
                 </table>
+                {showModal && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white p-6 rounded-md shadow-lg w-1/2">
+                            <h2 className="text-lg font-semibold pb-2 text-red-700">
+                            Vui lòng nhập lí do từ chối:
+                            </h2>
+                            <div className="w-full border rounded-md p-4 mb-4">
+                            
+                                <textarea
+                                    type="text"
+                                    name="cancelReason"
+                                    value={reasonText}
+                                    className="w-full"
+                                    onChange={(e) => setReasonText(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    className="bg-gray-500 text-white py-2 px-4 rounded-md"
+                                    onClick={() => setShowModal(false)}
+                                >
+                                    Đóng
+                                </button>
+                                <button
+                                    className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
+                                    onClick={handleReject}
+                                >
+                                    Xác nhận
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -34,7 +34,7 @@ const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
   { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
-  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
+  { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Đã hoàn thành" },
 ];
@@ -53,11 +53,11 @@ const OrderDetail = () => {
   const [formData, setFormData] = useState({});
   const [transportFee, setTransportFee] = useState(0);
   console.log(transportFee);
-  
+
 
 
   const statusOptions = [
- 
+
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
@@ -86,7 +86,7 @@ const OrderDetail = () => {
       if (response.data.isSuccess) {
         setOrder(response.data.data);
         setFormData(response.data.data);
-        // console.log(response.data.data);
+        console.log(response.data.data);
 
       } else {
         setError("Failed to retrieve order details");
@@ -99,7 +99,7 @@ const OrderDetail = () => {
   };
 
   useEffect(() => {
- 
+
     fetchOrderDetail();
     getCurrentStepIndex();
   }, [reload]);
@@ -129,7 +129,7 @@ const OrderDetail = () => {
       }
     } catch (error) {
       alert(error.response.data.message);
-      
+
     } finally {
       setUpdating(false);
     }
@@ -137,8 +137,19 @@ const OrderDetail = () => {
 
   const handleApprove = async () => {
     const response = await approveOrder(orderId);
-    setReload((prev) => !prev);
-    // console.log(response);
+    if (response){
+      const update = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      fetchOrderDetail()
+      setReload((prev) => !prev);
+    }
   };
 
   const handleReject = async () => {
@@ -381,29 +392,29 @@ const OrderDetail = () => {
               {/* edit productInformations and saleCosts part */}
               {editingSection === "productInformations" ? (
                 <div className="flex space-x-1">
+                  <button
+                    onClick={handleCancel}
+                    className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                  >
+                    <FontAwesomeIcon icon={faSave} className="mr-2" />
+                    Lưu
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                  onClick={() => handleEditClick("productInformations")}
+                  className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
                 >
-                  Hủy
+                  <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                  Chỉnh sửa
                 </button>
-                <button
-                  onClick={handleSave}
-                  className="px-4 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
-                >
-                  <FontAwesomeIcon icon={faSave} className="mr-2" />
-                  Lưu
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => handleEditClick("productInformations")}
-                className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
-              >
-                <FontAwesomeIcon icon={faEdit} className="mr-2" />
-                Chỉnh sửa
-              </button>
-            )}
+              )}
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -500,7 +511,7 @@ const OrderDetail = () => {
                           %
                         </p>{" "}
                       </div>
-                      
+
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
@@ -525,7 +536,7 @@ const OrderDetail = () => {
               <p className="text-gray-600">Phí vận chuyển</p>
               {
                 (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? 0 :
-                  
+
                   <TransportFee
                     address={order.address}
                     product={order.saleOrderDetailVMs.$values}
@@ -533,9 +544,6 @@ const OrderDetail = () => {
                     setTransportFee={setTransportFee}
                   />
               }
-
-
-
             </div>
             <div className="flex justify-between py-3 pt-4 mt-2 border-t border-gray-200">
               <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
@@ -545,24 +553,22 @@ const OrderDetail = () => {
             </div>
           </div>
 
-          {(order.orderStatus === "Chờ xử lý" && order.branchId === null) &&
-            (order.deliveryMethod !== "Đến cửa hàng nhận" &&
-              order.deliveryMethod !== "STORE_PICKUP") && (
-              <div className="mt-6 flex gap-3 justify-end">
-                <Button
-                  onClick={handleReject}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  Từ chối
-                </Button>
-                <Button
-                  onClick={handleApprove}
-                  className="bg-green-500 hover:bg-green-600"
-                >
-                  Chấp thuận
-                </Button>
-              </div>
-            )}
+          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
+            <div className="mt-6 flex gap-3 justify-end">
+              <Button
+                onClick={handleReject}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Từ chối
+              </Button>
+              <Button
+                onClick={handleApprove}
+                className="bg-green-500 hover:bg-green-600"
+              >
+                Chấp thuận
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -594,30 +600,30 @@ const OrderDetail = () => {
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
               {/* edit customerInformation part */}
               {editingSection === "customerInformation" ? (
-  <div className="flex space-x-1">
-    <button
-      onClick={handleCancel}
-      className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
-    >
-      Hủy
-    </button>
-    <button
-      onClick={handleSave}
-      className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
-    >
-      <FontAwesomeIcon icon={faSave} className="mr-2" />
-      Lưu
-    </button>
-  </div>
-) : (
-  <button
-    onClick={() => handleEditClick("customerInformation")}
-    className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
-  >
-    <FontAwesomeIcon icon={faEdit} className="mr-2" />
-    Chỉnh sửa
-  </button>
-)}
+                <div className="flex space-x-1">
+                  <button
+                    onClick={handleCancel}
+                    className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                  >
+                    <FontAwesomeIcon icon={faSave} className="mr-2" />
+                    Lưu
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleEditClick("customerInformation")}
+                  className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
+                >
+                  <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                  Chỉnh sửa
+                </button>
+              )}
 
             </div>
             <div className="space-y-3">
@@ -695,29 +701,29 @@ const OrderDetail = () => {
               {/* edit addition infor */}
               {editingSection === "additionInfor" ? (
                 <div className="flex space-x-1">
+                  <button
+                    onClick={handleCancel}
+                    className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
+                  >
+                    <FontAwesomeIcon icon={faSave} className="mr-2" />
+                    Lưu
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={handleCancel}
-                  className="px-2 py-2 text-sm font-medium text-red-500 border border-red-500 rounded-lg hover:bg-red-100 transition duration-200"
+                  onClick={() => handleEditClick("additionInfor")}
+                  className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
                 >
-                  Hủy
+                  <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                  Chỉnh sửa
                 </button>
-                <button
-                  onClick={handleSave}
-                  className="px-2 py-2 text-sm font-medium text-green-500 border border-green-500 rounded-lg hover:bg-green-100 transition duration-200 flex items-center"
-                >
-                  <FontAwesomeIcon icon={faSave} className="mr-2" />
-                  Lưu
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => handleEditClick("additionInfor")}
-                className="px-2 py-2 text-sm font-medium text-gray-500 border border-gray-300 rounded-lg hover:text-black hover:bg-gray-100 transition duration-200 flex items-center"
-              >
-                <FontAwesomeIcon icon={faEdit} className="mr-2" />
-                Chỉnh sửa
-              </button>
-            )}
+              )}
             </div>
             <div className="space-y-3">
               <div>

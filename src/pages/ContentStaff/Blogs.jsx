@@ -107,7 +107,7 @@ console.log(blogs);
                         <img
                           src={blog.coverImgPath}
                           alt={blog.title}
-                          className="object-cover w-20 h-20 rounded-md"
+                          className="object-contain w-56 rounded-md"
                         />
                       )}
                     </td>

@@ -71,9 +71,9 @@ const ListOrder = () => {
 
     const sortedOrders = [...filteredOrders].sort((a, b) => {
       if (selectedSortOrder === 'earliest') {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      } else {
         return new Date(b.createdAt) - new Date(a.createdAt);
+      } else {
+        return new Date(a.createdAt) - new Date(b.createdAt) ;
       }
     });
 
@@ -138,8 +138,8 @@ const ListOrder = () => {
             onChange={handleSortChange}
             value={sortOrder}
           >
-            <option value="latest">Đơn mới nhất</option>
-            <option value="earliest">Đơn cũ nhất</option>
+            <option value="latest">Đơn cũ nhất</option>
+            <option value="earliest">Đơn mới nhất</option>
           </select>
         </div>
       </div>

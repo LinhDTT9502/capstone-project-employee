@@ -11,6 +11,12 @@ import {
 import { useRef } from 'react';
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTimes,
+  faSpinner,
+  faCloudUploadAlt,
+} from "@fortawesome/free-solid-svg-icons";
 const UpdateBlog = () => {
   const { blogId: paramBlogId } = useParams();
   const blogId = Number(paramBlogId);
@@ -28,8 +34,7 @@ const UpdateBlog = () => {
   const [selectedImage, setSelectedImage] = useState(''); // Selected image URL
   const editorRef = useRef(null);
   const navigate = useNavigate();
-  console.log(blogId);
-  
+  const blog = blogs.find((blog) => blog.blogId === blogId);
 
   // Fetch images when opening the modal
   const fetchImages = async () => {
@@ -103,8 +108,8 @@ const UpdateBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !content) {
-      alert("Vui lòng điền tiêu đề và nội dung!");
+    if (!title || !content || !subTitle || !coverImage) {
+      alert("Vui lòng nhập đầy đủ thông tin bài viết!");
       return;
     }
 
@@ -117,10 +122,10 @@ const UpdateBlog = () => {
     try {
       if (blogID) {
         await updateBlog(blogID, formData);
-        alert("Blog cập nhật thành công");
+        alert("Chỉnh sửa bài viết thành công.");
       } else {
         await createBlog(formData);
-        alert("Blog cập nhật thành công");
+        alert("Tạo bài viết thành công");
       }
 
       // Reset fields and fetch updated blogs
@@ -152,10 +157,15 @@ const UpdateBlog = () => {
   //     alert("Failed to delete the blog.");
   //   }
   // };
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImage(file)
+      setViewImg(URL.createObjectURL(file));
+    }
+  };
 
-  const handleEdit = () => {
-    const blog = blogs.find((blog) => blog.blogId === blogId);
-    console.log(blog);
+  useEffect(() => {
 
     if (blog) {
       setBlogID(blogId);
@@ -166,36 +176,101 @@ const UpdateBlog = () => {
 
       setCoverImage(null);
     }
-  };
-
-  useEffect(() => {
-  handleEdit()
-  }, [blogId]);
+  }, [blogId, blog]);
 
   return (
     <div className="flex h-full">
       <div className="flex-grow border-l-2">
-         <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
-                  >
-               
-                    Quay lại
-                  </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
+        >
+
+          Quay lại
+        </button>
         <div className="container p-4 mx-auto">
           <h1 className="mb-4 text-2xl font-bold">
             {blogID ? "Chỉnh sửa bài viết" : "Tạo một bài viết"}
-          </h1>{viewImg && <img src={viewImg} alt="view" className="w-20 h-20 object-contain" />}
+          </h1>
 
           <form onSubmit={handleSubmit} className="mb-6">
             <div className="flex flex-col">
-              Chọn ảnh bìa
-              <input
+
+              <div
+                className="flex justify-center items-center p-2 "
+              >
+                {/* {viewImg && <img src={viewImg} alt="view" className=" w-2/3" />} */}
+                <div className="w-2/3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Thay đổi ảnh bìa
+                  </label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    {viewImg ? (
+                      <div className="relative">
+                        <img
+                          src={viewImg}
+                          alt="Main product"
+                          className="max-h-48 rounded-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setViewImg('')}
+                          className="absolute top-1 right-1 -mt-2 -mr-2 text-red-500 p-1 hover:text-white"
+                        >
+                          <FontAwesomeIcon
+                            icon={faTimes}
+                            className="h-4 w-4"
+                          />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-1 text-center">
+
+                        <>
+                          <FontAwesomeIcon
+                            icon={faCloudUploadAlt}
+                            className="mx-auto h-12 w-12 text-gray-400"
+                          />
+                          <div className="flex text-sm text-gray-600">
+                            <label
+                              htmlFor="main-image-upload"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                            >
+                              <span>Tải ảnh lên</span>
+                              <input
+                                id="main-image-upload"
+                                name="main-image-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="sr-only"
+                              />
+                            </label>
+
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            PNG, JPG, GIF
+                          </p>
+                        </>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {/* <div className="relative">
+                <img
+                  src={viewImg}
+                  alt="coverimg"
+                  className="max-h-48 rounded-md"
+                />
+                
+              </div> */}
+              {/* <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setCoverImage(e.target.files[0])}
                 className="form-file-input"
-              />
+              /> */}
             </div>
             <input
               type="text"
@@ -308,13 +383,17 @@ const UpdateBlog = () => {
 
             // `}
             />
-
-            <button
-              type="submit"
-              className="p-3 text-white transition duration-300 bg-blue-500 rounded-lg hover:bg-blue-600"
+            <div
+              className="flex justify-end p-5"
             >
-              {blogID ? "Lưu bài viết" : "Tạo bài viết"}
-            </button>
+              <button
+                type="submit"
+                className="p-3 text-white transition duration-300 bg-blue-500 rounded-lg hover:bg-blue-600"
+              >
+                {blogID ? "Lưu bài viết" : "Tạo bài viết"}
+              </button>
+            </div>
+
           </form>
 
           {/* <h2 className="mb-2 text-xl font-semibold">Danh sách bài viết</h2>
