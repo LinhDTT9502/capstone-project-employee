@@ -21,7 +21,7 @@ const ListOrder = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOrder, setSortOrder] = useState("latest");
+  const [sortOrder, setSortOrder] = useState("earliest");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const ordersPerPage = 30;
@@ -174,8 +174,9 @@ const ListOrder = () => {
             onChange={handleSortChange}
             value={sortOrder}
           >
-            <option value="latest">Đơn cũ nhất</option>
             <option value="earliest">Đơn mới nhất</option>
+
+            <option value="latest">Đơn cũ nhất</option>
           </select>
         </div>
       </div>
@@ -260,13 +261,13 @@ const ListOrder = () => {
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
         <thead className="bg-gray-100 border-b border-gray-200">
           <tr>
-            <th className="text-left p-4 font-semibold text-gray-600">
+            <th className="text-left p-2 font-semibold text-gray-600">
               Mã đơn hàng
             </th>
             <th className="text-left p-4 font-semibold text-gray-600">
               Khách hàng
             </th>
-            <th className="text-left p-4 font-semibold text-gray-600">
+            <th className="text-left p-2 font-semibold text-gray-600">
               Ngày đặt hàng
             </th>
             <th className="text-left p-4 font-semibold text-gray-600">

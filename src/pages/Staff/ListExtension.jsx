@@ -7,7 +7,7 @@ import { selectUser } from "../../redux/slices/authSlice";
 const ListExtension = () => {
   const [extensionRequests, setExtensionRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  const [extensionStatus, setExtensionStatus] = useState(1);
+  const [extensionStatus, setExtensionStatus] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +16,7 @@ const ListExtension = () => {
 
   // Chip filter options
   const statusChips = [
+    { label: "Tất cả", value: 0, color: "blue" },
     { label: "Đang xử lý", value: 1, color: "yellow" },
     { label: "Chấp thuận", value: 2, color: "green" },
     { label: "Từ chối", value: 3, color: "red" },

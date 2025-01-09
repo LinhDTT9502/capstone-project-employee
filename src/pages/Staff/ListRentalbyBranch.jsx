@@ -13,7 +13,7 @@ const ListRentalbyBranch = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOrder, setSortOrder] = useState('latest'); // Sorting state
+  const [sortOrder, setSortOrder] = useState('earliest'); // Sorting state
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
