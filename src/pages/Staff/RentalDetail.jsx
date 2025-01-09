@@ -77,7 +77,7 @@ const RentalDetail = () => {
   };
 
   const statusOptions = [
-    { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-600" }, // CANCELED
+    { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-600" }, // CANCELED
     { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-600" }, // PENDING
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-600" }, // CONFIRMED
     { label: "Đang xử lý", value: 3, color: "bg-indigo-100 text-indigo-600" }, // PROCESSING

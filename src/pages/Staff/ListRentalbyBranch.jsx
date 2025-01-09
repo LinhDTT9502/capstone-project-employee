@@ -179,96 +179,60 @@ const ListRentalbyBranch = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 py-3">
-  {/* Row 1 */}
-  <div className="flex gap-2 flex-wrap">
-    {[
-      { label: "Tất cả", value: "", color: "bg-blue-500 text-white" },
-      { label: "Đã hủy", value: "Đã hủy", color: "bg-red-100 text-red-600" },
-      { label: "Chờ xử lý", value: "Chờ xử lý", color: "bg-yellow-100 text-yellow-600" },
-      { label: "Đã xác nhận", value: "Đã xác nhận", color: "bg-blue-100 text-blue-600" },
-      { label: "Đang xử lý", value: "Đang xử lý", color: "bg-indigo-100 text-indigo-600" },
-    ].map((chip) => (
-      <button
-        key={chip.label}
-        className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-          status === chip.value
-            ? `${chip.color} shadow-md`
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        onClick={() => handleStatusChange(chip.value)}
-      >
-        {chip.label}
-      </button>
-    ))}
-  </div>
+      <div className="flex gap-2 py-3">
+        {[
+          { label: "Tất cả", value: "", color: "bg-blue-500 text-white" },
+          {
+            label: "Chờ xử lý",
+            value: "Chờ xử lý",
+            color: "bg-yellow-100 text-yellow-600",
+          },
+          {
+            label: "Đã xác nhận",
+            value: "Đã xác nhận",
+            color: "bg-blue-100 text-blue-600",
+          },
+          {
+            label: "Đang xử lý",
+            value: "Đang xử lý",
+            color: "bg-indigo-100 text-indigo-600",
+          },
+          {
+            label: "Đã giao cho ĐVVC",
+            value: "Đã giao cho ĐVVC",
+            color: "bg-teal-100 text-teal-600",
+          },
+          {
+            label: "Đã giao hàng",
+            value: "Đã giao hàng",
+            color: "bg-green-100 text-green-600",
+          },
 
-  {/* Row 2 */}
-  <div className="flex gap-2 flex-wrap">
-    {[
-      { label: "Đã giao cho ĐVVC", value: "Đã giao cho ĐVVC", color: "bg-teal-100 text-teal-600" },
-      { label: "Đã giao hàng", value: "Đã giao hàng", color: "bg-green-100 text-green-600" },
-      { label: "Chờ khách nhận hàng", value: "Chờ khách nhận hàng", color: "bg-orange-100 text-orange-600" },
-      { label: "Đã từ chối", value: "Đã từ chối", color: "bg-red-100 text-red-600" },
-      { label: "Đang thuê", value: "Đang thuê", color: "bg-purple-100 text-purple-600" },
-    ].map((chip) => (
-      <button
-        key={chip.label}
-        className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-          status === chip.value
-            ? `${chip.color} shadow-md`
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        onClick={() => handleStatusChange(chip.value)}
-      >
-        {chip.label}
-      </button>
-    ))}
-  </div>
-
-  {/* Row 3 */}
-  <div className="flex gap-2 flex-wrap">
-    {[
-      { label: "Đang gia hạn", value: "Đang gia hạn", color: "bg-indigo-100 text-indigo-600" },
-      { label: "Bị trì hoãn", value: "Bị trì hoãn", color: "bg-orange-100 text-orange-600" },
-      { label: "Yêu cầu trả sản phẩm", value: "Yêu cầu trả sản phẩm", color: "bg-purple-100 text-purple-600" },
-      { label: "Đã trả sản phẩm", value: "Đã trả sản phẩm", color: "bg-gray-100 text-gray-600" },
-      { label: "Đang kiểm tra sản phẩm trả", value: "Đang kiểm tra sản phẩm trả", color: "bg-gray-100 text-gray-600" },
-    ].map((chip) => (
-      <button
-        key={chip.label}
-        className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-          status === chip.value
-            ? `${chip.color} shadow-md`
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        onClick={() => handleStatusChange(chip.value)}
-      >
-        {chip.label}
-      </button>
-    ))}
-  </div>
-
-  {/* Row 4 */}
-  <div className="flex gap-2 flex-wrap">
-    {[
-      { label: "Đã hoàn thành", value: "Đã hoàn thành", color: "bg-green-100 text-green-600" },
-      { label: "Xử lý đơn thất bại", value: "Xử lý đơn thất bại", color: "bg-orange-100 text-orange-600" },
-    ].map((chip) => (
-      <button
-        key={chip.label}
-        className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-          status === chip.value
-            ? `${chip.color} shadow-md`
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        onClick={() => handleStatusChange(chip.value)}
-      >
-        {chip.label}
-      </button>
-    ))}
-  </div>
-</div>
+          {
+            label: "Đã hoàn thành",
+            value: "Đã hoàn thành",
+            color: "bg-green-100 text-green-600",
+          },
+          {
+            label: "Đã hủy",
+            value: "Đã hủy",
+            color: "bg-red-100 text-red-600",
+          },
+          { label: "Đang gia hạn", value: "Đang gia hạn", color: "bg-indigo-100 text-indigo-600" },
+        ].map((chip) => (
+          <button
+            key={chip.label}
+            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
+              status === chip.value
+                ? `${chip.color} shadow-md`
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+            onClick={() => handleStatusChange(chip.value)}
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
 
       {/* Pagination */}
       <div className="flex justify-end items-center gap-2">

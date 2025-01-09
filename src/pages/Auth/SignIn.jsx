@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/slices/authSlice";
 import logo from "./2sport_logo.png";
-import { toast } from "react-toastify";
 
 function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +19,8 @@ function SignIn() {
         if (user) {
             if (user.role === "Admin") {
                 navigate("/admin/dashboard");
+            } else if (user.role === "Owner") {
+                navigate("/owner/dashboard");
             } else if (user.role === "Coordinator") {
                 navigate("/coordinator/assign-orders");
             } else if (user.role === "BranchStaff") {
@@ -58,7 +59,7 @@ function SignIn() {
                 navigate('/');
                 dispatch(logout());
                 localStorage.clear();
-                toast.error("Bạn không có quyền truy cập vào trang này");
+                alert("Bạn không có quyền truy cập vào trang này");
             }
         } catch (error) {
             console.error("Login failed", error);
@@ -165,4 +166,3 @@ function SignIn() {
 }
 
 export default SignIn;
-

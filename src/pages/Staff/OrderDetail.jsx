@@ -568,18 +568,18 @@ const OrderDetail = () => {
       <div className="w-full md:w-1/3 p-4">
         <div className="sticky top-4">
           <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-            <select
-              onChange={(e) => setNewStatus(e.target.value)}
-              value={newStatus || order.orderStatus}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option>Chọn tình trạng đơn</option>
-              {statusOptions.map((status) => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
+          <select
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    value={newStatus || order.orderStatus}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                    <option>{order.orderStatus}</option>
+                    {statusOptions.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
             <Button
               onClick={handleStatusChange}
               disabled={updating}
