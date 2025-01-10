@@ -25,10 +25,13 @@ import {
   faArrowLeft,
   faEdit,
   faSave,
+  faFileInvoiceDollar,
 } from "@fortawesome/free-solid-svg-icons";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
 import TransportFee from "./TransportFee";
+import { toast } from "react-toastify";
+import InvoiceContent from "../../components/OnlineStaff/ProductOfBranch/InvoiceContent";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -52,13 +55,14 @@ const OrderDetail = () => {
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
   const [transportFee, setTransportFee] = useState(0);
-  console.log(transportFee);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-
+  const handlePrint = () => {
+    window.print();
+  };
   const statusOptions = [
 
-    // { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
     {
@@ -86,7 +90,6 @@ const OrderDetail = () => {
       if (response.data.isSuccess) {
         setOrder(response.data.data);
         setFormData(response.data.data);
-        console.log(response.data.data);
 
       } else {
         setError("Failed to retrieve order details");
@@ -120,15 +123,16 @@ const OrderDetail = () => {
 
       if (response) {
         // Update order status locally without needing to reload
-        fetchOrderDetail()
+        fetchOrderDetail();
         setUpdating(true);
 
-        alert("Cập nhật trạng thái thành công");
+        toast.success("Cập nhật trạng thái thành công");
       } else {
-        alert("Failed to update order status");
+        toast.error("Failed to update order status");
       }
     } catch (error) {
-      alert(error.response.data.message);
+
+      toast.error(error.response.data.message);
 
     } finally {
       setUpdating(false);
@@ -176,7 +180,6 @@ const OrderDetail = () => {
             return {
               ...product,
               [name]: value,
-
             };
           }
           console.log(product);
@@ -277,16 +280,19 @@ const OrderDetail = () => {
       );
 
       if (response.data.isSuccess) {
-        // alert("Cập nhật đơn hàng thành công");
+
+        toast.success("Cập nhật đơn hàng thành công");
+
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
       } else {
-        alert("Failed to update order");
+        toast.error("Failed to update order");
       }
     } catch (error) {
-      alert("Error updating order");
+      toast.error("Error updating order");
     }
   };
+
 
   const updateTransportFee = (calculatedFee) => {
     if (calculatedFee !== order.tranSportFee) {
@@ -392,10 +398,11 @@ const OrderDetail = () => {
               </h2>
               <div className="flex gap-2">
                 <span
-                  className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
-                    (status) => status.label === order.orderStatus
-                  )?.color || "bg-gray-100 text-gray-800"
-                    }`}
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${
+                    statusOptions.find(
+                      (status) => status.label === order.orderStatus
+                    )?.color || "bg-gray-100 text-gray-800"
+                  }`}
                 >
                   {order.orderStatus}
                 </span>
@@ -424,40 +431,43 @@ const OrderDetail = () => {
                 <Step
                   key={index}
                   completed={index < getCurrentStepIndex(order.orderStatus)}
-                  className={`${index < getCurrentStepIndex(order.orderStatus)
-                    ? "bg-blue-500 text-wrap w-10 text-green-600"
-                    : "bg-green-600 text-green-600"
-                    }`}
+                  className={`${
+                    index < getCurrentStepIndex(order.orderStatus)
+                      ? "bg-blue-500 text-wrap w-10 text-green-600"
+                      : "bg-green-600 text-green-600"
+                  }`}
                 >
                   <div className="relative flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 flex items-center justify-center rounded-full ${index <= getCurrentStepIndex(order.orderStatus)
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-300 text-gray-600"
-                        }`}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full ${
+                        index <= getCurrentStepIndex(order.orderStatus)
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-300 text-gray-600"
+                      }`}
                     >
                       <FontAwesomeIcon
                         icon={
                           index === 0
                             ? faClock
                             : index === 1
-                              ? faCheckCircle
-                              : index === 2
-                                ? faMoneyBillWave
-                                : index === 3
-                                  ? faCogs
-                                  : index === 4
-                                    ? faTruck
-                                    : faFlagCheckered
+                            ? faCheckCircle
+                            : index === 2
+                            ? faMoneyBillWave
+                            : index === 3
+                            ? faCogs
+                            : index === 4
+                            ? faTruck
+                            : faFlagCheckered
                         }
                         className="text-lg"
                       />
                     </div>
                     <div
-                      className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${index <= getCurrentStepIndex(order.orderStatus)
-                        ? "text-green-600"
-                        : "text-gray-600"
-                        }`}
+                      className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${
+                        index <= getCurrentStepIndex(order.orderStatus)
+                          ? "text-green-600"
+                          : "text-gray-600"
+                      }`}
                     >
                       {status.label}
                     </div>
@@ -519,10 +529,7 @@ const OrderDetail = () => {
                           {item.productName}
                         </p>
                         <p className="flex text-sm text-gray-500 gap-2">
-                          Số lượng:{" "}
-
-                          {item.quantity}
-
+                          Số lượng: {item.quantity}
                         </p>
                         <p className="text-sm text-gray-500">
                           <b>Màu sắc: </b>
@@ -531,7 +538,8 @@ const OrderDetail = () => {
                               productCode={item.productCode}
                               selectedColor={
                                 formData.saleOrderDetailVMs.$values.find(
-                                  (valueItem) => valueItem.productId === item.productId
+                                  (valueItem) =>
+                                    valueItem.productId === item.productId
                                 )?.color || ""
                               }
                               setSelectedColor={(newColor) => {
@@ -539,8 +547,8 @@ const OrderDetail = () => {
                                   {
                                     target: {
                                       name: "color",
-                                      value: newColor
-                                    }
+                                      value: newColor,
+                                    },
                                   },
                                   item.productId
                                 );
@@ -550,14 +558,13 @@ const OrderDetail = () => {
                                   {
                                     target: {
                                       name: "imgAvatarPath",
-                                      value: imgAvatarPath
-                                    }
+                                      value: imgAvatarPath,
+                                    },
                                   },
                                   item.productId
                                 );
                               }}
                             />
-
                           ) : (
                             item.color
                           )}
@@ -565,41 +572,41 @@ const OrderDetail = () => {
                         <p className="text-sm text-gray-500">
                           <b>Kích thước: </b>
                           {editingSection === "productInformations" ? (
-
                             <ProductSize
                               productCode={item.productCode}
                               color={item.color}
-                              selectedSize={formData.saleOrderDetailVMs.$values.find(
-                                (valueItem) => valueItem.productId === item.productId
-                              )?.size || ""}
+                              selectedSize={
+                                formData.saleOrderDetailVMs.$values.find(
+                                  (valueItem) =>
+                                    valueItem.productId === item.productId
+                                )?.size || ""
+                              }
                               setSelectedSize={(newSize) => {
                                 handleProductChange(
                                   {
                                     target: {
                                       name: "size",
-                                      value: newSize
-                                    }
+                                      value: newSize,
+                                    },
                                   },
                                   item.productId
                                 );
                               }}
                             />
-
                           ) : (
                             item.size
                           )}
                         </p>
                         <p className="text-sm text-gray-500">
                           <b>Tình trạng: </b>
-                          {item.condition}
-                          %
+                          {item.condition}%
                         </p>{" "}
                       </div>
 
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
-                        {item.unitPrice.toLocaleString('vi-VN')}₫
+                        {item.unitPrice.toLocaleString("vi-VN")} ₫
                       </p>
                     </div>
                   </li>
@@ -613,11 +620,12 @@ const OrderDetail = () => {
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Tạm tính</p>
               <p className="font-medium text-gray-900">
-                {order.subTotal.toLocaleString('vi-VN')}₫
+                {order.subTotal.toLocaleString("vi-VN")} ₫
               </p>
             </div>
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Phí vận chuyển</p>
+
               {order.tranSportFee === 0 ? (
                 (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
                   0
@@ -647,13 +655,30 @@ const OrderDetail = () => {
                   />
               }
             </div> */}
+
             <div className="flex justify-between py-3 pt-4 mt-2 border-t border-gray-200">
-              <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
+              <p className="text-lg font-semibold text-gray-900 ">Tổng cộng </p>
               <p className="text-lg font-semibold text-rose-700">
-                {(order.totalAmount + transportFee).toLocaleString('vi-VN')}₫
+                {(order.totalAmount + transportFee).toLocaleString("vi-VN")} ₫
               </p>
             </div>
           </div>
+
+
+          {order.orderStatus === "Đã hoàn thành" && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md hover:shadow-lg transition duration-300"
+              >
+                <FontAwesomeIcon
+                  icon={faFileInvoiceDollar}
+                  className="mr-2 text-lg"
+                />
+                Xuất hóa đơn
+              </button>
+            </div>
+          )}
 
           {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
             <div className="mt-6 flex gap-3 justify-end">
@@ -671,35 +696,37 @@ const OrderDetail = () => {
               </Button>
             </div>
           )}
+
         </div>
       </div>
 
       <div className="w-full md:w-1/3 p-4">
         <div className="sticky top-4">
+
           {order.orderStatus === "Đã xác nhận" && 
-           <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-           <select
-             onChange={(e) => setNewStatus(e.target.value)}
-             value={newStatus || order.orderStatus}
-             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-           >
-             <option>Chọn tình trạng đơn</option>
-             {statusOptions.map((status) => (
-               <option key={status.value} value={status.value}>
-                 {status.label}
-               </option>
-             ))}
-           </select>
-           <Button
-             onClick={handleStatusChange}
-             disabled={updating}
-             className="bg-blue-500 hover:bg-blue-600"
-           >
-             {updating ? "Đang thay đổi..." : "Cập nhật"}
-           </Button>
-         </div>
+             <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+            <select
+              onChange={(e) => setNewStatus(e.target.value)}
+              value={newStatus || order.orderStatus}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option>{order.orderStatus}</option>
+              {statusOptions.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+            <Button
+              onClick={handleStatusChange}
+              disabled={updating}
+              className="bg-blue-500 hover:bg-blue-600"
+            >
+              {updating ? "Đang thay đổi..." : "Cập nhật"}
+            </Button>
+          </div>
           }
-         
+
           <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
@@ -855,21 +882,21 @@ const OrderDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Chi nhánh</p>
-                <p className="font-medium">{order.branchName || "KH chọn giao tận nơi"}</p>
+                <p className="font-medium">
+                  {order.branchName || "KH chọn giao tận nơi"}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Phương thức thanh toán</p>
-                <p className="font-medium">
-                  {order.paymentMethod || ""}
-                </p>
+                <p className="font-medium">{order.paymentMethod || ""}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Ngày đặt hàng</p>
                 <p className="font-medium">
-                  {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
+                  {new Date(order.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
                   })}
                 </p>
               </div>
@@ -895,6 +922,37 @@ const OrderDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal for Invoice */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white w-3/4 max-h-[90vh] overflow-y-auto rounded-lg shadow-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Hóa đơn chi tiết</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            {/* Invoice Content */}
+            <InvoiceContent
+              searchQuery={order.rentalOrderCode}
+              orderType="rentOrder"
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handlePrint}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
+              >
+                <FontAwesomeIcon icon={faPrint} className="mr-2" />
+                In hóa đơn
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

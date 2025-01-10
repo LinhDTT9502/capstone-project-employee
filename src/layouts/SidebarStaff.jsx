@@ -30,7 +30,8 @@ import {
   faExchange,
   faBriefcase,
   faPercent,
-  faFolder
+  faFolder,
+  faBoxesPacking
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../redux/slices/authSlice";
 
@@ -126,7 +127,7 @@ export default function SidebarStaff() {
       <SidebarLink to="/admin/manage-warehouse" icon={faWarehouse}>
         Xem kho
       </SidebarLink>
-      <SidebarLink to="/admin/import-history" icon={faComments}>
+      <SidebarLink to="/admin/import-history" icon={faBoxesPacking}>
         Lịch sử nhập hàng
       </SidebarLink>
     </>
@@ -140,16 +141,16 @@ export default function SidebarStaff() {
       <SidebarLink to="/owner/manage-feedback" icon={faComments}>
         Danh sách phản hồi
       </SidebarLink>
-      <SidebarLink to="/owner/import-history" icon={faComments}>
+      <SidebarLink to="/owner/import-history" icon={faBoxesPacking}>
         Lịch sử nhập hàng
       </SidebarLink>
 
       <SidebarLink to="/owner/manage-warehouse" icon={faWarehouse}>
         Quản lý kho
       </SidebarLink>
-      <SidebarLink to="/owner/test" icon={faWarehouse}>
+      {/* <SidebarLink to="/owner/test" icon={faWarehouse}>
         Quản lý kho
-      </SidebarLink>
+      </SidebarLink> */}
     </>
   );
 
@@ -212,7 +213,7 @@ export default function SidebarStaff() {
   const renderStaffLinks = () => (
     <>
       <SidebarLink to="/staff/list-orders" icon={faClipboardList}>
-        Danh sách đơn hàng
+        Danh sách đơn mua
       </SidebarLink>
       <SidebarLink to="/staff/list-rentals" icon={faClipboardList}>
         Danh sách đơn cho thuê
@@ -257,7 +258,7 @@ export default function SidebarStaff() {
       Quản lý kho
     </SidebarLink>
     <SidebarLink to="/manager/list-orders" icon={faClipboardList}>
-      Danh sách đơn hàng
+      Danh sách đơn mua
     </SidebarLink>
     <SidebarLink to="/manager/list-rentals" icon={faClipboardList}>
       Danh sách đơn cho thuê

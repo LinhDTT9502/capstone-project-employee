@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faFileInvoice, faPrint } from "@fortawesome/free-solid-svg-icons";
 import InvoiceContent from "../../components/OnlineStaff/ProductOfBranch/InvoiceContent";
+import { toast } from "react-toastify";
 
 export default function Invoice() {
   const [showInvoice, setShowInvoice] = useState(false);
@@ -10,11 +11,11 @@ export default function Invoice() {
 
   const handleButtonClick = () => {
     if (!orderType) {
-      alert("Vui lòng chọn 'Đơn mua' hoặc 'Đơn thuê' trước khi tạo hóa đơn!");
+      toast.warning("Vui lòng chọn 'Đơn mua' hoặc 'Đơn thuê' trước khi tạo hóa đơn!");
       return;
     }
     if (!searchQuery) {
-      alert("Vui lòng nhập mã đơn hàng!");
+      toast.warning("Vui lòng nhập mã đơn hàng!");
       return;
     }
 

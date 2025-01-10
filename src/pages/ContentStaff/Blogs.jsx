@@ -35,7 +35,7 @@ const Blogs = () => {
         setBlogs(response.data.data.$values);
       } catch (error) {
         console.error("Error fetching blogs:", error);
-        alert("Failed to fetch blogs.");
+        toast.error("Failed to fetch blogs.");
       }
     };
     setIsReload(false);

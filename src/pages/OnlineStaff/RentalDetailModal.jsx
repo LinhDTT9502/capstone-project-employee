@@ -9,6 +9,7 @@ import {
 import { getOrderDetail } from "../../services/Staff/OrderService";
 import ProductOfBranch from "../../components/OnlineStaff/ProductOfBranch/ProductOfBranch";
 import { getRentalDetail } from "../../services/Staff/RentalService";
+import { toast } from "react-toastify";
 
 const RentalDetailModal = ({ open, onClose, orderCode }) => {
   const [orderDetail, setOrderDetail] = useState(null);
@@ -66,7 +67,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
 
   const handleAssignBranch = async () => {
     if (!selectedBranchId) {
-      alert("Vui lòng chọn chi nhánh cho đơn hàng");
+      toast.warning("Vui lòng chọn chi nhánh cho đơn hàng");
       return;
     }
 
@@ -86,11 +87,11 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
         throw new Error("Failed to assign branch. Please try again.");
       }
 
-      alert("Đã phân nhánh thành công!");
+      toast.success("Đã phân nhánh thành công!");
       onClose(); // Close the modal after successful assignment
     } catch (error) {
       console.error(error);
-      alert("Error assigning branch. Please try again.");
+      toast.error("Error assigning branch. Please try again.");
     }
   };
 
@@ -170,12 +171,12 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
                         <span className="italic">
                           {order.rentPrice
                             ? order.rentPrice.toLocaleString('vi-VN')
-                            : "N/A"}₫
+                            : "N/A"} ₫
                         </span>
                       </p>
                       <p>
                         <span className="font-bold">Tạm tính: </span>
-                        <span className="italic">{order.subTotal.toLocaleString('vi-VN')}₫</span>
+                        <span className="italic">{order.subTotal.toLocaleString('vi-VN')} ₫</span>
 
                       </p>
                     </div>

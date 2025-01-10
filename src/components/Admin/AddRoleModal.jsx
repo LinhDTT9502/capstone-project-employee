@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 
 const AddRoleModal = ({ isOpen, onClose, onAddRole }) => {
   const [roleName, setRoleName] = useState("");
@@ -10,11 +11,11 @@ const AddRoleModal = ({ isOpen, onClose, onAddRole }) => {
   const handleSubmit = () => {
     // Validate input
     if (!roleName.trim()) {
-      alert("Tên vai trò không được để trống.");
+      toast.warning("Tên vai trò không được để trống.");
       return;
     }
     if (!description.trim()) {
-      alert("Mô tả không được để trống.");
+      toast.warning("Mô tả không được để trống.");
       return;
     }
     // Call parent handler

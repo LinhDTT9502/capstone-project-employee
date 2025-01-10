@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
 import { getOrderDetail } from '../../services/Staff/OrderService';
 import ProductOfBranch from '../../components/OnlineStaff/ProductOfBranch/ProductOfBranch';
+import { toast } from 'react-toastify';
 
 const OrderDetailModal = ({ open, onClose, orderId }) => {
   const [orderDetail, setOrderDetail] = useState(null);
@@ -33,7 +34,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
 
   const handleAssignBranch = async () => {
     if (!selectedBranchId) {
-      alert('Vui lòng chọn chi nhánh cho đơn hàng');
+      toast.warning('Vui lòng chọn chi nhánh cho đơn hàng');
       return;
     }
 
@@ -53,11 +54,11 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
         throw new Error('Failed to assign branch. Please try again.');
       }
 
-      alert('Branch assigned successfully!');
+      toast.success('Branch assigned successfully!');
       onClose(); // Close the modal after successful assignment
     } catch (error) {
       console.error(error);
-      alert('Error assigning branch. Please try again.');
+      toast.error('Error assigning branch. Please try again.');
     }
   };
 
@@ -101,7 +102,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
             <p><strong>Phương thức nhận hàng:</strong> {orderDetail?.deliveryMethod}</p>
             <p><strong>Số điện thoại:</strong> {formatPhoneNumber(orderDetail?.contactPhone)}</p>
             <p><strong>Địa chỉ:</strong> {orderDetail?.address}</p>
-            <p><strong>Tổng cộng:</strong> {orderDetail?.totalAmount.toLocaleString('vi-VN')}₫</p>
+            <p><strong>Tổng cộng:</strong> {orderDetail?.totalAmount.toLocaleString('vi-VN')} ₫</p>
             <h4 className="mt-4 mb-2">Sản phẩm:</h4>
             <ul>
               {orderDetail?.saleOrderDetailVMs?.$values.map((item) => (
@@ -121,7 +122,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
                       </p>
                       <p>
                         <span className="font-bold">Đơn giá: </span>
-                        <span className="italic">{item.unitPrice.toLocaleString('vi-VN')}₫</span>
+                        <span className="italic">{item.unitPrice.toLocaleString('vi-VN')} ₫</span>
                       </p>
                       <p>
                         <span className="font-bold">Số lượng: </span>
@@ -129,7 +130,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
                       </p>
                       <p>
                         <span className="font-bold">Tạm tính: </span>
-                        <span className="italic">{item.totalAmount.toLocaleString('vi-VN')}₫</span>
+                        <span className="italic">{item.totalAmount.toLocaleString('vi-VN')} ₫</span>
                       </p>
                     </div>
                   </div>

@@ -9,7 +9,7 @@ const ReplyComment = ({ productCode, parentCommentId, setIsReload }) => {
 
   const handleReply = async () => {
     if (!content.trim()) {
-      toast.error('Vui lòng nhập nội dung phản hồi.');
+      toast.warning('Vui lòng nhập nội dung phản hồi.');
       return;
     }
 
@@ -17,7 +17,7 @@ const ReplyComment = ({ productCode, parentCommentId, setIsReload }) => {
     console.log(productCode, parentCommentId, token);
 
     if (!token) {
-      toast.error('Vui lòng đăng nhập để trả lời!');
+      toast.warning('Vui lòng đăng nhập để trả lời!');
       return;
     }
 

@@ -137,7 +137,7 @@ export default function InvoiceContent({ searchQuery, orderType }) {
                 <td className="py-2 px-4 border-b">{child.productName}</td>
                 <td className="py-2 px-4 border-b">{child.color || "N/A"}, {child.size || "N/A"}</td>
                 <td className="py-2 px-4 border-b text-right">{child.quantity}</td>
-                <td className="py-2 px-4 border-b text-right">{child.rentPrice.toLocaleString('vi-VN')}₫</td>
+                <td className="py-2 px-4 border-b text-right">{child.rentPrice.toLocaleString('vi-VN')} ₫</td>
               </tr>
             ))) : (
             items.map((item, index) => (
@@ -145,7 +145,7 @@ export default function InvoiceContent({ searchQuery, orderType }) {
                 <td className="py-2 px-4 border-b">{item.productName}</td>
                 <td className="py-2 px-4 border-b">{item.color || "N/A"}, {item.size || "N/A"}</td>
                 <td className="py-2 px-4 border-b text-right">{item.quantity}</td>
-                <td className="py-2 px-4 border-b text-right">{item.unitPrice.toLocaleString('vi-VN')}₫</td>
+                <td className="py-2 px-4 border-b text-right">{item.unitPrice.toLocaleString('vi-VN')} ₫</td>
               </tr>
             ))
           )}
@@ -157,7 +157,7 @@ export default function InvoiceContent({ searchQuery, orderType }) {
         <div className="text-right w-64">
           <div className="flex justify-between text-xl font-bold border-t border-gray-300 pt-2">
             <span>Tổng tiền:</span>
-            <span>{totalAmount.toLocaleString('vi-VN')}₫ VND</span>
+            <span>{totalAmount.toLocaleString('vi-VN')} ₫</span>
           </div>
         </div>
       </div>

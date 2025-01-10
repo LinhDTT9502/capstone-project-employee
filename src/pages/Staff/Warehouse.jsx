@@ -56,7 +56,7 @@ export default function Warehouse() {
     const oldQuantity = item.quantity;
 
     if (!newQuantity || newQuantity <= oldQuantity) {
-      alert(`The entered quantity must be greater than the current quantity of ${oldQuantity}.`);
+      toast.warning(`The entered quantity must be greater than the current quantity of ${oldQuantity}.`);
       return;
     }
 

@@ -271,13 +271,13 @@ const ListImportHistory = () => {
               <div className="bg-gray-100 p-4 rounded-lg shadow">
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá Bán</h3>
                 <p className="text-lg text-gray-900">
-                  {selectedImport.price.toLocaleString("Vi-vn")}₫
+                  {selectedImport.price.toLocaleString("Vi-vn")} ₫
                 </p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">
                 <h3 className="text-sm font-semibold text-gray-600 mb-2">Giá Thuê</h3>
                 <p className="text-lg text-gray-900">
-                  {selectedImport.rentPrice.toLocaleString("Vi-vn")}₫
+                  {selectedImport.rentPrice.toLocaleString("Vi-vn")} ₫
                 </p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow">

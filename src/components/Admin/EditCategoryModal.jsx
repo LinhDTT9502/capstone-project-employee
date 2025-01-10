@@ -3,6 +3,7 @@ import { Dialog } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { SportSelect } from "../Product/SportSelect";
+import { toast } from "react-toastify";
 
 const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
   const [categoryName, setCategoryName] = useState("");
@@ -19,7 +20,7 @@ const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
 
   const handleSubmit = async () => {
     if (!categoryName.trim() || !sportId || !categoryImage) {
-      alert("Tất cả các trường đều bắt buộc.");
+      toast.warning("Tất cả các trường đều bắt buộc.");
       return;
     }
 
@@ -35,7 +36,7 @@ const EditCategoryModal = ({ isOpen, onClose, onEditCategory, category }) => {
       onClose();
     } catch (error) {
       console.error("Error updating category:", error);
-      alert("Có lỗi xảy ra khi lưu danh mục.");
+      toast.error("Có lỗi xảy ra khi lưu danh mục.");
     }
   };
 

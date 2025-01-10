@@ -192,7 +192,7 @@ const RentalTransportFee = ({ address, product, branchId, setTransportFee }) => 
             {loading ? (
                 <p>Đang tính toán</p>
             ) : (
-                <p className="text-orange-500 font-bold">{shippingFee > 0 ? `${shippingFee.toLocaleString('vi-VN')}₫` : "Chờ tính toán "}</p>
+                <p className="text-orange-500 font-bold">{shippingFee > 0 ? `${shippingFee.toLocaleString('vi-VN')} ₫` : "Chờ tính toán "}</p>
             )}
         </div>
     );

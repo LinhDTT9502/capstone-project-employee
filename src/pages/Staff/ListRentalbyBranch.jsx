@@ -6,50 +6,68 @@ import { faEye, faTrash, faChevronLeft, faChevronRight } from "@fortawesome/free
 import { getRentalbyBranch, removeRental } from '../../services/Staff/RentalService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
+import { Button } from '@material-tailwind/react';
+import { toast } from 'react-toastify';
 
 const ListRentalbyBranch = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOrder, setSortOrder] = useState('latest'); // Sorting state
+  const [sortOrder, setSortOrder] = useState('earliest'); // Sorting state
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const ordersPerPage = 30;
+  const [status, setStatus] = useState("");
 
   const user = useSelector(selectUser);
 
   const statusStyles = {
-    "Đã hủy": 'bg-red-100 text-red-600',
-    "Chờ xử lý": 'bg-yellow-100 text-yellow-600',
-    "Đã xác nhận đơn": 'bg-blue-100 text-blue-600',
-    "Đã giao hàng": 'bg-green-100 text-green-600',
-    "Đang xử lý": 'bg-indigo-100 text-indigo-600',
-    "Đã giao cho đơn vị vận chuyển": 'bg-teal-100 text-teal-600',
-    "Chờ khách nhận hàng": 'bg-orange-100 text-orange-600',
-    "Đang kiểm tra sản phẩm trả": 'bg-gray-100 text-gray-600',
-    "Bị trì hoãn": 'bg-orange-100 text-orange-600',
-    "Yêu cầu trả sản phẩm": 'bg-purple-100 text-purple-600',
-    "Đã trả sản phẩm": 'bg-gray-100 text-gray-600',
-    "Yêu cầu gia hạn": 'bg-orange-100 text-orange-600',
-    "Đang thuê": 'bg-purple-100 text-purple-600',
-    "Đã từ chối": 'bg-red-100 text-red-600',
-    "Xử lý đơn thất bại": 'bg-orange-100 text-orange-600',
-    "Đơn thuê đã kết thúc": 'bg-purple-100 text-purple-600',
+    "Đã hủy": "bg-red-100 text-red-600",
+    "Chờ xử lý": "bg-yellow-100 text-yellow-600",
+    "Đã xác nhận": "bg-blue-100 text-blue-600",
+    "Đang xử lý": "bg-indigo-100 text-indigo-600",
+    "Đã giao cho ĐVVC": "bg-teal-100 text-teal-600",
+    "Đã giao hàng": "bg-green-100 text-green-600",
+    "Chờ khách nhận hàng": "bg-orange-100 text-orange-600",
+    "Đã từ chối": "bg-red-100 text-red-600",
+    "Đang thuê": "bg-purple-100 text-purple-600",
+    "Đang gia hạn": "bg-indigo-100 text-indigo-600",
+    "Bị trì hoãn": "bg-orange-100 text-orange-600",
+    "Yêu cầu trả sản phẩm": "bg-purple-100 text-purple-600",
+    "Đã trả sản phẩm": "bg-gray-100 text-gray-600",
+    "Đang kiểm tra sản phẩm trả": "bg-gray-100 text-gray-600",
+    "Đã hoàn thành": "bg-green-100 text-green-600",
+    "Xử lý đơn thất bại": "bg-orange-100 text-orange-600",
+  
+    // Các trạng thái cọc
+    "Đã thanh toán cọc 100% tiền thuê": "bg-green-100 text-green-600",
+    "Cọc 50% tiền thuê": "bg-blue-100 text-blue-600",
+    "Chưa thanh toán": "bg-red-100 text-red-600",
+    "Đã hoàn trả": "bg-gray-100 text-gray-600",
+    "Đang chờ thanh toán cọc 100% tiền thuê": "bg-orange-100 text-orange-600",
   };
+  
 
   const paymentStyles = {
-    "Đã hủy": 'bg-red-100 text-red-600',
-    "Đang chờ thanh toán": 'bg-yellow-100 text-yellow-600',
-    "Đã thanh toán": 'bg-blue-100 text-blue-600',
-    "Đã giao hàng": 'bg-green-100 text-green-600'
+    "Đã hủy": "bg-red-100 text-red-600",
+    "Đang chờ thanh toán": "bg-yellow-100 text-yellow-600",
+    "Đã thanh toán": "bg-blue-100 text-blue-600",
+    "Đã đặt cọc": "bg-teal-100 text-teal-600",
+    "Đã hoàn tiền": "bg-orange-100 text-orange-600",
+    "Thất bại": "bg-red-100 text-red-600",
   };
+  
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
   };
 
   const fetchOrders = async () => {
@@ -68,6 +86,16 @@ const ListRentalbyBranch = () => {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    const filtered = orders.filter(
+      (order) =>
+        (status === "" || order.orderStatus === status) &&
+        (order.rentalOrderCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.fullName.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredOrders(filtered);
+  }, [status, searchTerm, orders]);
 
   const handleSortChange = (e) => {
     const selectedSortOrder = e.target.value;
@@ -95,10 +123,11 @@ const ListRentalbyBranch = () => {
 
       const data = await removeRental(orderId);
       if (data.isSuccess) {
-        alert('Bạn đã xóa đơn hàng thành công!');
+        toast.success('Bạn đã xóa đơn hàng thành công!');
         fetchOrders();
       } else {
         console.error('Không thể xóa đơn hàng:', data.message);
+        toast.error('Không thể xóa đơn hàng');
       }
     } catch (error) {
       console.error('Lỗi khi xóa đơn hàng:', error);
@@ -148,6 +177,61 @@ const ListRentalbyBranch = () => {
             <option value="earliest">Đơn mới nhất</option>
           </select>
         </div>
+      </div>
+
+      <div className="flex gap-2 py-3">
+        {[
+          { label: "Tất cả", value: "", color: "bg-blue-500 text-white" },
+          {
+            label: "Chờ xử lý",
+            value: "Chờ xử lý",
+            color: "bg-yellow-100 text-yellow-600",
+          },
+          {
+            label: "Đã xác nhận",
+            value: "Đã xác nhận",
+            color: "bg-blue-100 text-blue-600",
+          },
+          {
+            label: "Đang xử lý",
+            value: "Đang xử lý",
+            color: "bg-indigo-100 text-indigo-600",
+          },
+          {
+            label: "Đã giao cho ĐVVC",
+            value: "Đã giao cho ĐVVC",
+            color: "bg-teal-100 text-teal-600",
+          },
+          {
+            label: "Đã giao hàng",
+            value: "Đã giao hàng",
+            color: "bg-green-100 text-green-600",
+          },
+
+          {
+            label: "Đã hoàn thành",
+            value: "Đã hoàn thành",
+            color: "bg-green-100 text-green-600",
+          },
+          {
+            label: "Đã hủy",
+            value: "Đã hủy",
+            color: "bg-red-100 text-red-600",
+          },
+          { label: "Đang gia hạn", value: "Đang gia hạn", color: "bg-indigo-100 text-indigo-600" },
+        ].map((chip) => (
+          <button
+            key={chip.label}
+            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
+              status === chip.value
+                ? `${chip.color} shadow-md`
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+            onClick={() => handleStatusChange(chip.value)}
+          >
+            {chip.label}
+          </button>
+        ))}
       </div>
 
       {/* Pagination */}
@@ -212,21 +296,32 @@ const ListRentalbyBranch = () => {
                   <div className='flex items-center gap-3'>
                     {user.ManagerId !== "Unknow" ? (
                       <Link to={`/manager/list-rentals/${order.id}`}>
-                        <FontAwesomeIcon icon={faEye} />
+                        <Button size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2">
+                                                  <FontAwesomeIcon icon={faEye} />
+
+                        </Button>
                       </Link>
                     ) : (
                       <Link to={`/staff/list-rentals/${order.id}`}>
-                        <FontAwesomeIcon icon={faEye} />
-                      </Link>
+                        <Button size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2"><FontAwesomeIcon icon={faEye} className="text-sm	"/>
+                     </Button> </Link>
                     )}
 
 
-                    <button
+                    <Button
                       onClick={() => handleRemoveOrder(order.id)}
-                      className="text-red-500 hover:text-red-700 p-2 rounded transition-all duration-300"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                      size="md"
+                        color="red"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2"                   >
+                      <FontAwesomeIcon icon={faTrash} className="text-sm	"/>
+                    </Button>
 
                   </div>
                 </td>
