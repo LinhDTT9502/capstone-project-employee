@@ -45,6 +45,8 @@ export const getRentalbyStatusAPI = (orderStatus) => {
   };
   
   export const rejectRentalAPI = (orderId) => {
+    // console.log(orderId);
+    
     return axios.post(`${API_BASE_URL}/${orderId}/reject`, {
       headers: {
         'accept': '*/*'
@@ -70,6 +72,14 @@ export const getRentalbyStatusAPI = (orderStatus) => {
 
   export const approveExtensionAPI = (rentalOrderCode) => {
     return axios.post(`${API_BASE_URL}/approve-extension/${rentalOrderCode}`, {
+      headers: {
+        'accept': '*/*'
+      }
+    });
+  };
+
+  export const rejectExtensionAPI = (rentalOrderCode, rejectionReason) => {
+    return axios.post(`${API_BASE_URL}/approve-extension/${rentalOrderCode}`,{rejectionReason}, {
       headers: {
         'accept': '*/*'
       }

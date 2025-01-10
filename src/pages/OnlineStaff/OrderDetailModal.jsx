@@ -81,6 +81,8 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
 
   // Extract product IDs from the order details
   const productIds = orderDetail?.saleOrderDetailVMs?.$values.map((item) => item.productId) || [];
+  console.log(orderDetail);
+  
 
   return (
     <Dialog open={open} handler={onClose}>
@@ -106,7 +108,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
               {orderDetail?.saleOrderDetailVMs?.$values.map((item) => (
                 <li key={item.productId} className="mb-2">
                   <div className="flex items-center gap-4">
-                    {console.log(item)}
+                    {/* {console.log(item)} */}
                     <img src={item.imgAvatarPath} alt={item.productName} className="w-16 h-16 object-cover rounded-lg" />
 
                     <div>

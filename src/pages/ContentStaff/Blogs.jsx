@@ -42,6 +42,7 @@ const Blogs = () => {
     fetchBlogs();
   }, [isReload]);
 
+console.log(blogs);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -106,7 +107,7 @@ const Blogs = () => {
                         <img
                           src={blog.coverImgPath}
                           alt={blog.title}
-                          className="object-cover w-20 h-20 rounded-md"
+                          className="object-contain w-56 rounded-md"
                         />
                       )}
                     </td>
@@ -118,7 +119,7 @@ const Blogs = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div
-                        className="prose-sm prose"
+                        className="prose-sm prose line-clamp-3"
                         dangerouslySetInnerHTML={{ __html: blog.content }}
                       />
                     </td>

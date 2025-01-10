@@ -37,7 +37,7 @@ const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
   { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
-  { id: 4, label: "Đã giao cho đơn vị vận chuyển" },
+  { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
   { id: 6, label: "Đã hoàn thành" },
 ];
@@ -57,11 +57,12 @@ const OrderDetail = () => {
   const [transportFee, setTransportFee] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+
   const handlePrint = () => {
     window.print();
   };
   const statusOptions = [
-    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" },
+
     { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" },
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" },
     {
@@ -89,7 +90,7 @@ const OrderDetail = () => {
       if (response.data.isSuccess) {
         setOrder(response.data.data);
         setFormData(response.data.data);
-        // console.log(response.data.data);
+
       } else {
         setError("Failed to retrieve order details");
       }
@@ -101,6 +102,7 @@ const OrderDetail = () => {
   };
 
   useEffect(() => {
+
     fetchOrderDetail();
     getCurrentStepIndex();
   }, [reload]);
@@ -129,7 +131,9 @@ const OrderDetail = () => {
         toast.error("Failed to update order status");
       }
     } catch (error) {
+
       toast.error(error.response.data.message);
+
     } finally {
       setUpdating(false);
     }
@@ -137,8 +141,19 @@ const OrderDetail = () => {
 
   const handleApprove = async () => {
     const response = await approveOrder(orderId);
-    setReload((prev) => !prev);
-    // console.log(response);
+    if (response) {
+      const update = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      fetchOrderDetail()
+      setReload((prev) => !prev);
+    }
   };
 
   const handleReject = async () => {
@@ -207,6 +222,8 @@ const OrderDetail = () => {
       formData.paymentStatus = 3;
     } else if (formData.paymentStatus === "Đã hủy") {
       formData.paymentStatus = 4;
+    }else if (formData.paymentStatus === "N/A") {
+      formData.paymentStatus = 1;
     }
     if (formData.deliveryMethod === "Đến cửa hàng nhận") {
       formData.deliveryMethod = "STORE_PICKUP";
@@ -234,7 +251,7 @@ const OrderDetail = () => {
         cartItemId: null, // You can set this dynamically if available
         productId: item.productId,
         productName: item.productName,
-        productCode: item.productCode || "BAYORA88SS", // Handle null values
+        productCode: item.productCode || "", // Handle null values
         size: item.size || "", // Handle null values
         color: item.color || "", // Handle null values
         condition: item.condition,
@@ -263,7 +280,9 @@ const OrderDetail = () => {
       );
 
       if (response.data.isSuccess) {
+
         toast.success("Cập nhật đơn hàng thành công");
+
         setOrder(formData);
         setEditingSection(null); // Exit edit mode
       } else {
@@ -271,6 +290,90 @@ const OrderDetail = () => {
       }
     } catch (error) {
       toast.error("Error updating order");
+    }
+  };
+
+
+  const updateTransportFee = (calculatedFee) => {
+    if (calculatedFee !== order.tranSportFee) {
+      // Update formData with the new transport fee and recalculate total
+      const updatedTransportFee = calculatedFee ;
+      const updatedTotalAmount = formData.subTotal + updatedTransportFee;
+
+      // Update formData
+      setFormData((prev) => ({
+        ...prev,
+        tranSportFee: updatedTransportFee,
+        totalAmount: updatedTotalAmount,
+      }));
+      if (formData.paymentStatus === "Đang chờ thanh toán") {
+        formData.paymentStatus = 1;
+      } else if (formData.paymentStatus === "Đã thanh toán") {
+        formData.paymentStatus = 2;
+      } else if (formData.paymentStatus === "Đã đặt cọc") {
+        formData.paymentStatus = 3;
+      } else if (formData.paymentStatus === "Đã hủy") {
+        formData.paymentStatus = 4;
+      }else if (formData.paymentStatus === "N/A") {
+        formData.paymentStatus = 1;
+      }
+      if (formData.deliveryMethod === "Đến cửa hàng nhận") {
+        formData.deliveryMethod = "STORE_PICKUP";
+      } else if (formData.deliveryMethod === "Giao hàng tận nơi") {
+        formData.deliveryMethod = "HOME_DELIVERY";
+      }
+
+      const payload = {
+        customerInformation: {
+          userId: formData.userId, // Assuming `id` is the userId
+          email: formData.email,
+          fullName: formData.fullName,
+          gender: formData.gender,
+          contactPhone: formData.contactPhone,
+          address: formData.address,
+        },
+        deliveryMethod: formData.deliveryMethod,
+        branchId: formData.branchId,
+        dateOfReceipt: formData.dateOfReceipt,
+        paymentMethodId: formData.paymentMethodId || null, // Assuming you may have a `paymentMethodId` field
+        paymentStatus: formData.paymentStatus,
+        note: formData.note || "", // Ensure note is always a string, even if empty
+        productInformations: formData.saleOrderDetailVMs.$values.map((item) => ({
+          cartItemId: null, // You can set this dynamically if available
+          productId: item.productId,
+          productName: item.productName,
+          productCode: item.productCode || "", // Handle null values
+          size: item.size || "", // Handle null values
+          color: item.color || "", // Handle null values
+          condition: item.condition,
+          unitPrice: item.unitPrice,
+          imgAvatarPath: item.imgAvatarPath,
+          quantity: item.quantity,
+        })),
+        saleCosts: {
+          subTotal: formData.subTotal,
+          tranSportFee: updatedTransportFee,
+          totalAmount: updatedTotalAmount,
+        },
+      };
+      axios
+        .put(
+          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-order/?orderId=${orderId}`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        )
+        .then((response) => {
+          setOrder(formData);
+          fetchOrderDetail()
+          console.log("Updated successfully:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error updating transport fee:", error);
+        });
     }
   };
 
@@ -499,6 +602,7 @@ const OrderDetail = () => {
                           {item.condition}%
                         </p>{" "}
                       </div>
+
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
@@ -521,17 +625,37 @@ const OrderDetail = () => {
             </div>
             <div className="flex justify-between py-2">
               <p className="text-gray-600">Phí vận chuyển</p>
-              {order.totalAmount >= 2000000
-                ? 0
-                : order.deliveryMethod === "Giao hàng tận nơi" && (
-                    <TransportFee
-                      address={order.address}
-                      product={order.saleOrderDetailVMs.$values}
-                      branchId={order.branchId}
-                      setTransportFee={setTransportFee}
-                    />
-                  )}
+
+              {order.tranSportFee === 0 ? (
+                (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
+                  0
+                ) : (
+                  <TransportFee
+                    address={order.address}
+                    product={order.saleOrderDetailVMs.$values}
+                    branchId={order.branchId}
+                    setTransportFee={updateTransportFee}
+                  />
+                )
+              ) : (
+                <p className="text-orange-500 font-bold">{order.tranSportFee.toLocaleString("vi-VN")}₫</p>
+              )}
             </div>
+
+            {/* <div className="flex justify-between py-2">
+              <p className="text-gray-600">Phí vận chuyển</p>
+              {
+                (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? 0 :
+
+                  <TransportFee
+                    address={order.address}
+                    product={order.saleOrderDetailVMs.$values}
+                    branchId={order.branchId}
+                    setTransportFee={setTransportFee}
+                  />
+              }
+            </div> */}
+
             <div className="flex justify-between py-3 pt-4 mt-2 border-t border-gray-200">
               <p className="text-lg font-semibold text-gray-900 ">Tổng cộng </p>
               <p className="text-lg font-semibold text-rose-700">
@@ -539,6 +663,7 @@ const OrderDetail = () => {
               </p>
             </div>
           </div>
+
 
           {order.orderStatus === "Đã hoàn thành" && (
             <div className="flex justify-end">
@@ -555,31 +680,31 @@ const OrderDetail = () => {
             </div>
           )}
 
-          {order.orderStatus === "Chờ xử lý" &&
-            order.branchId === null &&
-            order.deliveryMethod !== "Đến cửa hàng nhận" &&
-            order.deliveryMethod !== "STORE_PICKUP" && (
-              <div className="mt-6 flex gap-3 justify-end">
-                <Button
-                  onClick={handleReject}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  Từ chối
-                </Button>
-                <Button
-                  onClick={handleApprove}
-                  className="bg-green-500 hover:bg-green-600"
-                >
-                  Chấp thuận
-                </Button>
-              </div>
-            )}
+          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
+            <div className="mt-6 flex gap-3 justify-end">
+              <Button
+                onClick={handleReject}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                Từ chối
+              </Button>
+              <Button
+                onClick={handleApprove}
+                className="bg-green-500 hover:bg-green-600"
+              >
+                Chấp thuận
+              </Button>
+            </div>
+          )}
+
         </div>
       </div>
 
       <div className="w-full md:w-1/3 p-4">
         <div className="sticky top-4">
-          <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+
+          {order.orderStatus === "Đã xác nhận" && 
+             <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
             <select
               onChange={(e) => setNewStatus(e.target.value)}
               value={newStatus || order.orderStatus}
@@ -600,6 +725,8 @@ const OrderDetail = () => {
               {updating ? "Đang thay đổi..." : "Cập nhật"}
             </Button>
           </div>
+          }
+
           <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
@@ -629,6 +756,7 @@ const OrderDetail = () => {
                   Chỉnh sửa
                 </button>
               )}
+
             </div>
             <div className="space-y-3">
               <div>
