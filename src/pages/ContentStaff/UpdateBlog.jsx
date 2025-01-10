@@ -19,7 +19,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 const UpdateBlog = (selectedBlog) => {
-const UpdateBlog = () => {
   const { blogId: paramBlogId } = useParams();
   const blogId = Number(paramBlogId);
 

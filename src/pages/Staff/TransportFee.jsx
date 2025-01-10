@@ -105,7 +105,7 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
                     return response[0];
                 })
             );
-            console.log(results);
+            // console.log(results);
 
             // Extract only height, weight, and width from the results
             const filteredResults = results.map((item) => ({

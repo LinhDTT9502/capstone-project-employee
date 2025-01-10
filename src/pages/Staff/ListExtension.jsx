@@ -7,20 +7,18 @@ import { selectUser } from "../../redux/slices/authSlice";
 
 const ListExtension = () => {
 
-    const [extensionRequests, setExtensionRequests] = useState([]);
-    const [filteredRequests, setFilteredRequests] = useState([]);
-    const [extensionStatus, setExtensionStatus] = useState(1);
-    const user = useSelector(selectUser)
-    const [reload, setReload] = useState(false);
-    const [showModal, setShowModal] = useState(false)
-    const [rentalOrderCode, setRentalOrderCode] = useState(null)
-    const [reasonText, setReasonText] = useState('');
+  const [extensionRequests, setExtensionRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [extensionStatus, setExtensionStatus] = useState(1);
+  const user = useSelector(selectUser)
+  const [reload, setReload] = useState(false);
+  const [showModal, setShowModal] = useState(false)
+  const [rentalOrderCode, setRentalOrderCode] = useState(null)
+  const [reasonText, setReasonText] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const user = useSelector(selectUser);
-
 
   // Chip filter options
   const statusChips = [
@@ -81,14 +79,14 @@ const ListExtension = () => {
     }
   };
 
-    const handleReject = async () => {
-        const response = await rejectExtension(rentalOrderCode, reasonText);
-        console.log(response);
-        setShowModal(false)
-        setReload((prev) => !prev);
-    };
+  const handleReject = async () => {
+    const response = await rejectExtension(rentalOrderCode, reasonText);
+    console.log(response);
+    setShowModal(false)
+    setReload((prev) => !prev);
+  };
 
-     return (
+  return (
     <div className="container mx-auto p-4">
       <div className="shadow-lg bg-white p-6 rounded-lg">
         {/* Title */}
@@ -188,12 +186,12 @@ const ListExtension = () => {
                             >
                               Chấp nhận
                             </Button>
-                            <Button size="sm" 
+                            <Button size="sm"
                               onClick={() => {
-                                                    setRentalOrderCode(request.rentalOrderCode);
-                                                    setShowModal(true);
-                                                }}
-className="bg-red-500 text-white">
+                                setRentalOrderCode(request.rentalOrderCode);
+                                setShowModal(true);
+                              }}
+                              className="bg-red-500 text-white">
                               Từ chối
                             </Button>
 
@@ -214,39 +212,39 @@ className="bg-red-500 text-white">
             </table>
           </div>
         )}
- {showModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-white p-6 rounded-md shadow-lg w-1/2">
-                            <h2 className="text-lg font-semibold pb-2 text-red-700">
-                            Vui lòng nhập lí do từ chối:
-                            </h2>
-                            <div className="w-full border rounded-md p-4 mb-4">
-                            
-                                <textarea
-                                    type="text"
-                                    name="cancelReason"
-                                    value={reasonText}
-                                    className="w-full"
-                                    onChange={(e) => setReasonText(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex justify-end space-x-4">
-                                <button
-                                    className="bg-gray-500 text-white py-2 px-4 rounded-md"
-                                    onClick={() => setShowModal(false)}
-                                >
-                                    Đóng
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
-                                    onClick={handleReject}
-                                >
-                                    Xác nhận
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-md shadow-lg w-1/2">
+              <h2 className="text-lg font-semibold pb-2 text-red-700">
+                Vui lòng nhập lí do từ chối:
+              </h2>
+              <div className="w-full border rounded-md p-4 mb-4">
+
+                <textarea
+                  type="text"
+                  name="cancelReason"
+                  value={reasonText}
+                  className="w-full"
+                  onChange={(e) => setReasonText(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  className="bg-gray-500 text-white py-2 px-4 rounded-md"
+                  onClick={() => setShowModal(false)}
+                >
+                  Đóng
+                </button>
+                <button
+                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
+                  onClick={handleReject}
+                >
+                  Xác nhận
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="flex justify-center mt-4">
@@ -254,17 +252,12 @@ className="bg-red-500 text-white">
             <button
               key={number + 1}
               onClick={() => handlePageChange(number + 1)}
-              className={`px-3 py-1 mx-1 border rounded ${
-                currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
-              }`}
+              className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+                }`}
             >
               {number + 1}
             </button>
           ))}
-
-                </table>
-               
-            </div>
         </div>
       </div>
     </div>

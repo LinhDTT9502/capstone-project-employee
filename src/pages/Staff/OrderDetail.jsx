@@ -192,6 +192,8 @@ const OrderDetail = () => {
   };
   const handleApprove = async () => {
     const response = await approveOrder(orderId);
+    console.log(response);
+    
     fetchOrderDetail()
     setReload((prev) => !prev);
     // if (response) {
@@ -203,8 +205,7 @@ const OrderDetail = () => {
     //         Authorization: `Bearer ${user.token}`,
     //       },
     //     }
-    //   );
-     
+    //   ); 
     // }
   };
 
@@ -732,7 +733,7 @@ const OrderDetail = () => {
             </div>
           )}
 
-          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
+          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi" && order.updatedAt === null) && (
             <div className="mt-6 flex gap-3 justify-end">
               <Button
                 onClick={handleReject}
@@ -755,7 +756,7 @@ const OrderDetail = () => {
       <div className="w-full md:w-1/3 p-4">
         <div className="sticky top-4">
 
-          {order.orderStatus === "Đã xác nhận" &&
+          {order.updatedAt !== null&&
               <div className="flex flex-col">
               <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
                  <select
