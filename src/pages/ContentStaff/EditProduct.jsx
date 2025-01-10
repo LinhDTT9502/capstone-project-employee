@@ -36,7 +36,7 @@ const EditProduct = () => {
       }
     } catch (error) {
       console.error("Error updating description:", error);
-      alert("An error occurred while updating the description.");
+      toast.error("An error occurred while updating the description.");
     }
   };
 

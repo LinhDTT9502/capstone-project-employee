@@ -77,7 +77,7 @@ const AddProductModal = ({ isOpen, onClose, setIsReload }) => {
     if (productImages.length === 0) errors.push("At least one product image is required.");
 
     if (errors.length > 0) {
-      alert("Validation Errors:\n" + errors.join("\n"));
+      toast.warning("Validation Errors:\n" + errors.join("\n"));
       return false;
     }
 

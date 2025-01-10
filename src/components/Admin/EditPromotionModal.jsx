@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSave } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 
 const EditPromotionModal = ({ isOpen, onClose, onSave, promotion }) => {
   const [productName, setProductName] = useState("");
@@ -16,7 +17,7 @@ const EditPromotionModal = ({ isOpen, onClose, onSave, promotion }) => {
 
   const handleSubmit = () => {
     if (!productName.trim() || discount === "") {
-      alert("Tên sản phẩm và mức khuyến mãi không được để trống.");
+      toast.warning("Tên sản phẩm và mức khuyến mãi không được để trống.");
       return;
     }
 

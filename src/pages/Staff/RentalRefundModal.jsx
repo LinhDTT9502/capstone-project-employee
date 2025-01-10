@@ -82,10 +82,10 @@ const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
             <div className="bg-white p-4 rounded-lg shadow">
               <h3 className="text-lg font-semibold mb-3 text-gray-700">Chi tiết chi phí</h3>
               <div className="grid grid-cols-2 gap-4">
-                <p><span className="font-medium">Giá thuê:</span> {orderDetails.rentPrice?.toLocaleString('vi-VN') || 0} VND</p>
-                <p><span className="font-medium">Phí trễ hạn:</span> {orderDetails.lateFee?.toLocaleString('vi-VN')} VND</p>
-                <p><span className="font-medium">Phí vận chuyển:</span> {orderDetails.tranSportFee?.toLocaleString('vi-VN')} VND</p>
-                <p className="col-span-2"><span className="font-medium text-lg">Tổng cộng:</span> <span className="text-xl font-bold text-green-600">{orderDetails.totalAmount?.toLocaleString('vi-VN')} VND</span></p>
+                <p><span className="font-medium">Giá thuê:</span> {orderDetails.rentPrice?.toLocaleString('vi-VN') || 0} ₫</p>
+                <p><span className="font-medium">Phí trễ hạn:</span> {orderDetails.lateFee?.toLocaleString('vi-VN')} ₫</p>
+                <p><span className="font-medium">Phí vận chuyển:</span> {orderDetails.tranSportFee?.toLocaleString('vi-VN')} ₫</p>
+                <p className="col-span-2"><span className="font-medium text-lg">Tổng cộng:</span> <span className="text-xl font-bold text-green-600">{orderDetails.totalAmount?.toLocaleString('vi-VN')} ₫</span></p>
               </div>
             </div>
 

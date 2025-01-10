@@ -97,7 +97,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     if (file) {
       const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        alert("Loại tệp không hợp lệ. Vui lòng tải lên tệp PNG, JPG, GIF hoặc WEBP.");
+        toast.warning("Loại tệp không hợp lệ. Vui lòng tải lên tệp PNG, JPG, GIF hoặc WEBP.");
         return;
       }
 
@@ -113,7 +113,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     // Filter and validate allowed file types
     const validFiles = files.filter((file) => {
       if (!allowedTypes.includes(file.type)) {
-        alert(`File ${file.name} is not a valid type. Please upload PNG, JPG, GIF, or WEBP.`);
+        toast.warning(`File ${file.name} is not a valid type. Please upload PNG, JPG, GIF, or WEBP.`);
         return false;
       }
       return true;
@@ -146,7 +146,7 @@ const EditProductModal = ({ isEdit, isOpen, onClose, product, setIsReload }) => 
     if (!productMainImage) errors.push("Main product image is required.");
     if (productImages.length === 0) errors.push("At least one product image is required.");
     if (errors.length > 0) {
-      alert("Validation Errors:\n" + errors.join("\n"));
+      toast.warning("Validation Errors:\n" + errors.join("\n"));
       return false;
     }
 

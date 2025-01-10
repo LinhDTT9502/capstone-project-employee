@@ -12,6 +12,8 @@ import {
   Select,
   Step,
   Stepper,
+  Modal,
+  Box,
 } from "@material-tailwind/react";
 import {
   approveRental,
@@ -26,21 +28,25 @@ import {
   faMoneyBillWave,
   faSave,
   faTruck,
-  faArrowLeft
+  faPrint,
+  faArrowLeft,
+  faFileInvoiceDollar,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
 import TransportFee from "./TransportFee";
 import RentalTransportFee from "./RentalTransportFee";
+import { toast } from "react-toastify";
+import InvoiceContent from "../../components/OnlineStaff/ProductOfBranch/InvoiceContent";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
-  { id: 2, label: "Đã xác nhận đơn" },
+  { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
   { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
-  { id: 6, label: "Hoàn thành" },
+  { id: 6, label: "Đã Hoàn thành" },
 ];
 
 const RentalDetail = () => {
@@ -55,16 +61,23 @@ const RentalDetail = () => {
   const token = localStorage.getItem("token");
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [transportFees, setTransportFees] = useState({});
-  const [transportFee, setTransportFee] = useState(null)
+  const [transportFee, setTransportFee] = useState(null);
   // Step 1: Extract all fee values
   const feeValues = Object.values(transportFees);
 
   // Step 2: Calculate the total fee
   const totalFees = feeValues.reduce((acc, fee) => acc + fee, 0);
+
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const updateTransportFee = async (childId, fee) => {
     setTransportFees((prevFees) => ({
@@ -168,49 +181,45 @@ const RentalDetail = () => {
   };
 
   const statusOptions = [
-    { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
-    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
-    { label: "Đã xác nhận đơn", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
-    { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" }, // PROCESSING
-    { label: "Đã giao cho đơn vị vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
-    { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" }, // DELIVERED
-    { label: "Bị từ chối", value: 6, color: "bg-red-200 text-red-700" }, // DECLINED
+    { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-600" }, // CANCELED
+    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-600" }, // PENDING
+    { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-600" }, // CONFIRMED
+    { label: "Đang xử lý", value: 3, color: "bg-indigo-100 text-indigo-600" }, // PROCESSING
+    { label: "Đã giao ĐVVC", value: 4, color: "bg-teal-100 text-teal-600" }, // SHIPPED
+    { label: "Đã giao hàng", value: 5, color: "bg-green-100 text-green-600" }, // DELIVERED
+    { label: "Bị từ chối", value: 6, color: "bg-red-100 text-red-600" }, // DECLINED
     {
       label: "Chờ khách nhận hàng",
       value: 7,
-      color: "bg-yellow-200 text-yellow-700",
+      color: "bg-orange-100 text-orange-600",
     }, // AWAITING_PICKUP
-    { label: "Đang thuê", value: 8, color: "bg-blue-200 text-blue-700" }, // RENTED
+    { label: "Đang thuê", value: 8, color: "bg-purple-100 text-purple-600" }, // RENTED
     {
       label: "Yêu cầu gia hạn",
       value: 9,
-      color: "bg-orange-200 text-orange-700",
+      color: "bg-indigo-100 text-indigo-600",
     }, // EXTENSION_REQUESTED
-    { label: "Bị trì hoãn", value: 10, color: "bg-orange-100 text-orange-800" }, // DELAYED
+    { label: "Bị trì hoãn", value: 10, color: "bg-orange-100 text-orange-600" }, // DELAYED
     {
       label: "Yêu cầu trả sản phẩm",
       value: 11,
-      color: "bg-gray-100 text-gray-800",
+      color: "bg-purple-100 text-purple-600",
     }, // RETURN_REQUESTED
-    {
-      label: "Đã trả sản phẩm",
-      value: 12,
-      color: "bg-green-100 text-green-800",
-    }, // RETURNED
+    { label: "Đã trả sản phẩm", value: 12, color: "bg-gray-100 text-gray-600" }, // RETURNED
     {
       label: "Đang kiểm tra sản phẩm trả",
       value: 13,
-      color: "bg-blue-100 text-blue-700",
+      color: "bg-gray-100 text-gray-600",
     }, // INSPECTING
     {
       label: "Đơn thuê đã kết thúc",
       value: 14,
-      color: "bg-gray-200 text-gray-700",
+      color: "bg-green-100 text-green-600",
     }, // COMPLETED
     {
       label: "Xử lý đơn thất bại",
       value: 15,
-      color: "bg-red-300 text-red-700",
+      color: "bg-orange-100 text-orange-600",
     }, // FAILED
   ];
 
@@ -226,11 +235,14 @@ const RentalDetail = () => {
 
       if (response.data.isSuccess) {
         setOrder(response.data.data);
-        setFormData(response.data.data)
+        setFormData(response.data.data);
         console.log(response.data.data);
 
-        if (response.data.data.deliveryMethod === "Đến cửa hàng nhận" || response.data.data.orderStatus !== "Chờ xử lý") {
-          setIsApproved(true)
+        if (
+          response.data.data.deliveryMethod === "Đến cửa hàng nhận" ||
+          response.data.data.orderStatus !== "Chờ xử lý"
+        ) {
+          setIsApproved(true);
         }
       } else {
         setError("Failed to retrieve order details");
@@ -274,7 +286,9 @@ const RentalDetail = () => {
 
   const handleStatusChange = async () => {
     if (newStatus === null || updating) return;
-    const statusLabel = statusOptions.find(option => option.value === newStatus)?.label;
+    const statusLabel = statusOptions.find(
+      (option) => option.value === newStatus
+    )?.label;
 
     setUpdating(true);
     try {
@@ -289,14 +303,16 @@ const RentalDetail = () => {
       );
       if (response.data.isSuccess) {
         setOrder({ ...order, orderStatus: statusLabel });
-        fetchOrderDetail()
+        fetchOrderDetail();
+
+
+        toast.success("Order status updated successfully");
 
       } else {
-        alert("Failed to update order status");
+        toast.error("Failed to update order status");
       }
     } catch (error) {
-      alert(error.response.data.message);
-
+      toast.error(error.response.data.message);
     } finally {
       setUpdating(false);
     }
@@ -450,19 +466,17 @@ const RentalDetail = () => {
 
     // Update formData by finding the product by its ID and modifying the specific field
     setFormData((prev) => {
-      const updatedOrderDetailVMs = prev.childOrders.$values.map(
-        (product) => {
-          if (product.productId === productId) {
-            return {
-              ...product,
-              [name]: value, // Update the specific field for this product
-            };
-          }
-          console.log(product);
-
-          return product; // Keep other products unchanged
+      const updatedOrderDetailVMs = prev.childOrders.$values.map((product) => {
+        if (product.productId === productId) {
+          return {
+            ...product,
+            [name]: value, // Update the specific field for this product
+          };
         }
-      );
+        console.log(product);
+
+        return product; // Keep other products unchanged
+      });
 
       return {
         ...prev,
@@ -530,7 +544,7 @@ const RentalDetail = () => {
           dateOfReceipt: item.dateOfReceipt,
           rentalStartDate: item.rentalStartDate,
           rentalEndDate: item.rentalEndDate,
-          rentalDays: item.rentalDays
+          rentalDays: item.rentalDays,
         },
         rentalCosts: {
           subTotal: item.subTotal,
@@ -556,18 +570,17 @@ const RentalDetail = () => {
       if (response) {
         console.log(response);
 
-        alert("Cập nhật đơn hàng thành công");
+        toast.success("Cập nhật đơn hàng thành công");
         setOrder(formData);
         fetchOrderDetail()
         setEditingSection(null); // Exit edit mode
       } else {
-        alert("Failed to update order");
+        toast.error("Failed to update order");
       }
     } catch (error) {
-      alert("Error updating order");
+      toast.error("Error updating order");
     }
   };
-
 
   if (loading)
     return (
@@ -589,18 +602,20 @@ const RentalDetail = () => {
                 <h2 className="text-2xl font-semibold text-gray-800">
                   Chi tiết đơn thuê #{order.rentalOrderCode}
                 </h2>
-
                 <div className="flex items-center space-x-4">
                   <span
-                    className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
-                      (status) => status.label === order.orderStatus
-                    )?.color || "bg-gray-100 text-gray-800"
-                      }`}
+                    className={`px-3 py-1 text-sm font-medium rounded-full ${
+                      statusOptions.find(
+                        (status) => status.label === order.orderStatus
+                      )?.color || "bg-gray-100 text-gray-800"
+                    }`}
                   >
                     {order.orderStatus}
                   </span>
 
-                </div>              </div>
+                </div>{" "}
+              </div>
+
 
               <div className="flex items-center gap-2">
                 <Button
@@ -615,6 +630,39 @@ const RentalDetail = () => {
               </div>
             </div>
 
+
+            {/* Modal for Invoice */}
+            {isModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white w-3/4 max-h-[90vh] overflow-y-auto rounded-lg shadow-lg p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">Hóa đơn chi tiết</h2>
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {/* Invoice Content */}
+                  <InvoiceContent
+                    searchQuery={order.rentalOrderCode}
+                    orderType="rentOrder"
+                  />
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={handlePrint}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
+                    >
+                      <FontAwesomeIcon icon={faPrint} className="mr-2" />
+                      In hóa đơn
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
             {/* Order Progress */}
             <div className="mb-12">
               <Stepper
@@ -625,40 +673,43 @@ const RentalDetail = () => {
                   <Step
                     key={index}
                     completed={index < getCurrentStepIndex(order.orderStatus)}
-                    className={`${index < getCurrentStepIndex(order.orderStatus)
-                      ? "bg-blue-500 text-green-600"
-                      : "bg-green-600 text-green-600"
-                      }`}
+                    className={`${
+                      index < getCurrentStepIndex(order.orderStatus)
+                        ? "bg-blue-500 text-green-600"
+                        : "bg-green-600 text-green-600"
+                    }`}
                   >
                     <div className="relative flex flex-col items-center">
                       <div
-                        className={`w-10 h-10 flex items-center justify-center rounded-full ${index <= getCurrentStepIndex(order.orderStatus)
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-300 text-gray-600"
-                          }`}
+                        className={`w-10 h-10 flex items-center justify-center rounded-full ${
+                          index <= getCurrentStepIndex(order.orderStatus)
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-300 text-gray-600"
+                        }`}
                       >
                         <FontAwesomeIcon
                           icon={
                             index === 0
                               ? faClock
                               : index === 1
-                                ? faCheckCircle
-                                : index === 2
-                                  ? faMoneyBillWave
-                                  : index === 3
-                                    ? faCogs
-                                    : index === 4
-                                      ? faTruck
-                                      : faFlagCheckered
+                              ? faCheckCircle
+                              : index === 2
+                              ? faMoneyBillWave
+                              : index === 3
+                              ? faCogs
+                              : index === 4
+                              ? faTruck
+                              : faFlagCheckered
                           }
                           className="text-lg"
                         />
                       </div>
                       <div
-                        className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${index <= getCurrentStepIndex(order.orderStatus)
-                          ? "text-green-600"
-                          : "text-gray-600"
-                          }`}
+                        className={`absolute top-12 text-xs font-medium text-wrap w-20 text-center ${
+                          index <= getCurrentStepIndex(order.orderStatus)
+                            ? "text-green-600"
+                            : "text-gray-600"
+                        }`}
                       >
                         {status.label}
                       </div>
@@ -728,7 +779,8 @@ const RentalDetail = () => {
                                   productCode={child.productCode}
                                   selectedColor={
                                     formData.childOrders.$values.find(
-                                      (valueItem) => valueItem.productId === child.productId
+                                      (valueItem) =>
+                                        valueItem.productId === child.productId
                                     )?.color || ""
                                   }
                                   setSelectedColor={(newColor) => {
@@ -736,8 +788,8 @@ const RentalDetail = () => {
                                       {
                                         target: {
                                           name: "color",
-                                          value: newColor
-                                        }
+                                          value: newColor,
+                                        },
                                       },
                                       child.productId
                                     );
@@ -747,8 +799,8 @@ const RentalDetail = () => {
                                       {
                                         target: {
                                           name: "imgAvatarPath",
-                                          value: imgAvatarPath
-                                        }
+                                          value: imgAvatarPath,
+                                        },
                                       },
                                       child.productId
                                     );
@@ -764,16 +816,19 @@ const RentalDetail = () => {
                                 <ProductSize
                                   productCode={child.productCode}
                                   color={child.color}
-                                  selectedSize={formData.childOrders.$values.find(
-                                    (valueItem) => valueItem.productId === child.productId
-                                  )?.size || ""}
+                                  selectedSize={
+                                    formData.childOrders.$values.find(
+                                      (valueItem) =>
+                                        valueItem.productId === child.productId
+                                    )?.size || ""
+                                  }
                                   setSelectedSize={(newSize) => {
                                     handleProductChange(
                                       {
                                         target: {
                                           name: "size",
-                                          value: newSize
-                                        }
+                                          value: newSize,
+                                        },
                                       },
                                       child.productId
                                     );
@@ -784,9 +839,7 @@ const RentalDetail = () => {
                               )}
                             </p>
                             <p className="text-sm text-gray-500">
-                              <b>Tình trạng: </b> {child.condition}
-
-                              %
+                              <b>Tình trạng: </b> {child.condition}%
                             </p>{" "}
                             <p className="mt-2">
                               <span className="font-semibold">
@@ -794,21 +847,23 @@ const RentalDetail = () => {
                               </span>{" "}
                               {new Date(
                                 child.rentalStartDate
-                              ).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
                               })}{" "}
                               -{" "}
-                              {new Date(
-                                child.rentalEndDate
-                              ).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })}
+                              {new Date(child.rentalEndDate).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                }
+                              )}
                             </p>
                             <p>
+
                               {order.tranSportFee === 0 ? (
                                 (child.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
                                   0
@@ -854,15 +909,18 @@ const RentalDetail = () => {
                                 setTransportFee={(fee) => updateTransportFee(child.id, fee)}
                               />}
 
+
                               <span className="font-semibold"> Tổng cộng:</span>{" "}
                               <p className="font-medium text-gray-900">
-                                {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
-                                  "vi-VN"
-                                )}
+                                {(
+                                  child.totalAmount +
+                                  (transportFees[child.id] || 0)
+                                ).toLocaleString("vi-VN")}{" "}
                                 ₫
                               </p> */}
                             </p>
                           </div>
+
 
                         </div><div className="text-right">
                           <p className="font-medium text-gray-900">
@@ -981,16 +1039,23 @@ const RentalDetail = () => {
                             <span className="font-semibold">
                               Thời gian thuê:
                             </span>{" "}
-                            {new Date(rentalStartDate).toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })} -{" "}
-                            {new Date(rentalEndDate).toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })}
+                            {new Date(rentalStartDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              }
+                            )}{" "}
+                            -{" "}
+                            {new Date(rentalEndDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              }
+                            )}
                           </p>
                         </div>
                       </div>
@@ -1006,11 +1071,13 @@ const RentalDetail = () => {
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Tạm tính</p>
                 <p className="font-medium text-gray-900">
-                  {subTotal.toLocaleString()} ₫</p>
+                  {subTotal.toLocaleString()} ₫
+                </p>
               </div>
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
                 <p className="font-semibold text-orange-600">
+
                   
                   {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ? (
                     children.length > 0 ? (
@@ -1027,15 +1094,33 @@ const RentalDetail = () => {
                   )}
 
                   ₫</p>
+
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))}₫
-
+                  {children.length > 0
+                    ? (order.totalAmount + totalFees).toLocaleString("vi-VN")
+                    : (totalAmount + transportFee).toLocaleString("vi-VN")}{" "}
+                  ₫
                 </p>
               </div>
             </div>
+
+            {order.orderStatus === "Đã hoàn thành" && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md hover:shadow-lg transition duration-300"
+                >
+                  <FontAwesomeIcon
+                    icon={faFileInvoiceDollar}
+                    className="mr-2 text-lg"
+                  />
+                  Xuất hóa đơn
+                </button>
+              </div>
+            )}
             {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
               <div className="mt-6 flex gap-3 justify-end">
                 <Button
@@ -1052,11 +1137,13 @@ const RentalDetail = () => {
                 </Button>
               </div>
             )}
+
           </div>
         </div>
         <div className="w-full md:w-1/3 p-4">
           <div className="sticky top-4">
             {/* Right Side - Customer Info & Summary */}
+
             {order.orderStatus === "Đã xác nhận" &&
             <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
               <select
@@ -1085,6 +1172,15 @@ const RentalDetail = () => {
             
             <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
 
+              <Button
+                onClick={handleStatusChange}
+                disabled={updating}
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                {updating ? "Đang cập nhật..." : "Cập nhật"}
+              </Button>
+            </div>
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
                 {/* edit customerInformation part */}
@@ -1238,10 +1334,14 @@ const RentalDetail = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chi nhánh</p>
-                  <p className="font-medium">{order.branchName || "KH chọn giao tận nơi"}</p>
+                  <p className="font-medium">
+                    {order.branchName || "KH chọn giao tận nơi"}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Phương thức thanh toán</p>
+                  <p className="text-sm text-gray-500">
+                    Phương thức thanh toán
+                  </p>
                   <p className="font-medium">
                     {order.paymentMethod || "KH chưa thanh toán"}
                   </p>
@@ -1255,10 +1355,10 @@ const RentalDetail = () => {
                 <div>
                   <p className="text-sm text-gray-500">Ngày đặt hàng</p>
                   <p className="font-medium">
-                    {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
+                    {new Date(order.createdAt).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
                     })}
                   </p>
                 </div>
@@ -1274,16 +1374,16 @@ const RentalDetail = () => {
                         onChange={(e) => handleCustomerInfChange(e)}
                         className="w-full border-orange-500 text-black border-2"
                       />
+                    ) : order.note ? (
+                      order.note
                     ) : (
-                      order.note ? order.note : "Không có ghi chú"
+                      "Không có ghi chú"
                     )}
                   </p>
                 </div>
-
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </>

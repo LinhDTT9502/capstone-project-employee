@@ -17,9 +17,12 @@ import {
   faSpinner,
   faCloudUploadAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+const UpdateBlog = (selectedBlog) => {
 const UpdateBlog = () => {
   const { blogId: paramBlogId } = useParams();
   const blogId = Number(paramBlogId);
+
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [content, setContent] = useState("");
@@ -99,7 +102,7 @@ const UpdateBlog = () => {
         setBlogs(response.data.data.$values);
       } catch (error) {
         console.error("Error fetching blogs:", error);
-        alert("Failed to fetch blogs.");
+        toast.error("Failed to fetch blogs.");
       }
     };
     fetchBlogs();
@@ -110,6 +113,7 @@ const UpdateBlog = () => {
 
     if (!title || !content || !subTitle || !coverImage) {
       alert("Vui lòng nhập đầy đủ thông tin bài viết!");
+
       return;
     }
 
@@ -120,6 +124,7 @@ const UpdateBlog = () => {
     if (coverImage) formData.append("coverImage", coverImage);
 
     try {
+
       if (blogID) {
         await updateBlog(blogID, formData);
         alert("Chỉnh sửa bài viết thành công.");
@@ -138,7 +143,7 @@ const UpdateBlog = () => {
       setBlogs(updatedBlogs.data.data.$values);
     } catch (error) {
       console.error("Error saving blog:", error);
-      alert("Failed to save the blog.");
+      toast.error("Failed to save the blog.");
     }
   };
 
@@ -162,6 +167,7 @@ const UpdateBlog = () => {
     if (file) {
       setCoverImage(file)
       setViewImg(URL.createObjectURL(file));
+
     }
   };
 
