@@ -220,6 +220,9 @@ export default function SidebarStaff() {
       <SidebarLink to="/staff/list-refund" icon={faExchange}>
         Yêu cầu hoàn tiền
       </SidebarLink>
+      <SidebarLink to="/staff/list-return" icon={faExchange}>
+        Yêu cầu trả hàng
+      </SidebarLink>
       <SidebarLink to="/staff/list-extension" icon={faHandshake}>
         Yêu cầu gia hạn đơn thuê
       </SidebarLink>

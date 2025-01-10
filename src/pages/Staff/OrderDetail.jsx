@@ -48,13 +48,11 @@ const OrderDetail = () => {
   const user = useSelector(selectUser);
   const [reload, setReload] = useState(false);
   const [newStatus, setNewStatus] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
   const [transportFee, setTransportFee] = useState(0);
-  console.log(transportFee);
-
-
 
   const statusOptions = [
 
@@ -72,6 +70,27 @@ const OrderDetail = () => {
       color: "bg-orange-100 text-orange-800",
     },
     { label: "Đã hủy", value: 0, color: "bg-red-100 text-red-800" },
+  ];
+
+  const statusPaymentOptions = [
+
+    { label: "Đang chờ thanh toán", value: 1, color: "bg-blue-100 text-blue-800" },
+    { label: "Đã thanh toán", value: 2, color: "bg-green-100 text-green-800" },
+    { label: "Thất bại", value: 3, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hoàn tiền",
+      value: 4,
+      color: "bg-purple-100 text-purple-800",
+    },
+    { label: "Đã đặt cọc", value: 5, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hủy",
+      value: 0,
+      color: "bg-orange-100 text-orange-800",
+    },
+    
+ 
+ 
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -134,12 +153,12 @@ const OrderDetail = () => {
       setUpdating(false);
     }
   };
+  const handlePaymentStatusChange = async () => {
+    if (paymentStatus === null || updating) return;
 
-  const handleApprove = async () => {
-    const response = await approveOrder(orderId);
-    if (response) {
-      const update = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
+    try {
+      const response = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-payment-status/${orderId}?paymentStatus=${paymentStatus}`,
         {},
         {
           headers: {
@@ -147,9 +166,39 @@ const OrderDetail = () => {
           },
         }
       );
-      fetchOrderDetail()
-      setReload((prev) => !prev);
+
+      if (response) {
+        // Update order status locally without needing to reload
+        fetchOrderDetail()
+        setUpdating(true);
+
+        alert("Cập nhật trạng thái thành công");
+      } else {
+        alert("Failed to update order status");
+      }
+    } catch (error) {
+      alert(error.response.data.message);
+
+    } finally {
+      setUpdating(false);
     }
+  };
+  const handleApprove = async () => {
+    const response = await approveOrder(orderId);
+    fetchOrderDetail()
+    setReload((prev) => !prev);
+    // if (response) {
+    //   const update = await axios.put(
+    //     `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
+    //     {},
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${user.token}`,
+    //       },
+    //     }
+    //   );
+     
+    // }
   };
 
   const handleReject = async () => {
@@ -219,7 +268,7 @@ const OrderDetail = () => {
       formData.paymentStatus = 3;
     } else if (formData.paymentStatus === "Đã hủy") {
       formData.paymentStatus = 4;
-    }else if (formData.paymentStatus === "N/A") {
+    } else if (formData.paymentStatus === "N/A") {
       formData.paymentStatus = 1;
     }
     if (formData.deliveryMethod === "Đến cửa hàng nhận") {
@@ -291,7 +340,7 @@ const OrderDetail = () => {
   const updateTransportFee = (calculatedFee) => {
     if (calculatedFee !== order.tranSportFee) {
       // Update formData with the new transport fee and recalculate total
-      const updatedTransportFee = calculatedFee ;
+      const updatedTransportFee = calculatedFee;
       const updatedTotalAmount = formData.subTotal + updatedTransportFee;
 
       // Update formData
@@ -308,7 +357,7 @@ const OrderDetail = () => {
         formData.paymentStatus = 3;
       } else if (formData.paymentStatus === "Đã hủy") {
         formData.paymentStatus = 4;
-      }else if (formData.paymentStatus === "N/A") {
+      } else if (formData.paymentStatus === "N/A") {
         formData.paymentStatus = 1;
       }
       if (formData.deliveryMethod === "Đến cửa hàng nhận") {
@@ -655,7 +704,7 @@ const OrderDetail = () => {
             </div>
           </div>
 
-          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
+          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi" && order.updatedAt === null) && (
             <div className="mt-6 flex gap-3 justify-end">
               <Button
                 onClick={handleReject}
@@ -676,30 +725,55 @@ const OrderDetail = () => {
 
       <div className="w-full md:w-1/3 p-4">
         <div className="sticky top-4">
-          {order.orderStatus === "Đã xác nhận" && 
-           <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-           <select
-             onChange={(e) => setNewStatus(e.target.value)}
-             value={newStatus || order.orderStatus}
-             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-           >
-             <option>Chọn tình trạng đơn</option>
-             {statusOptions.map((status) => (
-               <option key={status.value} value={status.value}>
-                 {status.label}
-               </option>
-             ))}
-           </select>
-           <Button
-             onClick={handleStatusChange}
-             disabled={updating}
-             className="bg-blue-500 hover:bg-blue-600"
-           >
-             {updating ? "Đang thay đổi..." : "Cập nhật"}
-           </Button>
-         </div>
+          {order.orderStatus === "Đã xác nhận" &&
+            <div className="flex flex-col">
+              <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+                <select
+                  onChange={(e) => setNewStatus(e.target.value)}
+                  value={newStatus || order.orderStatus}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option>Chọn tình trạng đơn</option>
+                  {statusOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={handleStatusChange}
+                  disabled={updating}
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  {updating ? "Đang thay đổi..." : "Cập nhật"}
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+                <select
+                  onChange={(e) => setPaymentStatus(e.target.value)}
+                  value={paymentStatus || order.paymentStatus}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option>Chọn trạng thái thanh toán</option>
+                  {statusPaymentOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={handlePaymentStatusChange}
+                  disabled={updating}
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  {updating ? "Đang thay đổi..." : "Cập nhật"}
+                </Button>
+              </div>
+            </div>
+
           }
-         
+
           <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Thông tin khách hàng</h3>
