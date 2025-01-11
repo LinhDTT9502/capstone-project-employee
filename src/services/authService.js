@@ -1,7 +1,8 @@
 import { refreshTokenAPI, signIn} from '../api/apiAuth';
 import { jwtDecode } from 'jwt-decode';
-import { login, logout } from '../redux/slices/authSlice';
+import { login, logout, selectUser } from '../redux/slices/authSlice';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 export const authenticateUser = async (dispatch, data) => {
   try {
@@ -24,6 +25,7 @@ export const authenticateUser = async (dispatch, data) => {
 export const checkAndRefreshToken = async () => {
   let token = localStorage.getItem('token');
   const refreshToken = localStorage.getItem('refreshToken');
+  const user = useSelector(selectUser)
 
   if (!token || !refreshToken) {
     throw new Error('No token or refresh token found');
@@ -34,8 +36,8 @@ export const checkAndRefreshToken = async () => {
 
   if (decoded.exp < currentTime) {
     try {
-      const response = await refreshTokenAPI(token, refreshToken);
-      // console.log(response);
+      const response = await refreshTokenAPI(token, refreshToken, user.UserId);
+      console.log(response);
       const newToken = response.data.data.token;
       const newRefreshToken = response.data.data.refreshToken;
       localStorage.setItem('token', newToken);

@@ -1,29 +1,22 @@
-import React, { useEffect, useState } from "react";
-import {
-  getOrderbyBranch,
-  removeOrder,
-} from "../../services/Staff/OrderService";
-import { Link, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { getOrderbyBranch, getOrderList } from '../../services/Staff/OrderService';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faTrash,
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
-import { selectUser } from "../../redux/slices/authSlice";
-import { Button, Chip } from "@material-tailwind/react";
-import { toast } from "react-toastify";
+import { faEye, faTrash, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { getRentalbyBranch, getRentalbyStatus, removeRental } from '../../services/Staff/RentalService';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../redux/slices/authSlice';
+import { Button } from '@material-tailwind/react';
+import { toast } from 'react-toastify';
 
-const ListOrder = () => {
+const RentalReturnList = () => {
   const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOrder, setSortOrder] = useState("earliest");
+  const [sortOrder, setSortOrder] = useState('earliest'); // Sorting state
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const ordersPerPage = 30;
   const [status, setStatus] = useState("");
 
@@ -33,17 +26,28 @@ const ListOrder = () => {
     "Đã hủy": "bg-red-100 text-red-600",
     "Chờ xử lý": "bg-yellow-100 text-yellow-600",
     "Đã xác nhận": "bg-blue-100 text-blue-600",
-    "Đã giao hàng": "bg-green-100 text-green-600",
     "Đang xử lý": "bg-indigo-100 text-indigo-600",
     "Đã giao cho ĐVVC": "bg-teal-100 text-teal-600",
-    "Đã hoàn tiền": "bg-orange-100 text-orange-600",
-    "Đã hoàn thành": "bg-green-100 text-green-600",
-    "Đang xử lý hoàn tiền": "bg-orange-100 text-orange-600",
+    "Đã giao hàng": "bg-green-100 text-green-600",
+    "Chờ khách nhận hàng": "bg-orange-100 text-orange-600",
     "Đã từ chối": "bg-red-100 text-red-600",
-    "Đang xử lý trả hàng": "bg-purple-100 text-purple-600",
-    "Đã trả hàng": "bg-gray-100 text-gray-600",
-    "Thất bại": "bg-red-100 text-red-600",
+    "Đang thuê": "bg-purple-100 text-purple-600",
+    "Đang gia hạn": "bg-indigo-100 text-indigo-600",
+    "Bị trì hoãn": "bg-orange-100 text-orange-600",
+    "Yêu cầu trả sản phẩm": "bg-purple-100 text-purple-600",
+    "Đã trả sản phẩm": "bg-gray-100 text-gray-600",
+    "Đang kiểm tra sản phẩm trả": "bg-gray-100 text-gray-600",
+    "Đã hoàn thành": "bg-green-100 text-green-600",
+    "Xử lý đơn thất bại": "bg-orange-100 text-orange-600",
+  
+    // Các trạng thái cọc
+    "Đã thanh toán cọc 100% tiền thuê": "bg-green-100 text-green-600",
+    "Cọc 50% tiền thuê": "bg-blue-100 text-blue-600",
+    "Chưa thanh toán": "bg-red-100 text-red-600",
+    "Đã hoàn trả": "bg-gray-100 text-gray-600",
+    "Đang chờ thanh toán cọc 100% tiền thuê": "bg-orange-100 text-orange-600",
   };
+  
 
   const paymentStyles = {
     "Đã hủy": "bg-red-100 text-red-600",
@@ -53,7 +57,7 @@ const ListOrder = () => {
     "Đã hoàn tiền": "bg-orange-100 text-orange-600",
     "Thất bại": "bg-red-100 text-red-600",
   };
-
+  
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const handlePageChange = (newPage) => {
@@ -68,15 +72,12 @@ const ListOrder = () => {
 
   const fetchOrders = async () => {
     try {
-      const data = await getOrderbyBranch(user.BranchId);
-
-      console.log(data);
-
+        const data = await getRentalbyStatus(11);
       setOrders(data);
       setFilteredOrders(data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      setError("Failed to fetch orders");
+      console.error('Error fetching orders:', error);
+      setError('Failed to fetch orders');
     } finally {
       setLoading(false);
     }
@@ -90,7 +91,7 @@ const ListOrder = () => {
     const filtered = orders.filter(
       (order) =>
         (status === "" || order.orderStatus === status) &&
-        (order.saleOrderCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.rentalOrderCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
           order.fullName.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredOrders(filtered);
@@ -101,7 +102,7 @@ const ListOrder = () => {
     setSortOrder(selectedSortOrder);
 
     const sortedOrders = [...filteredOrders].sort((a, b) => {
-      if (selectedSortOrder === "earliest") {
+      if (selectedSortOrder === 'earliest') {
         return new Date(b.createdAt) - new Date(a.createdAt);
       } else {
         return new Date(a.createdAt) - new Date(b.createdAt);
@@ -110,54 +111,54 @@ const ListOrder = () => {
 
     setFilteredOrders(sortedOrders);
   };
-
   const handleRemoveOrder = async (orderId) => {
     // Confirm before proceeding with removal
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa đơn hàng này không?"
-    );
+    const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');
     if (!confirmDelete) {
       return; // Exit if user cancels
     }
 
     try {
-      const data = await removeOrder(orderId); // Call the API
+      console.log(orderId);
+
+      const data = await removeRental(orderId);
       if (data.isSuccess) {
-        toast.success("Bạn đã xóa đơn hàng thành công!");
+        toast.success('Bạn đã xóa đơn hàng thành công!');
         fetchOrders();
       } else {
-        console.error("Không thể xóa đơn hàng:", data.message);
-        toast.error("Không thể xóa đơn hàng");
+        console.error('Không thể xóa đơn hàng:', data.message);
+        toast.error('Không thể xóa đơn hàng');
       }
     } catch (error) {
-      console.error("Lỗi khi xóa đơn hàng:", error);
+      console.error('Lỗi khi xóa đơn hàng:', error);
     }
   };
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    const filtered = orders.filter(
-      (order) =>
-        order.saleOrderCode.toLowerCase().includes(value.toLowerCase()) ||
-        order.fullName.toLowerCase().includes(value.toLowerCase())
+    const filtered = orders.filter(order =>
+      order.rentalOrderCode.toLowerCase().includes(value.toLowerCase()) ||
+      order.fullName.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredOrders(filtered);
   };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
         <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
       </div>
     );
+  }
+
   if (error) return <p className="text-center py-4 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Search and Filters */}
-
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <input
@@ -172,14 +173,13 @@ const ListOrder = () => {
             onChange={handleSortChange}
             value={sortOrder}
           >
-            <option value="earliest">Đơn mới nhất</option>
-
             <option value="latest">Đơn cũ nhất</option>
-
+            <option value="earliest">Đơn mới nhất</option>
           </select>
         </div>
       </div>
-      <div className="flex gap-2 py-3">
+
+      {/* <div className="flex gap-2 py-3">
         {[
           { label: "Tất cả", value: "", color: "bg-blue-500 text-white" },
           {
@@ -218,6 +218,7 @@ const ListOrder = () => {
             value: "Đã hủy",
             color: "bg-red-100 text-red-600",
           },
+          { label: "Đang gia hạn", value: "Đang gia hạn", color: "bg-indigo-100 text-indigo-600" },
         ].map((chip) => (
           <button
             key={chip.label}
@@ -231,16 +232,15 @@ const ListOrder = () => {
             {chip.label}
           </button>
         ))}
-      </div>
-      <div className="flex justify-end items-center gap-2 mb-4">
+      </div> */}
+
+      {/* Pagination */}
+      <div className="flex justify-end items-center gap-2">
         <span className="text-gray-600 text-xs">
-          {Math.min(
-            (currentPage - 1) * ordersPerPage + 1,
-            filteredOrders.length
-          )}
-          -{Math.min(currentPage * ordersPerPage, filteredOrders.length)} của{" "}
-          {filteredOrders.length} đơn hàng
+          {Math.min((currentPage - 1) * ordersPerPage + 1, filteredOrders.length)}-
+          {Math.min(currentPage * ordersPerPage, filteredOrders.length)} của {filteredOrders.length} đơn hàng
         </span>
+
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -256,112 +256,73 @@ const ListOrder = () => {
           <FontAwesomeIcon icon={faChevronRight} />
         </button>
       </div>
+
       {/* Orders Table */}
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
         <thead className="bg-gray-100 border-b border-gray-200">
           <tr>
-            <th className="text-left p-2 font-semibold text-gray-600">
-              Mã đơn hàng
-            </th>
-            <th className="text-left p-4 font-semibold text-gray-600">
-              Khách hàng
-            </th>
-            <th className="text-left p-2 font-semibold text-gray-600">
-              Ngày đặt hàng
-            </th>
-            <th className="text-left p-4 font-semibold text-gray-600">
-              Phương thức nhận hàng
-            </th>
-            <th className="text-left p-4 font-semibold text-gray-600">
-              TT thanh toán
-            </th>
-            <th className="text-left p-4 font-semibold text-gray-600">
-              TT đơn hàng
-            </th>
-            <th className="text-left p-4 font-semibold text-gray-600"> </th>
+            <th className="text-left p-4 font-semibold text-gray-600">Mã đơn hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Khách hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Ngày đặt hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">Phương thức nhận hàng</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT thanh toán</th>
+            <th className="text-left p-4 font-semibold text-gray-600">TT đơn hàng</th>
+
+            <th className="text-left p-4 font-semibold text-gray-600"></th>
           </tr>
         </thead>
         <tbody>
           {filteredOrders
-            .slice(
-              (currentPage - 1) * ordersPerPage,
-              currentPage * ordersPerPage
-            )
+            .slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
             .map((order) => (
-              <tr
-                key={order.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="p-4">{order.saleOrderCode}</td>
-                <td className="p-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">
-                      {order.fullName}
-                    </span>
-                    <span className="text-sm text-gray-500">{order.email}</span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
+              <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-50">
+                <td className="p-4">{order.rentalOrderCode}</td>
+                <td className="p-4">{order.fullName}</td>
+                <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td className="p-4">{order.deliveryMethod}</td>
-                <td className="p-4">
-                  {" "}
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      paymentStyles[order.paymentStatus] ||
-                      "bg-gray-100 text-gray-600"
+                <td className="p-4"> <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${paymentStyles[order.paymentStatus] || 'bg-gray-100 text-gray-600'
                     }`}
-                  >
-                    {order.paymentStatus}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      statusStyles[order.orderStatus] ||
-                      "bg-gray-100 text-gray-600"
+                >
+                  {order.paymentStatus}
+                </span></td>
+                <td className="p-4"> <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[order.orderStatus] || 'bg-gray-100 text-gray-600'
                     }`}
-                  >
-                    {order.orderStatus}
-                  </span>
-                </td>
-
+                >
+                  {order.orderStatus}
+                </span></td>
                 <td className="p-4">
-                  <div className="flex items-center gap-3">
+                  <div className='flex items-center gap-3'>
                     {user.ManagerId !== "Unknow" ? (
-                      <Link to={`/manager/list-orders/${order.id}`}>
-                        <Button
-                          size="md"
-                          color="blue"
-                          variant="text"
-                          className="flex items-center gap-2 px-2 py-2"
-                        >
-                          <FontAwesomeIcon icon={faEye} className="text-sm	" />
+                      <Link to={`/manager/list-rentals/${order.id}`}>
+                        <Button size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2">
+                                                  <FontAwesomeIcon icon={faEye} />
+
                         </Button>
                       </Link>
                     ) : (
-                      <Link to={`/staff/list-orders/${order.id}`}>
-                        <Button
-                          size="md"
-                          color="blue"
-                          variant="text"
-                          className="flex items-center gap-2 px-2 py-2"
-                        >
-                          <FontAwesomeIcon icon={faEye} className="text-sm	" />
-                        </Button>
-                      </Link>
+                      <Link to={`/staff/list-rentals/${order.id}`}>
+                        <Button size="md"
+                        color="blue"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2"><FontAwesomeIcon icon={faEye} className="text-sm	"/>
+                     </Button> </Link>
                     )}
+
 
                     <Button
                       onClick={() => handleRemoveOrder(order.id)}
                       size="md"
-                      color="red"
-                      variant="text"
-                      className="flex items-center gap-2 px-2 py-2"
-                    >
-                      <FontAwesomeIcon icon={faTrash} className="text-sm	" />
+                        color="red"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2"                   >
+                      <FontAwesomeIcon icon={faTrash} className="text-sm	"/>
                     </Button>
+
                   </div>
                 </td>
               </tr>
@@ -372,4 +333,4 @@ const ListOrder = () => {
   );
 };
 
-export default ListOrder;
+export default RentalReturnList;

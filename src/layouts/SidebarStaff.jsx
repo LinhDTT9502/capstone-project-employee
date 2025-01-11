@@ -222,7 +222,10 @@ export default function SidebarStaff() {
         Yêu cầu hoàn tiền
       </SidebarLink>
       <SidebarLink to="/staff/list-return" icon={faExchange}>
-        Yêu cầu trả hàng
+        Yêu cầu hoàn trả
+      </SidebarLink>
+      <SidebarLink to="/staff/list-rental-return" icon={faExchange}>
+        Yêu cầu trả hàng đơn thuê
       </SidebarLink>
       <SidebarLink to="/staff/list-extension" icon={faHandshake}>
         Yêu cầu gia hạn đơn thuê

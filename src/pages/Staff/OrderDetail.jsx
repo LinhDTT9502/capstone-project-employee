@@ -26,6 +26,7 @@ import {
   faEdit,
   faSave,
   faFileInvoiceDollar,
+  faPrint
 } from "@fortawesome/free-solid-svg-icons";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
@@ -89,7 +90,6 @@ const OrderDetail = () => {
       value: 4,
       color: "bg-purple-100 text-purple-800",
     },
-    { label: "Đã đặt cọc", value: 5, color: "bg-red-100 text-red-800" },
     {
       label: "Đã hủy",
       value: 0,
@@ -179,9 +179,9 @@ const OrderDetail = () => {
         fetchOrderDetail()
         setUpdating(true);
 
-        alert("Cập nhật trạng thái thành công");
+        toast.success("Cập nhật trạng thái thành công");
       } else {
-        alert("Failed to update order status");
+        toast.error("Failed to update order status");
       }
     } catch (error) {
       alert(error.response.data.message);
@@ -733,7 +733,7 @@ const OrderDetail = () => {
             </div>
           )}
 
-          {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi" && order.updatedAt === null) && (
+          {((order.orderStatus === "Chờ xử lý" || order.orderStatus === "Đã hủy") && order.deliveryMethod === "Giao hàng tận nơi") && (
             <div className="mt-6 flex gap-3 justify-end">
               <Button
                 onClick={handleReject}

@@ -13,10 +13,13 @@ export const signIn = (userName, password) => {
   });
 };
 
-export const refreshTokenAPI = (token, refreshToken) => {
+export const refreshTokenAPI = (token, refreshToken,userId) => {
+  console.log(token);
+  
   return axios.post(`https://capstone-project-703387227873.asia-southeast1.run.app/api/Auth/refresh-token`, {
     token,
     refreshToken,
+    userId
   }, {
     headers: {
       'Content-Type': 'application/json'

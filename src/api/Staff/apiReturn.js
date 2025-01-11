@@ -10,12 +10,20 @@ export const getListReturn = () => {
   });
 };
 
-export const updateRefundApi = ( data, token) => {
-  return axios.put(`${API_BASE_URL}/update`, data, {
+export const getListReturnbyBranch = (branchId) => {
+  return axios.get(`${API_BASE_URL}/branch/${branchId}`, {
+    headers: {
+      'accept': '*/*'
+    },
+  });
+};
+
+export const updateReturndApi = ( returnID, data) => {
+  return axios.put(`${API_BASE_URL}/${returnID}`, data, {
     headers: {
       'Accept': '*/*',
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      // 'Authorization': `Bearer ${token}`,
     }
   });
 };

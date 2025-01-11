@@ -23,7 +23,7 @@ const TransportFee = ({ address, product, branchId, setTransportFee }) => {
 
         try {
             const result = await fetchProvince();
-            // console.log(result);
+            console.log(result);
             
             if (result.code === 200 && result.data) {
                 const matchingProvince = result.data.find((province) =>

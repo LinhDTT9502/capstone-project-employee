@@ -26,7 +26,8 @@ import {
   faMoneyBillWave,
   faSave,
   faTruck,
-  faArrowLeft
+  faArrowLeft,
+  
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
@@ -55,7 +56,7 @@ const RentalDetail = () => {
   const token = localStorage.getItem("token");
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
-
+  const [paymentNewStatus, setPaymentNewStatus]=useState(null)
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [transportFees, setTransportFees] = useState({});
@@ -169,7 +170,7 @@ const RentalDetail = () => {
 
   const statusOptions = [
     { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
-    { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
+    // { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
     { label: "Đã xác nhận đơn", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" }, // PROCESSING
     { label: "Đã giao cho đơn vị vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
@@ -212,6 +213,27 @@ const RentalDetail = () => {
       value: 15,
       color: "bg-red-300 text-red-700",
     }, // FAILED
+  ];
+
+  const statusPaymentOptions = [
+
+    { label: "Đang chờ thanh toán", value: 1, color: "bg-blue-100 text-blue-800" },
+    { label: "Đã thanh toán", value: 2, color: "bg-green-100 text-green-800" },
+    { label: "Thất bại", value: 3, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hoàn tiền",
+      value: 4,
+      color: "bg-purple-100 text-purple-800",
+    },
+    { label: "Đã đặt cọc", value: 5, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hủy",
+      value: 0,
+      color: "bg-orange-100 text-orange-800",
+    },
+    
+ 
+ 
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -291,6 +313,37 @@ const RentalDetail = () => {
         setOrder({ ...order, orderStatus: statusLabel });
         fetchOrderDetail()
 
+      } else {
+        alert("Failed to update order status");
+      }
+    } catch (error) {
+      alert(error.response.data.message);
+
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handlePaymentStatusChange = async () => {
+    if (paymentNewStatus === null || updating) return;
+
+    try {
+      const response = await axios.put(
+        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-payment-status/${orderId}?paymentStatus=${paymentNewStatus}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      if (response) {
+        // Update order status locally without needing to reload
+        fetchOrderDetail()
+        setUpdating(true);
+
+        alert("Cập nhật trạng thái thành công");
       } else {
         alert("Failed to update order status");
       }
@@ -1036,7 +1089,7 @@ const RentalDetail = () => {
                 </p>
               </div>
             </div>
-            {(order.orderStatus === "Chờ xử lý" && order.deliveryMethod === "Giao hàng tận nơi") && (
+            {((order.orderStatus === "Chờ xử lý" || order.orderStatus === "Đã hủy") && order.deliveryMethod === "Giao hàng tận nơi") && (
               <div className="mt-6 flex gap-3 justify-end">
                 <Button
                   onClick={handleReject}
@@ -1084,28 +1137,26 @@ const RentalDetail = () => {
             </div>
 
             <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-              <select
-                onChange={(e) => setNewStatus(e.target.value)}
-                value={newStatus || order.orderStatus}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option>{order.orderStatus}</option>
-                {statusOptions.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
-              </select>
-
-              <Button
-                onClick={handleStatusChange}
-                disabled={updating}
-                className="bg-blue-500 hover:bg-blue-600"
-
-              >
-                {updating ? "Đang cập nhật..." : "Cập nhật"}
-              </Button>
-            </div>
+                <select
+                  onChange={(e) => setPaymentNewStatus(e.target.value)}
+                  value={paymentNewStatus || order.paymentStatus}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option>Chọn trạng thái thanh toán</option>
+                  {statusPaymentOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={handlePaymentStatusChange}
+                  disabled={updating}
+                  className="bg-blue-500 hover:bg-blue-600"
+                >
+                  {updating ? "Đang thay đổi..." : "Cập nhật"}
+                </Button>
+              </div>
             </div>
             }
             

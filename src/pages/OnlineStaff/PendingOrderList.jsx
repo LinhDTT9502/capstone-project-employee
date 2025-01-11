@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import OrderDetailModal from './OrderDetailModal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { Chip } from '@material-tailwind/react';
 
 const PendingOrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -14,6 +15,7 @@ const PendingOrderList = () => {
   const [reload, setReload] = useState(false);
   const [sortOrder, setSortOrder] = useState('earliest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState('')
 
   const ordersPerPage = 15;
 
@@ -32,7 +34,7 @@ const PendingOrderList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await getOrderbyStatus(1);
+        const data = await getOrderbyStatus(status);
         const pendingOrders = data
           .filter(order => order.branchId === null)
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -47,7 +49,7 @@ const PendingOrderList = () => {
     };
 
     fetchOrders();
-  }, [reload]);
+  }, [reload, status]);
 
   const handleOpenModal = (orderId) => {
     setSelectedOrderId(orderId);
@@ -105,6 +107,24 @@ const PendingOrderList = () => {
             <option value="earliest">Đơn mới nhất</option>
             <option value="latest">Đơn cũ nhất</option>
           </select>
+          <div className="flex gap-2">
+            {[
+              { label: "Tất cả", value: "", color: "bg-blue-500" },
+              { label: "Chờ xử lý", value: 1, color: "bg-yellow-400" },
+              { label: "Đã hủy", value: 0, color: "bg-red-500" },
+            ].map((chip) => (
+              <Chip
+                key={chip.label}
+                value={chip.label}
+                className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${status === chip.value
+                  ? `${chip.color} text-white shadow-md`
+                  : "bg-gray-200 text-black hover:bg-gray-300"
+                  }`}
+                onClick={() => setStatus(chip.value)}
+              />
+            ))}
+          </div>
+
         </div>
       </div>
       <div className="flex justify-end items-center gap-2">

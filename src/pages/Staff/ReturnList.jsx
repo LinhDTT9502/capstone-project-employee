@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UpdateRefundModal from "./UpdateRefundModal";
-import { getListOrderReturn } from "../../services/Staff/ReturnService";
+import {  getListOrderReturnbyBranch } from "../../services/Staff/ReturnService";
 
 
 const ReturnList = () => {
@@ -33,11 +33,13 @@ const ReturnList = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const data = await getListOrderReturn();
+            const data = await getListOrderReturnbyBranch(user.BranchId);
             console.log(data);
+            if (data) {
+                setOrders(data);
+                setError(null);
+            }
 
-            setOrders(data);
-            setError(null);
         } catch (error) {
             console.error("Error fetching orders:", error);
             setError("Failed to fetch orders");
@@ -122,12 +124,11 @@ const ReturnList = () => {
                 <div className="flex gap-2">
                     {[
                         { label: "Tất cả", value: "", color: "bg-blue-500" },
-                        { label: "Chờ xử lý", value: "Pending", color: "bg-yellow-400" },
-                        { label: "Đã chấp thuận", value: "Approved", color: "bg-green-500" },
-                        { label: "Bị từ chối", value: "Rejected", color: "bg-red-500" },
-                        { label: "Đã hoàn tiền", value: "Processed", color: "bg-purple-500" },
-                        { label: "Thất bại", value: "Failed", color: "bg-red-500" },
-                        { label: "Hoàn tất", value: "Completed", color: "bg-blue-500" },
+                        { label: "Chờ xử lý", value: "PENDING", color: "bg-yellow-400" },
+                        { label: "Đã chấp thuận", value: "APPROVED", color: "bg-green-500" },
+                        { label: "Bị từ chối", value: "REJECTED", color: "bg-red-500" },
+                        { label: "Đã hoàn tiền", value: "REFUNDED", color: "bg-purple-500" },
+                        { label: "Hoàn tất", value: "COMPLETED", color: "bg-blue-500" },
                     ].map((chip) => (
                         <Chip
                             key={chip.label}
@@ -159,8 +160,8 @@ const ReturnList = () => {
                                 <th className="py-2 px-4 border">Mã đơn hàng</th>
                                 <th className="py-2 px-4 border"></th>
                                 <th className="py-2 px-4 border">Lý do</th>
-                                <th className="py-2 px-4 border">Tổng tiền</th>
-                                <th className="py-2 px-4 border">Phương thức</th>
+                                {/* <th className="py-2 px-4 border">Tổng tiền</th> */}
+                                {/* <th className="py-2 px-4 border">Phương thức</th> */}
                                 <th className="py-2 px-4 border">Trạng thái</th>
                                 <th className="py-2 px-4 border">Ngày tạo</th>
                                 <th className="py-2 px-4 border"></th>
@@ -178,13 +179,15 @@ const ReturnList = () => {
                                                 {order.saleOrder?.saleOrderCode || "N/A"}
                                             </button>
                                         </td>
-                                        <td className="py-2 px-4 border"><video width="600" controls>
+                                        <td className="py-2 px-4 border">
+                                            {/* <video width="600" controls>
                                             <source src={order.videoUrl} type="video/mp4" />
                                             Your browser does not support the video tag.
-                                        </video></td>
+                                        </video> */}
+                                        </td>
                                         <td className="py-2 px-4 border">{order.reason}</td>
-                                        <td className="py-2 px-4 border">{order.saleOrder?.totalAmount || "N/A"}</td>
-                                        <td className="py-2 px-4 border">{order.saleOrder?.deliveryMethod || "N/A"}</td>
+                                        {/* <td className="py-2 px-4 border">{order.saleOrder?.totalAmount || "N/A"}</td> */}
+                                        {/* <td className="py-2 px-4 border">{order.saleOrder?.deliveryMethod || "N/A"}</td> */}
                                         <td className="py-2 px-4 border text-center">
                                             <span
                                                 className={`px-2 py-1 text-xs font-medium rounded-full ${order.status === "Pending"
@@ -206,8 +209,9 @@ const ReturnList = () => {
                                         </td>
                                         <td className="py-2 px-4 border">
                                             <button
-                                                onClick={() => handleUpdateRefund(order)}
-                                                className="bg-green-500 text-white p-2 rounded">
+                                                onClick={() => navigate(`/staff/list-return/${order.returnID}`, { state: { order } })}
+                                                className="bg-green-500 text-white p-2 rounded"
+                                            >
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </button>
                                         </td>
@@ -216,7 +220,7 @@ const ReturnList = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="7" className="text-center py-4">
-                                        No return orders available.
+                                        Không có đơn hàng nào được tìm thấy
                                     </td>
                                 </tr>
                             )}

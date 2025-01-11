@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { getRentalbyStatus } from '../../services/Staff/RentalService';
 import RentalDetailModal from './RentalDetailModal';
+import { Chip } from '@material-tailwind/react';
 
 const PendingRentalList = () => {
   const [orders, setOrders] = useState([]);
@@ -15,6 +16,7 @@ const PendingRentalList = () => {
   const [reload, setReload] = useState(false);
   const [sortOrder, setSortOrder] = useState('earliest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState('')
 
   const ordersPerPage = 15;
 
@@ -33,9 +35,7 @@ const PendingRentalList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await getRentalbyStatus(1);
-        console.log(data);
-
+        const data = await getRentalbyStatus(status);
         const pendingOrders = data
           .filter(order => order.branchId === null && order.parentOrderCode === null)
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -51,7 +51,7 @@ const PendingRentalList = () => {
     };
 
     fetchOrders();
-  }, [reload]);
+  }, [reload, status]);
 
   const handleOpenModal = (orderCode) => {
     setSelectedOrderCode(orderCode);
@@ -109,6 +109,23 @@ const PendingRentalList = () => {
             <option value="earliest">Đơn mới nhất</option>
             <option value="latest">Đơn cũ nhất</option>
           </select>
+          <div className="flex gap-2">
+            {[
+              { label: "Tất cả", value: "", color: "bg-blue-500" },
+              { label: "Chờ xử lý", value: 1, color: "bg-yellow-400" },
+              { label: "Đã hủy", value: 0, color: "bg-red-500" },
+            ].map((chip) => (
+              <Chip
+                key={chip.label}
+                value={chip.label}
+                className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${status === chip.value
+                  ? `${chip.color} text-white shadow-md`
+                  : "bg-gray-200 text-black hover:bg-gray-300"
+                  }`}
+                onClick={() => setStatus(chip.value)}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex justify-end items-center gap-2">
@@ -154,7 +171,7 @@ const PendingRentalList = () => {
               <td className="p-4">{order.rentalOrderCode}</td>
               <td className="p-4">
                 <div className="flex flex-col">
-                  <span className="font-medium text-gray-700">{order.fullName}</span>
+                  <span className="w-3/4 font-medium text-gray-700">{order.fullName}</span>
                   <span className="text-sm text-gray-500">{order.email}</span>
                 </div>
               </td>
