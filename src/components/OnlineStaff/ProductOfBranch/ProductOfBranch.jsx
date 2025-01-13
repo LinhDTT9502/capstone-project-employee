@@ -7,62 +7,59 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
     const [branches, setBranches] = useState([]);
     const [branchStatus, setBranchStatus] = useState({});
     const [check, setCheck] = useState([]);
-    // console.log(selectedProducts);
-
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadBranchesWithStatus = async () => {
+            setIsLoading(true);
             try {
                 const branchData = await fetchBranchs();
                 setBranches(branchData);
 
                 const statusPromises = branchData.map(async (branch) => {
                     const products = await fetchProductsbyBranch(branch.id);
-                    // Track unavailable products for each branch
-                    const unavailableProducts = selectedProducts.map((selectedProduct) => {
-                        // Find the branch product by matching selected product id
-                        const branchProduct = products.find(
-                            (p) => Number(p.productId) === Number(selectedProduct.productId || selectedProduct.id)
-                        );
-                        // console.log(branchProduct);
+                    const unavailableProducts = selectedProducts
+                        .map((selectedProduct) => {
+                            const branchProduct = products.find(
+                                (p) => Number(p.productId) === Number(selectedProduct.productId || selectedProduct.id)
+                            );
 
-                        if (!branchProduct) {
-                            // If branchProduct is null, the product is unavailable
-                            return {
-                                productName: selectedProduct.productName,
-                                productId: selectedProduct.id,
-                                availableQuantity: 0, // Indicate no stock
-                            };
-                        }
+                            if (!branchProduct) {
+                                return {
+                                    productName: selectedProduct.productName,
+                                    productId: selectedProduct.id,
+                                    availableQuantity: 0,
+                                };
+                            }
 
-                        // If the branch product exists and selected product quantity exceeds available quantity
-                        if (branchProduct.availableQuantity != null && selectedProduct.quantity > branchProduct.availableQuantity) {
-                            return {
-                                productName: selectedProduct.productName,
-                                productId: selectedProduct.id,
-                                availableQuantity: branchProduct.availableQuantity,
-                            };
-                        }
+                            if (
+                                branchProduct.availableQuantity != null &&
+                                selectedProduct.quantity > branchProduct.availableQuantity
+                            ) {
+                                return {
+                                    productName: selectedProduct.productName,
+                                    productId: selectedProduct.id,
+                                    availableQuantity: branchProduct.availableQuantity,
+                                };
+                            }
 
-                        // Otherwise, the product is available
-                        return null;
-                    }).filter(product => product !== null); // Filter out null values
+                            return null;
+                        })
+                        .filter((product) => product !== null);
 
-                    // Determine branch status
                     const isAvailable = unavailableProducts.length === 0;
-                    setCheck(unavailableProducts)
+                    setCheck(unavailableProducts);
                     return {
                         branchId: branch.id,
                         status: isAvailable
-                            ? "Còn hàng" // In stock
-                            : `Hết hàng: ${unavailableProducts.map(p => `${p.productName} (Số lượng còn: ${p.availableQuantity})`).join(", ")}`, // Out of stock
+                            ? "Còn hàng"
+                            : `Hết hàng: ${unavailableProducts
+                                .map((p) => `${p.productName} (Số lượng còn: ${p.availableQuantity})`)
+                                .join(", ")}`,
                     };
                 });
 
-                // Wait for all availability checks to complete
                 const statuses = await Promise.all(statusPromises);
-
-                // Update branchStatus with the results
                 const statusMap = {};
                 statuses.forEach(({ branchId, status }) => {
                     statusMap[branchId] = status;
@@ -70,6 +67,8 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
                 setBranchStatus(statusMap);
             } catch (error) {
                 console.error("Error loading branches or availability:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -78,47 +77,57 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
 
     const handleBranchChange = (branchId) => {
         setSelectedBranchId(branchId);
-        // console.log("Selected Branch ID:", branchId,orderId);
     };
 
     return (
         <div className="mt-4 text-sm text-black bg-gray-300 p-2 rounded">
-            <Card className="w-full">
-                <List>
-                    {branches.map((branch) => (
-                        <ListItem
-                            disabled={branchStatus[branch.id] !== "Còn hàng"}
-                            key={branch.id}
-                            className={`cursor-pointer hover:bg-gray-100 ${branchStatus[branch.id] === "Hết hàng" ? "opacity-50 cursor-not-allowed" : ""}`}
-                            onClick={() => branchStatus[branch.id] !== "Hết hàng" && handleBranchChange(branch.id)}
-                        >
-                            <input
-                                type="radio"
-                                name="branch"
-                                value={branch.id}
-                                checked={selectedBranchId === branch.id}
-                                onChange={() => handleBranchChange(branch.id)}
-                                className="mr-2"
+            {isLoading ? (
+                <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                    <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+                </div>
+            ) : (
+                <Card className="w-full">
+                    <List>
+                        {branches.map((branch) => (
+                            <ListItem
                                 disabled={branchStatus[branch.id] !== "Còn hàng"}
-                            />
-                            <ListItemPrefix>
-                                <Avatar
-                                    variant="circular"
-                                    alt={branch.branchName}
-                                    src={branch.imgAvatarPath}
+                                key={branch.id}
+                                className={`cursor-pointer hover:bg-gray-100 ${branchStatus[branch.id] === "Hết hàng" ? "opacity-50 cursor-not-allowed" : ""
+                                    }`}
+                                onClick={() => branchStatus[branch.id] !== "Hết hàng" && handleBranchChange(branch.id)}
+                            >
+                                <input
+                                    type="radio"
+                                    name="branch"
+                                    value={branch.id}
+                                    checked={selectedBranchId === branch.id}
+                                    onChange={() => handleBranchChange(branch.id)}
+                                    className="mr-2"
+                                    disabled={branchStatus[branch.id] !== "Còn hàng"}
                                 />
-                            </ListItemPrefix>
-                            <div>
-                                <Typography variant="h6">{branch.branchName} - {branch.hotline}</Typography>
-                                <Typography variant="small" color="gray">{branch.location}</Typography>
-                                <Typography variant="small" color={branchStatus[branch.id] === "Còn hàng" ? "green" : "red"}>
-                                    {branchStatus[branch.id]}
-                                </Typography>
-                            </div>
-                        </ListItem>
-                    ))}
-                </List>
-            </Card>
+                                <ListItemPrefix>
+                                    <Avatar
+                                        variant="circular"
+                                        alt={branch.branchName}
+                                        src={branch.imgAvatarPath}
+                                    />
+                                </ListItemPrefix>
+                                <div>
+                                    <Typography variant="h6">{branch.branchName} - {branch.hotline}</Typography>
+                                    <Typography variant="small" color="gray">{branch.location}</Typography>
+                                    <Typography
+                                        variant="small"
+                                        color={branchStatus[branch.id] === "Còn hàng" ? "green" : "red"}
+                                    >
+                                        {branchStatus[branch.id]}
+                                    </Typography>
+                                </div>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Card>
+            )}
         </div>
     );
 };

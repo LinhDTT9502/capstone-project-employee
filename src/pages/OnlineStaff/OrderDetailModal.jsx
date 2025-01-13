@@ -54,11 +54,11 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
         throw new Error('Failed to assign branch. Please try again.');
       }
 
-      toast.success('Branch assigned successfully!');
+      toast.success('Đã bàn giao thành công!');
       onClose(); // Close the modal after successful assignment
     } catch (error) {
       console.error(error);
-      toast.error('Error assigning branch. Please try again.');
+      toast.error('Bàn giao thất bại!');
     }
   };
 
@@ -82,7 +82,7 @@ const OrderDetailModal = ({ open, onClose, orderId }) => {
   // Extract product IDs from the order details
   const productIds = orderDetail?.saleOrderDetailVMs?.$values.map((item) => item.productId) || [];
   console.log(orderDetail);
-  
+
 
   return (
     <Dialog open={open} handler={onClose}>

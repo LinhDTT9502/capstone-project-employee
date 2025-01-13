@@ -106,6 +106,20 @@ const ListWarehouses = () => {
     setCurrentPage(pageNumber);
   };
 
+  const getPageNumbers = () => {
+    const maxVisiblePages = 10;
+    const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    const visiblePages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      visiblePages.push(i);
+    }
+    return visiblePages;
+  };
+
+  const visiblePages = getPageNumbers();
+
   // Edit quantity handler
   const handleEditQuantity = async () => {
     try {
@@ -270,7 +284,13 @@ const ListWarehouses = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="overflow-x-auto">
+      {/* Loading State */}
+      {warehouses.length <= 0 ? (
+        <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+          <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+        </div>
+      ) : (<div className="overflow-x-auto">
         <table className="table-auto w-full border border-gray-200">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -345,20 +365,42 @@ const ListWarehouses = () => {
             )}
           </tbody>
         </table>
-        {/* Pagination */}
-        <div className="flex justify-center mt-4">
-          {[...Array(totalPages).keys()].map((number) => (
+        <div className="flex justify-center items-center mt-4 space-x-2">
+          {/* "<" Button for Previous */}
+          {currentPage > 1 && (
             <button
-              key={number + 1}
-              onClick={() => handlePageChange(number + 1)}
-              className={`px-3 py-1 mx-1 border rounded ${currentPage === number + 1 ? "bg-black text-white" : "bg-gray-200"
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
+            >
+              {"<"}
+            </button>
+          )}
+
+          {/* Pagination Numbers */}
+          {visiblePages.map((number) => (
+            <button
+              key={number}
+              onClick={() => handlePageChange(number)}
+              className={`px-3 py-1 border rounded ${currentPage === number ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-300"
                 }`}
             >
-              {number + 1}
+              {number}
             </button>
           ))}
+
+          {/* ">" Button for Next */}
+          {currentPage < totalPages && (
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
+            >
+              {">"}
+            </button>
+          )}
         </div>
       </div >
+      )};
+
     </div >
   );
 };
