@@ -73,7 +73,7 @@ const RentalDetailModal = ({ open, onClose, orderCode }) => {
 
     try {
       const response = await fetch(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/assign-branch?orderId=${orderId}&branchId=${selectedBranchId}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/assign-branch?orderId=${orderId}&branchId=${selectedBranchId}`,
         {
           method: "PUT",
           headers: {

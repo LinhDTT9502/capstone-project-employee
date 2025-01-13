@@ -69,10 +69,9 @@ const ListOrder = () => {
   const fetchOrders = async () => {
     try {
       const data = await getOrderbyBranch(user.BranchId);
-
-      console.log(data);
-
-      setOrders(data);
+      const pendingOrders = data
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setOrders(pendingOrders);
       setFilteredOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -173,7 +172,6 @@ const ListOrder = () => {
             value={sortOrder}
           >
             <option value="earliest">Đơn mới nhất</option>
-
             <option value="latest">Đơn cũ nhất</option>
 
           </select>

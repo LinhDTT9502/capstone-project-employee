@@ -14,7 +14,7 @@ const RichTextEditor = () => {
   const fetchImages = async () => {
     try {
       const response = await axios.get(
-        'https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/list-images'
+        'https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Blog/list-images'
       );
       const fetchedImages = response.data.$values || [];
       setImages(fetchedImages.filter((url) => typeof url === 'string' && url.trim() !== ''));
@@ -42,7 +42,7 @@ const RichTextEditor = () => {
     formData.append('file', blobInfo.blob());
     try {
       const response = await axios.post(
-        'https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/upload-an-image',
+        'https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Blog/upload-an-image',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

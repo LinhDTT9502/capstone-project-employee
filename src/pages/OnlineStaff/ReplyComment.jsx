@@ -34,7 +34,7 @@ const ReplyComment = ({ productCode, parentCommentId, setIsReload }) => {
 
     // axios
     //   .post(
-    //     `https://capstone-project-703387227873.asia-southeast1.run.app/api/Comment/reply-comment/${productCode}?parentCommentId=${parentCommentId}`,
+    //     `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Comment/reply-comment/${productCode}?parentCommentId=${parentCommentId}`,
     //     { content },
     //     {
     //       headers: {

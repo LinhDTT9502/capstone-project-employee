@@ -25,7 +25,7 @@ const ImportFileExcel = () => {
 
         try {
             const response = await fetch(
-                "https://capstone-project-703387227873.asia-southeast1.run.app/api/Product/import-product-from-excel",
+                "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Product/import-product-from-excel",
                 {
                     method: "POST",
                     headers: {

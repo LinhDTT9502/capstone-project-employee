@@ -13,7 +13,7 @@ export const getRentalsList = async () => {
 export const getRentalbyStatus = async (orderStatus) => {
   try {
     const response = await getRentalbyStatusAPI(orderStatus);
-    return response.data.data.$values;
+    return response.data.data;
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw error;

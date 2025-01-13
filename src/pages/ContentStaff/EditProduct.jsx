@@ -20,7 +20,7 @@ const EditProduct = () => {
 
     try {
       const response = await fetch(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/Product/edit-description-of-product/${productCode}?description=${encodeURIComponent(description)}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Product/edit-description-of-product/${productCode}?description=${encodeURIComponent(description)}`,
         {
           method: 'PUT',
           headers: {

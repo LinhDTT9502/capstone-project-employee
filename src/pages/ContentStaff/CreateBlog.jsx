@@ -35,7 +35,7 @@ const CreateBlog = () => {
   const fetchImages = async () => {
     try {
       const response = await axios.get(
-        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/list-images"
+        "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Blog/list-images"
       );
       const fetchedImages = response.data.$values || [];
       console.log("API Response:", fetchedImages);
@@ -77,7 +77,7 @@ const CreateBlog = () => {
 
     try {
       const response = await axios.post(
-        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/upload-an-image",
+        "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Blog/upload-an-image",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -278,7 +278,7 @@ const CreateBlog = () => {
                     if (meta.filetype === "image") {
                       // Step 1: Fetch the images from API
                       fetch(
-                        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Blog/list-images"
+                        "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Blog/list-images"
                       ) // Replace with your API URL
                         .then((response) => response.json())
                         .then((data) => {

@@ -107,7 +107,7 @@ const OrderDetail = () => {
   const fetchOrderDetail = async () => {
     try {
       const response = await axios.get(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/get-sale-order-detail?orderId=${orderId}`
       );
       if (response.data.isSuccess) {
         setOrder(response.data.data);
@@ -134,7 +134,7 @@ const OrderDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=${newStatus}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=${newStatus}`,
         {},
         {
           headers: {
@@ -165,7 +165,7 @@ const OrderDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-payment-status/${orderId}?paymentStatus=${paymentStatus}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/update-sale-payment-status/${orderId}?paymentStatus=${paymentStatus}`,
         {},
         {
           headers: {
@@ -198,7 +198,7 @@ const OrderDetail = () => {
     setReload((prev) => !prev);
     // if (response) {
     //   const update = await axios.put(
-    //     `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
+    //     `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/update-order-status/${orderId}?status=2`,
     //     {},
     //     {
     //       headers: {
@@ -323,7 +323,7 @@ const OrderDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-order/?orderId=${orderId}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/update-sale-order/?orderId=${orderId}`,
         payload, // Use the transformed payload
         {
           headers: {
@@ -411,7 +411,7 @@ const OrderDetail = () => {
       };
       axios
         .put(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-order/?orderId=${orderId}`,
+          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/update-sale-order/?orderId=${orderId}`,
           payload,
           {
             headers: {

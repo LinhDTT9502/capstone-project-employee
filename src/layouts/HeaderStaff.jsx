@@ -72,7 +72,7 @@ function HeaderStaff() {
     setOrderId(data.id);
     console.log(orderCode, branchId, id);
     const response = await fetch(
-      `https://capstone-project-703387227873.asia-southeast1.run.app/api/Notification/update-status?id=${id}&isRead=true`,
+      `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Notification/update-status?id=${id}&isRead=true`,
       {
         method: "PUT",
         headers: {
@@ -133,7 +133,7 @@ function HeaderStaff() {
   // const handleNotificationClick = async (notificationId, event) => {
   //     event.stopPropagation();  // Prevent the Menu from closing when clicking on the notification
   //     try {
-  //         const response = await fetch(`https://capstone-project-703387227873.asia-southeast1.run.app/api/Notification/update-status?id=${notificationId}&isRead=true`, {
+  //         const response = await fetch(`https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Notification/update-status?id=${notificationId}&isRead=true`, {
   //             method: 'PUT',
   //             headers: {
   //                 'accept': '*/*',

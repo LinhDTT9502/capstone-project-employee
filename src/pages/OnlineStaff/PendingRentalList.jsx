@@ -36,7 +36,7 @@ const PendingRentalList = () => {
     const fetchOrders = async () => {
       try {
         const data = await getRentalbyStatus(status);
-        const pendingOrders = data
+        const pendingOrders = data.$values
           .filter(order => order.branchId === null && order.parentOrderCode === null)
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setOrders(pendingOrders);

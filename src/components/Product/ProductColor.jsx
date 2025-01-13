@@ -5,6 +5,8 @@ export function ProductColor({ productCode, selectedColor, setSelectedColor, onC
   const [colors, setColors] = useState([]);
   const [colorImages, setColorImages] = useState({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);  
+  console.log(productCode, selectedColor, setSelectedColor);
+  
 
   useEffect(() => {
     const loadColors = async () => {

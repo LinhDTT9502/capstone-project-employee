@@ -4,7 +4,7 @@ let connection;
 
 export function initializeSignalR(token) {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl('https://capstone-project-703387227873.asia-southeast1.run.app/notificationHub', {
+        .withUrl('https://twosport-api-offcial-685025377967.asia-southeast1.run.app/notificationHub', {
             accessTokenFactory: () => token,
         })
         .withAutomaticReconnect()

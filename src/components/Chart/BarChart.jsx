@@ -20,12 +20,12 @@ const BarChart = ({ branchId }) => {
       try {
         // Fetch Sale Orders
         const saleResponse = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/get-orders-by-branch?branchId=${branchId}`
+          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/SaleOrder/get-orders-by-branch?branchId=${branchId}`
         );
 
         // Fetch Rental Orders
         const rentalResponse = await axios.get(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-orders-by-branch?branchId=${branchId}`
+          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/get-orders-by-branch?branchId=${branchId}`
         );
 
         if (saleResponse.data.data || rentalResponse.data.data) {

@@ -182,7 +182,7 @@ const ImportProduct = () => {
 
     try {
       const response = await fetch(
-        "https://capstone-project-703387227873.asia-southeast1.run.app/api/Product/import-product",
+        "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Product/import-product",
         {
           method: "POST",
           headers: {

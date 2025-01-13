@@ -5,7 +5,6 @@ import { fetchBranchDetail } from "../../services/branchService";
 
 const RentalTransportFee = ({ address, product, branchId, setTransportFee }) => {
     // console.log(branchId);
-        console.log(address, product, branchId);
     const [provinceID, setProvinceID] = useState("");
     const [districtID, setDistrictID] = useState("");
     const [wardCode, setWardCode] = useState("");

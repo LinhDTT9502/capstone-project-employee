@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://capstone-project-703387227873.asia-southeast1.run.app/api/Category";
+const API_BASE_URL = "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Category";
 
 // Get all categories
 export const getAllCategories = () => {

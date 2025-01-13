@@ -35,8 +35,12 @@ const ReturnList = () => {
         try {
             const data = await getListOrderReturnbyBranch(user.BranchId);
             console.log(data);
-            if (data) {
+            
+            if (data.$value) {
                 setOrders(data);
+                setError(null);
+            } else {
+                setOrders([]);
                 setError(null);
             }
 
@@ -99,7 +103,7 @@ const ReturnList = () => {
     };
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-xl font-bold mb-4">Đơn hàng yêu cầu hoàn tiền</h1>
+            <h1 className="text-xl font-bold mb-4">Đơn hàng yêu cầu hoàn trả sản phẩm</h1>
 
             <div className="flex justify-between mb-4">
                 <div className="flex gap-1 p-1 bg-gray-200 rounded-full w-fit transition-all duration-300">

@@ -27,13 +27,14 @@ import {
   faSave,
   faTruck,
   faArrowLeft,
-  
+  faPrint
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
 import { ProductSize } from "../../components/Product/ProductSize";
 import TransportFee from "./TransportFee";
 import RentalTransportFee from "./RentalTransportFee";
+import { toast } from "react-toastify";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
@@ -56,11 +57,12 @@ const RentalDetail = () => {
   const token = localStorage.getItem("token");
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({});
-  const [paymentNewStatus, setPaymentNewStatus]=useState(null)
+  const [paymentNewStatus, setPaymentNewStatus] = useState(null)
   const [newStatus, setNewStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [transportFees, setTransportFees] = useState({});
   const [transportFee, setTransportFee] = useState(null)
+  
   // Step 1: Extract all fee values
   const feeValues = Object.values(transportFees);
 
@@ -146,7 +148,7 @@ const RentalDetail = () => {
 
       try {
         const response = await axios.put(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
+          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
           payload, // Use the transformed payload
           {
             headers: {
@@ -231,9 +233,26 @@ const RentalDetail = () => {
       value: 0,
       color: "bg-orange-100 text-orange-800",
     },
-    
- 
- 
+
+  ];
+
+  const statusDeposittOptions = [
+
+    { label: "Đang chờ thanh toán", value: 1, color: "bg-blue-100 text-blue-800" },
+    { label: "Đã thanh toán", value: 2, color: "bg-green-100 text-green-800" },
+    { label: "Thất bại", value: 3, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hoàn tiền",
+      value: 4,
+      color: "bg-purple-100 text-purple-800",
+    },
+    { label: "Đã đặt cọc", value: 5, color: "bg-red-100 text-red-800" },
+    {
+      label: "Đã hủy",
+      value: 0,
+      color: "bg-orange-100 text-orange-800",
+    },
+
   ];
 
   const getCurrentStepIndex = (orderStatus) => {
@@ -243,7 +262,7 @@ const RentalDetail = () => {
   const fetchOrderDetail = async () => {
     try {
       const response = await axios.get(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/get-rental-order-detail?orderId=${rentalId}`
       );
 
       if (response.data.isSuccess) {
@@ -291,6 +310,8 @@ const RentalDetail = () => {
     paymentStatus,
     subTotal,
   } = order;
+  console.log(order);
+  
 
   const children = childOrders?.$values || [];
 
@@ -301,7 +322,7 @@ const RentalDetail = () => {
     setUpdating(true);
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status/${rentalId}?orderStatus=${newStatus}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status/${rentalId}?orderStatus=${newStatus}`,
         {},
         {
           headers: {
@@ -326,10 +347,12 @@ const RentalDetail = () => {
 
   const handlePaymentStatusChange = async () => {
     if (paymentNewStatus === null || updating) return;
+    console.log(paymentNewStatus);
+
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/SaleOrder/update-sale-payment-status/${orderId}?paymentStatus=${paymentNewStatus}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update-rental-payment-status/${rentalId}?paymentStatus=${paymentNewStatus}`,
         {},
         {
           headers: {
@@ -337,8 +360,9 @@ const RentalDetail = () => {
           },
         }
       );
+console.log(response);
 
-      if (response) {
+      if (response.data.isSuccess) {
         // Update order status locally without needing to reload
         fetchOrderDetail()
         setUpdating(true);
@@ -402,34 +426,34 @@ const RentalDetail = () => {
         parentTranSportFee: formData.tranSportFee,
         parentTotalAmount: formData.totalAmount,
         branchId: formData.branchId,
-        productInformations: formData.childOrders.$values.map((item) => ({
+        productInformations: {
           cartItemId: null, // You can set this dynamically if available
-          productId: item.productId,
-          productName: item.productName,
-          productCode: item.productCode || "", // Handle null values
-          size: item.size || "", // Handle null values
-          color: item.color || "", // Handle null values
-          condition: item.condition,
-          rentPrice: item.rentPrice,
-          imgAvatarPath: item.imgAvatarPath,
-          quantity: item.quantity,
+          productId: formData.productId,
+          productName: formData.productName,
+          productCode: formData.productCode || "", // Handle null values
+          size: formData.size || "", // Handle null values
+          color: formData.color || "", // Handle null values
+          condition: formData.condition,
+          rentPrice: formData.rentPrice,
+          imgAvatarPath: formData.imgAvatarPath,
+          quantity: formData.quantity,
           rentalDates: {
-            dateOfReceipt: item.dateOfReceipt,
-            rentalStartDate: item.rentalStartDate,
-            rentalEndDate: item.rentalEndDate,
-            rentalDays: item.rentalDays
+            dateOfReceipt: formData.dateOfReceipt,
+            rentalStartDate: formData.rentalStartDate,
+            rentalEndDate: formData.rentalEndDate,
+            rentalDays: formData.rentalDays
           },
           rentalCosts: {
-            subTotal: item.subTotal,
+            subTotal: formData.subTotal,
             tranSportFee: updatedTransportFee,
             totalAmount: updatedTotalAmount
           },
-        })),
+        },
       };
 
       try {
         const response = await axios.put(
-          `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
+          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
           payload, // Use the transformed payload
           {
             headers: {
@@ -456,17 +480,6 @@ const RentalDetail = () => {
     console.log(response);
 
     if (response) {
-      const statusLabel = statusOptions.find(option => option.value === 2)?.label;
-      const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update-rental-order-status/${rentalId}?orderStatus=2`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setOrder({ ...order, orderStatus: statusLabel });
       fetchOrderDetail()
       setReload((prev) => !prev);
     }
@@ -527,7 +540,7 @@ const RentalDetail = () => {
     });
     console.log(formData);
   };
-  console.log(formData);
+
 
   // Submit updates to the API
   const handleSave = async () => {
@@ -597,7 +610,7 @@ const RentalDetail = () => {
 
     try {
       const response = await axios.put(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
         payload, // Use the transformed payload
         {
           headers: {
@@ -608,13 +621,12 @@ const RentalDetail = () => {
 
       if (response) {
         console.log(response);
-
-        alert("Cập nhật đơn hàng thành công");
+        toast.success("Cập nhật đơn hàng thành công");
         setOrder(formData);
         fetchOrderDetail()
         setEditingSection(null); // Exit edit mode
       } else {
-        alert("Failed to update order");
+        toast.error("Failed to update order");
       }
     } catch (error) {
       alert("Error updating order");
@@ -866,20 +878,20 @@ const RentalDetail = () => {
                                 (child.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
                                   0
                                 ) : (
-                                 <div>
-                                   <TransportFee
-                                    address={child.address}
-                                    product={order.childOrders.$values}
-                                    branchId={order.branchId}
-                                    setTransportFee={(fee) => updateTransportFee(child.id, fee)}
-                                  />
-                                  <span className="font-semibold"> Tổng cộng:</span>{" "}
-                                  <p className="font-medium text-gray-900">
-                                    {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
-                                      "vi-VN"
-                                    )}
-                                    ₫
-                                  </p>
+                                  <div>
+                                    <TransportFee
+                                      address={child.address}
+                                      product={order.childOrders.$values}
+                                      branchId={order.branchId}
+                                      setTransportFee={(fee) => updateTransportFee(child.id, fee)}
+                                    />
+                                    <span className="font-semibold"> Tổng cộng:</span>{" "}
+                                    <p className="font-medium text-gray-900">
+                                      {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
+                                        "vi-VN"
+                                      )}
+                                      ₫
+                                    </p>
                                   </div>
                                 )
                               ) : (
@@ -898,7 +910,7 @@ const RentalDetail = () => {
                                     )}
                                     ₫
                                   </p>
-                                  </div>
+                                </div>
                               )}
                               {/* {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? 0 : <TransportFee
                                 address={child.address}
@@ -927,16 +939,18 @@ const RentalDetail = () => {
                   ) : (
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
                       <div className="flex flex-col md:flex-row gap-4">
-                        <img
-                          src={order.imgAvatarPath || "/placeholder.jpg"}
-                          alt={productName}
-                          className="w-full md:w-32 h-32 object-cover rounded"
-                        />
                         <div className="flex-grow">
-                          <h4 className="font-semibold text-lg mb-2">
-                            {productName}
-                          </h4>
-                           {/* <p className="flex text-sm text-gray-500 gap-2">
+                          <div className="flex items-center space-x-4">
+                          <img
+                            src={order.imgAvatarPath}
+                            alt={order.productName}
+                            className="object-cover w-16 h-16 rounded-lg shadow-sm"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-700">
+                              {order.productName}
+                            </p>
+                            <p className="flex text-sm text-gray-500 gap-2">
                               Số lượng: {order.quantity}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -944,11 +958,7 @@ const RentalDetail = () => {
                               {editingSection === "productInformations" ? (
                                 <ProductColor
                                   productCode={order.productCode}
-                                  selectedColor={
-                                    formData.childOrders.$values.find(
-                                      (valueItem) => valueItem.productId === child.productId
-                                    )?.color || ""
-                                  }
+                                  selectedColor={order.color}
                                   setSelectedColor={(newColor) => {
                                     handleProductChange(
                                       {
@@ -957,7 +967,7 @@ const RentalDetail = () => {
                                           value: newColor
                                         }
                                       },
-                                      child.productId
+                                      order.productId
                                     );
                                   }}
                                   onColorSelect={(imgAvatarPath) => {
@@ -968,23 +978,21 @@ const RentalDetail = () => {
                                           value: imgAvatarPath
                                         }
                                       },
-                                      child.productId
+                                      order.productId
                                     );
                                   }}
                                 />
                               ) : (
-                                child.color
+                                order.color
                               )}
                             </p>
                             <p className="text-sm text-gray-500">
                               <b>Kích thước: </b>
                               {editingSection === "productInformations" ? (
                                 <ProductSize
-                                  productCode={child.productCode}
-                                  color={child.color}
-                                  selectedSize={formData.childOrders.$values.find(
-                                    (valueItem) => valueItem.productId === child.productId
-                                  )?.size || ""}
+                                  productCode={order.productCode}
+                                  color={order.color}
+                                  selectedSize={order.size}
                                   setSelectedSize={(newSize) => {
                                     handleProductChange(
                                       {
@@ -993,16 +1001,16 @@ const RentalDetail = () => {
                                           value: newSize
                                         }
                                       },
-                                      child.productId
+                                      order.productId
                                     );
                                   }}
                                 />
                               ) : (
-                                child.size
+                                order.size
                               )}
                             </p>
                             <p className="text-sm text-gray-500">
-                              <b>Tình trạng: </b> {child.condition}
+                              <b>Tình trạng: </b> {order.condition}
 
                               %
                             </p>{" "}
@@ -1011,7 +1019,7 @@ const RentalDetail = () => {
                                 Ngày thuê:
                               </span>{" "}
                               {new Date(
-                                child.rentalStartDate
+                                rentalStartDate
                               ).toLocaleDateString('en-GB', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -1019,14 +1027,38 @@ const RentalDetail = () => {
                               })}{" "}
                               -{" "}
                               {new Date(
-                                child.rentalEndDate
+                                rentalEndDate
                               ).toLocaleDateString('en-GB', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric',
                               })}
-                            </p> */}
-                          <p>
+                            </p>
+                            <p>
+                            
+                              {/* {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? 0 : <TransportFee
+                                address={child.address}
+                                product={order.childOrders.$values}
+                                branchId={order.branchId}
+                                setTransportFee={(fee) => updateTransportFee(child.id, fee)}
+                              />}
+
+                              <span className="font-semibold"> Tổng cộng:</span>{" "}
+                              <p className="font-medium text-gray-900">
+                                {(child.totalAmount + (transportFees[child.id] || 0)).toLocaleString(
+                                  "vi-VN"
+                                )}
+                                ₫
+                              </p> */}
+                            </p>
+                          </div>
+
+                        </div><div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            {rentPrice.toLocaleString('vi-VN')}₫
+                          </p>
+                        </div>
+                          {/* <p>
                             <span className="font-semibold">Giá thuê:</span>{" "}
                             {rentPrice || "N/A"} ₫
                           </p>
@@ -1044,7 +1076,7 @@ const RentalDetail = () => {
                               month: '2-digit',
                               year: 'numeric',
                             })}
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>
@@ -1064,7 +1096,7 @@ const RentalDetail = () => {
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
                 <p className="font-semibold text-orange-600">
-                  
+
                   {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ? (
                     children.length > 0 ? (
                       totalFees.toLocaleString('vi-VN')
@@ -1074,7 +1106,7 @@ const RentalDetail = () => {
                       address={order.address}
                       product={order}
                       branchId={order.branchId}
-                      setTransportFee={setTransportFee}
+                      setTransportFee={(fee) => updateOrderFee(fee)}
                     />)
 
                   )}
@@ -1111,55 +1143,55 @@ const RentalDetail = () => {
           <div className="sticky top-4">
             {/* Right Side - Customer Info & Summary */}
             {order.orderStatus === "Đã xác nhận" &&
-            <div className="flex flex-col">
-              <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-              <select
-                onChange={(e) => setNewStatus(e.target.value)}
-                value={newStatus || order.orderStatus}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option>{order.orderStatus}</option>
-                {statusOptions.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col w-full">
+                <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+                  <select
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    value={newStatus || order.orderStatus}
+                    className="w-2/3 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option>{order.orderStatus}</option>
+                    {statusOptions.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
 
-              <Button
-                onClick={handleStatusChange}
-                disabled={updating}
-                className="bg-blue-500 hover:bg-blue-600"
+                  <Button
+                    onClick={handleStatusChange}
+                    disabled={updating}
+                    className="w-1/3 bg-blue-500 hover:bg-blue-600"
 
-              >
-                {updating ? "Đang cập nhật..." : "Cập nhật"}
-              </Button>
-            </div>
+                  >
+                    {updating ? "Đang cập nhật..." : "Cập nhật"}
+                  </Button>
+                </div>
 
-            <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
-                <select
-                  onChange={(e) => setPaymentNewStatus(e.target.value)}
-                  value={paymentNewStatus || order.paymentStatus}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option>Chọn trạng thái thanh toán</option>
-                  {statusPaymentOptions.map((status) => (
-                    <option key={status.value} value={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  onClick={handlePaymentStatusChange}
-                  disabled={updating}
-                  className="bg-blue-500 hover:bg-blue-600"
-                >
-                  {updating ? "Đang thay đổi..." : "Cập nhật"}
-                </Button>
+                <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
+                  <select
+                    onChange={(e) => setPaymentNewStatus(e.target.value)}
+                    value={paymentNewStatus || order.paymentStatus}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option>Chọn trạng thái thanh toán</option>
+                    {statusPaymentOptions.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    onClick={handlePaymentStatusChange}
+                    disabled={updating}
+                    className="bg-blue-500 hover:bg-blue-600"
+                  >
+                    {updating ? "Đang thay đổi..." : "Cập nhật"}
+                  </Button>
+                </div>
               </div>
-            </div>
             }
-            
+
             <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
 
               <div className="flex items-center justify-between mb-4">
@@ -1325,6 +1357,12 @@ const RentalDetail = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Trạng thái thanh toán</p>
+                  <p className="font-medium">
+                    {order.paymentStatus || "KH chưa thanh toán"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Trạng thái đặt cọc</p>
                   <p className="font-medium">
                     {order.depositStatus || "KH chưa thanh toán"}
                   </p>

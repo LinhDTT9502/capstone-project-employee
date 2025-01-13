@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://capstone-project-703387227873.asia-southeast1.run.app/api/Staff';
+const API_BASE_URL = 'https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Staff';
 
 export const getAllStaff = () => {
   return axios.get(`${API_BASE_URL}/get-all-staffs`, {
@@ -10,7 +10,7 @@ export const getAllStaff = () => {
   });
 };
 export const getAllStaffWithoutBranch = () => {
-  return axios.get(`https://capstone-project-703387227873.asia-southeast1.run.app/api/User/get-users-without-branch/3`, {
+  return axios.get(`https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/User/get-users-without-branch/3`, {
     headers: {
       'accept': '*/*'
     }

@@ -73,7 +73,8 @@ const ListRentalbyBranch = () => {
   const fetchOrders = async () => {
     try {
       const data = await getRentalbyBranch(user.BranchId);
-      setOrders(data);
+      const pendingOrders = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setOrders(pendingOrders);
       setFilteredOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -173,8 +174,9 @@ const ListRentalbyBranch = () => {
             onChange={handleSortChange}
             value={sortOrder}
           >
-            <option value="latest">Đơn cũ nhất</option>
             <option value="earliest">Đơn mới nhất</option>
+            <option value="latest">Đơn cũ nhất</option>
+            
           </select>
         </div>
       </div>

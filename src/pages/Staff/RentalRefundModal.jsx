@@ -68,6 +68,16 @@ const RentalRefundModal = ({ open, onClose, orderCode, rentalCode }) => {
                   month: '2-digit',
                   year: 'numeric',
                 })}</p>
+                   <p><span className="font-medium">Thời gian thuê:</span> {new Date(orderDetails.rentalStartDate).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })} - {new Date(orderDetails.rentalEndDate).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+                </p>
                 <p><span className="font-medium">Phương thức giao hàng:</span> {orderDetails.deliveryMethod}</p>
                 <p><span className="font-medium">Tình trạng thanh toán:</span> <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">{orderDetails.paymentStatus}</span></p>
                 <p><span className="font-medium">Phương thức thanh toán:</span> {orderDetails.paymentMethod || "Không xác định"}</p>

@@ -14,7 +14,7 @@ const useOrderNotification = (onNotificationReceived) => {
 
         // Create a new SignalR connection
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl("https://capstone-project-703387227873.asia-southeast1.run.app/notificationHub", options)
+            .withUrl("https://twosport-api-offcial-685025377967.asia-southeast1.run.app/notificationHub", options)
             .withAutomaticReconnect()  // Enable automatic reconnect
             .build();
 
@@ -67,7 +67,7 @@ export default useOrderNotification;
 // class useOrderNotification {
 //     constructor() {
 //         this.connection = new HubConnectionBuilder()
-//             .withUrl('https://capstone-project-703387227873.asia-southeast1.run.app/notificationHub', {
+//             .withUrl('https://twosport-api-offcial-685025377967.asia-southeast1.run.app/notificationHub', {
 //                 accessTokenFactory: () => localStorage.getItem('token') // Assume JWT token is stored in localStorage
 //             })
 //             .build();

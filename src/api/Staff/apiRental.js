@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = 'https://capstone-project-703387227873.asia-southeast1.run.app/api/RentalOrder';
+const API_BASE_URL = 'https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder';
 
 export const getRentalsListAPI = () => {
   return axios.get(`${API_BASE_URL}/get-all-rental-orders`, {

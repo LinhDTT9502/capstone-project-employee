@@ -13,7 +13,7 @@ export const getListOrderReturn = async () => {
 export const getListOrderReturnbyBranch = async (branchId) => {
   try {
     const response = await getListReturnbyBranch(branchId);
-    return response.data.data.$values; 
+    return response.data; 
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw error;

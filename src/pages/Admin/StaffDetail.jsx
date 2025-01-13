@@ -11,7 +11,7 @@ const StaffDetail = () => {
   const fetchStaffDetail = async () => {
     try {
       const response = await fetch(
-        `https://capstone-project-703387227873.asia-southeast1.run.app/api/Staff/get-staff-details?staffId=${staffId}`,
+        `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/Staff/get-staff-details?staffId=${staffId}`,
         {
           headers: { accept: "*/*" },
         }
