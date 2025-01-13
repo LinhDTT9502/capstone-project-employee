@@ -284,7 +284,13 @@ const ListWarehouses = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="overflow-x-auto">
+      {/* Loading State */}
+      {warehouses.length <= 0 ? (
+        <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+          <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>
+        </div>
+      ) : (<div className="overflow-x-auto">
         <table className="table-auto w-full border border-gray-200">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -393,6 +399,8 @@ const ListWarehouses = () => {
           )}
         </div>
       </div >
+      )};
+
     </div >
   );
 };
