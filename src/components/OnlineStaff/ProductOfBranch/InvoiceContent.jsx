@@ -1,13 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faBuilding, faFileInvoiceDollar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser, faBuilding, faFileInvoiceDollar, faPrint
+} from "@fortawesome/free-solid-svg-icons";
 import { getOrderbyCode } from "../../../services/Staff/OrderService";
 import { getRentalDetail } from "../../../services/Staff/RentalService";
 import { fetchBranchDetail } from "../../../services/branchService";
+import { useReactToPrint } from "react-to-print";
+
 
 export default function InvoiceContent({ searchQuery, orderType }) {
   const [orderDetails, setOrderDetails] = useState(null);
   const [branch, setBranch] = useState("");
+
+
+  const invoiceRef = useRef();
+
+
+  const handlePrint = useReactToPrint({
+    content: () => invoiceRef.current, 
+  });console.log("Invoice Ref:", invoiceRef.current);
+
 
   const fetchOrderDetail = async () => {
     try {
@@ -83,8 +96,20 @@ export default function InvoiceContent({ searchQuery, orderType }) {
     ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:min-h-0">
-      <div className="flex justify-between items-start mb-8">
+    <div className="bg-white rounded-lg shadow-lg p-8 max-w-[210mm] mx-auto min-h-[297mm] ">
+
+<div className="flex justify-end mt-4 print:hidden">
+              <button
+                onClick={() => handlePrint()}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
+              >
+                <FontAwesomeIcon icon={faPrint} className="mr-2" />
+                In hóa đơn
+              </button>
+            </div>
+      {/* UI print */}
+
+      <div  ref={invoiceRef} className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             <FontAwesomeIcon icon={faFileInvoiceDollar} className="mr-2 text-blue-500" />

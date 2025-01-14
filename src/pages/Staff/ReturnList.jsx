@@ -36,8 +36,8 @@ const ReturnList = () => {
             const data = await getListOrderReturnbyBranch(user.BranchId);
             console.log(data);
             
-            if (data.$value) {
-                setOrders(data);
+            if (data.$values) {
+                setOrders(data.$values);
                 setError(null);
             } else {
                 setOrders([]);
@@ -129,10 +129,10 @@ const ReturnList = () => {
                     {[
                         { label: "Tất cả", value: "", color: "bg-blue-500" },
                         { label: "Chờ xử lý", value: "PENDING", color: "bg-yellow-400" },
-                        { label: "Đã chấp thuận", value: "APPROVED", color: "bg-green-500" },
+                        { label: "Đã chấp thuận", value: "Approved", color: "bg-green-500" },
                         { label: "Bị từ chối", value: "REJECTED", color: "bg-red-500" },
                         { label: "Đã hoàn tiền", value: "REFUNDED", color: "bg-purple-500" },
-                        { label: "Hoàn tất", value: "COMPLETED", color: "bg-blue-500" },
+                        { label: "Hoàn tất", value: "Completed", color: "bg-blue-500" },
                     ].map((chip) => (
                         <Chip
                             key={chip.label}
@@ -196,7 +196,7 @@ const ReturnList = () => {
                                             <span
                                                 className={`px-2 py-1 text-xs font-medium rounded-full ${order.status === "Pending"
                                                     ? "bg-yellow-100 text-yellow-600"
-                                                    : order.status === "Approved"
+                                                    : order.status === "Completed"
                                                         ? "bg-green-100 text-green-600"
                                                         : "bg-red-100 text-red-600"
                                                     }`}

@@ -499,7 +499,7 @@ console.log(selectOrder);
                 />
               </div>
               <div className="text-sm font-medium text-gray-700">
-                Phí hư hại: {damageFee.toLocaleString()} ₫
+                Phí hư hại: {damageFee.toLocaleString("vi-VN")} ₫
               </div>
             </div>
             <div className="mt-6 flex justify-end space-x-3">

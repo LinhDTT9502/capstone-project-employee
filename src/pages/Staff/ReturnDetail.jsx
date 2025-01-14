@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import {
     Card,
     CardBody,
-    CardHeader,
     Typography,
 } from "@material-tailwind/react";
 import { useLocation } from 'react-router-dom';
-import {
-    faEdit,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { updateReturnd } from '../../services/Staff/ReturnService';
 import { useSelector } from 'react-redux';
@@ -17,32 +14,11 @@ import { toast } from 'react-toastify';
 
 const ReturnDetail = () => {
     const location = useLocation();
-    const { order } = location.state;
+    const { order: initialOrder } = location.state;
+    const [order, setOrder] = useState(initialOrder);
     const [showModal, setShowModal] = useState(false);
-    const [reasonText, setReasonText] = useState('');
-    const [notesText, setNotesText] = useState('');
-    const [newStatus, setNewStatus] = useState('Approved')
-    const user = useSelector(selectUser)
-
-    const statusOptions = [
-
-        { label: "Chấp thuận", value: "Approved", color: "bg-blue-100 text-blue-800" },
-        { label: "Từ chối", value: "Rejected", color: "bg-red-100 text-red-800" },
-        {
-            label: "Đã hoàn tiền",
-            value: "Refunded",
-            color: "bg-purple-100 text-purple-800",
-        },
-        {
-            label: "Hoàn tất",
-            value: "Completed",
-            color: "bg-green-100 text-green-800",
-        },
-    ];
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-    };
+    const [newStatus, setNewStatus] = useState('Approved');
+    const user = useSelector(selectUser);
 
     const InfoItem = ({ label, value }) => (
         <div>
@@ -51,64 +27,54 @@ const ReturnDetail = () => {
         </div>
     );
 
-    const handleEdit = async () => {
+    const statusOptions = [
+        { label: "Chấp thuận", value: "Approved", color: "bg-blue-100 text-blue-800" },
+        { label: "Từ chối", value: "Rejected", color: "bg-red-100 text-red-800" },
+        { label: "Đã hoàn tiền", value: "Refunded", color: "bg-purple-100 text-purple-800" },
+        { label: "Hoàn tất", value: "Completed", color: "bg-green-100 text-green-800" },
+    ];
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+    const handleEdit = async () => {
         const payload = {
-            productCode: order.productCode,
-            size: order.size,
-            color: order.color,
-            condition: order.condition,
-            returnAmount: order.returnAmount,
-            reason: reasonText || order.reason,
-            notes: notesText,
+            ...order,
             processedBy: user.UserId,
-            videoUrl: order.videoUrl,
             status: newStatus,
-            updatedAt: new Date().toISOString()
-        }
+            updatedAt: new Date().toISOString(),
+        };
 
         try {
             const response = await updateReturnd(order.returnID, payload);
-            console.log(response);
-            
-
             if (response.data.isSuccess) {
                 toast.success("Cập nhật đơn hàng thành công");
-                setShowModal(false)
-                // setReload((prev) => !prev);
+                setOrder((prevOrder) => ({ ...prevOrder, status: newStatus })); // Update local state
+                setShowModal(false);
             } else {
                 toast.error("Failed to update order");
             }
         } catch (error) {
             toast.error("Error updating order");
         }
-
     };
 
     return (
         <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
-
             <Card className="w-full p-5 mx-auto shadow-lg">
-                <div className='flex justify-between'>
-                    <div className='flex items-center space-x-5'>
+                <div className="flex justify-between">
+                    <div className="flex items-center space-x-5">
                         <Typography variant="h4" className="font-bold">Chi tiết yêu cầu hoàn trả</Typography>
                         <span
-                            className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find(
-                                (status) => status.value.toLowerCase() === order.status.toLowerCase()
-                            )?.color || "bg-yellow-100 text-yellow-800"
+                            className={`px-3 py-1 text-sm font-medium rounded-full ${statusOptions.find((status) => status.value === order.status)?.color || "bg-yellow-100 text-yellow-800"
                                 }`}
                         >
-                            {statusOptions.find(
-                                        (status) => status.value.toLowerCase() === order.status.toLowerCase()
-                                    )?.label || "Chờ xử lý"}
+                            {statusOptions.find((status) => status.value === order.status)?.label || "Chờ xử lý"}
                         </span>
-
                     </div>
-
                     <button
-                        onClick={() => {
-                            setShowModal(true);
-                        }}
+                        onClick={() => setShowModal(true)}
                         className="bg-green-500 text-white p-2 rounded"
                     >
                         <FontAwesomeIcon icon={faEdit} />
@@ -158,7 +124,7 @@ const ReturnDetail = () => {
 
                     {/* Video hoàn trả */}
                     {order.videoUrl && (
-                        <section>
+                        <section className='w-1/3 h-auto'>
                             <Typography variant="h5" className="font-semibold mb-4 text-blue-700 border-b pb-2">Video sản phẩm khi hoàn trả</Typography>
                             <div className="aspect-w-16 aspect-h-9">
                                 <video controls className="w-full h-full rounded-lg object-cover">
@@ -173,40 +139,32 @@ const ReturnDetail = () => {
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-md shadow-lg w-1/2">
-                        <h2 className="text-lg font-semibold pb-2 text-orange-700">
-                            Cập nhật trạng thái đơn hàng
-                        </h2>
-                        <div className="w-full border rounded-md p-4 mb-4">
+                        <div className='justify-between flex'>
 
+
+                            <h2 className="text-lg font-semibold pb-2 text-orange-700 ">
+                                Cập nhật trạng thái đơn hàng
+                            </h2>
                             <select
                                 onChange={(e) => setNewStatus(e.target.value)}
                                 value={newStatus || order.orderStatus}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="px-3 py-2  border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                          
+
                                 {statusOptions.map((status) => (
                                     <option key={status.value} value={status.value}>
                                         {status.label}
                                     </option>
                                 ))}
                             </select>
-
-                            <textarea
-                                type="text"
-                                name="Reason"
-                                value={reasonText}
-                                className="w-full"
-                                onChange={(e) => setReasonText(e.target.value)}
-                            />
-                            <textarea
-                                type="text"
-                                name="notes"
-                                value={notesText}
-                                className="w-full"
-                                onChange={(e) => setNotesText(e.target.value)}
-                            />
                         </div>
-                        <div className="flex justify-end space-x-4">
+                        <div className="w-full border rounded-md p-4 mb-4">
+                        <strong>Lí do hủy của khách hàng:</strong>
+                            <p className=''>{order.reason}</p>
+                            <strong>Ghi chú bổ sung</strong>
+                            <p>{order.notes}</p>
+                        </div>
+                        <div className="flex justify-end space-x-4 mt-4">
                             <button
                                 className="bg-gray-500 text-white py-2 px-4 rounded-md"
                                 onClick={() => setShowModal(false)}
@@ -214,7 +172,7 @@ const ReturnDetail = () => {
                                 Đóng
                             </button>
                             <button
-                                className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                                className="bg-green-500 text-white py-2 px-4 rounded-md"
                                 onClick={handleEdit}
                             >
                                 Xác nhận
@@ -228,4 +186,3 @@ const ReturnDetail = () => {
 };
 
 export default ReturnDetail;
-

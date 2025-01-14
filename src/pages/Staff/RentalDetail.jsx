@@ -38,7 +38,7 @@ import { toast } from "react-toastify";
 
 const ORDER_STEPS = [
   { id: 1, label: "Chờ xử lý" },
-  { id: 2, label: "Đã xác nhận đơn" },
+  { id: 2, label: "Đã xác nhận" },
   { id: 3, label: "Đang xử lý" },
   { id: 4, label: "Đã giao cho ĐVVC" },
   { id: 5, label: "Đã giao hàng" },
@@ -173,9 +173,9 @@ const RentalDetail = () => {
   const statusOptions = [
     { label: "Đã hủy đơn", value: 0, color: "bg-red-100 text-red-800" }, // CANCELED
     // { label: "Chờ xử lý", value: 1, color: "bg-yellow-100 text-yellow-800" }, // PENDING
-    { label: "Đã xác nhận đơn", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
+    { label: "Đã xác nhận", value: 2, color: "bg-blue-100 text-blue-800" }, // CONFIRMED
     { label: "Đang xử lý", value: 3, color: "bg-green-100 text-green-800" }, // PROCESSING
-    { label: "Đã giao cho đơn vị vận chuyển", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
+    { label: "Đã giao cho ĐVVC", value: 4, color: "bg-purple-100 text-purple-800" }, // SHIPPED
     { label: "Đã giao hàng", value: 5, color: "bg-indigo-100 text-indigo-800" }, // DELIVERED
     { label: "Bị từ chối", value: 6, color: "bg-red-200 text-red-700" }, // DECLINED
     {
@@ -218,8 +218,6 @@ const RentalDetail = () => {
   ];
 
   const statusPaymentOptions = [
-
-    { label: "Đang chờ thanh toán", value: 1, color: "bg-blue-100 text-blue-800" },
     { label: "Đã thanh toán", value: 2, color: "bg-green-100 text-green-800" },
     { label: "Thất bại", value: 3, color: "bg-red-100 text-red-800" },
     {
@@ -423,8 +421,8 @@ console.log(response);
         paymentStatus: formData.paymentStatus,
         note: formData.note || "",
         parentSubTotal: formData.subTotal,
-        parentTranSportFee: formData.tranSportFee,
-        parentTotalAmount: formData.totalAmount,
+        parentTranSportFee: updatedTransportFee,
+        parentTotalAmount: updatedTotalAmount,
         branchId: formData.branchId,
         productInformations: {
           cartItemId: null, // You can set this dynamically if available
@@ -444,9 +442,9 @@ console.log(response);
             rentalDays: formData.rentalDays
           },
           rentalCosts: {
-            subTotal: formData.subTotal,
-            tranSportFee: updatedTransportFee,
-            totalAmount: updatedTotalAmount
+            subTotal: null,
+            tranSportFee: null,
+            totalAmount: null
           },
         },
       };
@@ -876,7 +874,7 @@ console.log(response);
                             <p>
                               {order.tranSportFee === 0 ? (
                                 (child.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
-                                  0
+                                  ""
                                 ) : (
                                   <div>
                                     <TransportFee
@@ -1091,7 +1089,7 @@ console.log(response);
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Tạm tính</p>
                 <p className="font-medium text-gray-900">
-                  {subTotal.toLocaleString()} ₫</p>
+                  {subTotal.toLocaleString("vi-VN")} ₫</p>
               </div>
               <div className="flex justify-between py-2">
                 <p className="text-gray-600">Phí vận chuyển</p>
@@ -1121,7 +1119,7 @@ console.log(response);
                 </p>
               </div>
             </div>
-            {((order.orderStatus === "Chờ xử lý" || order.orderStatus === "Đã hủy") && order.deliveryMethod === "Giao hàng tận nơi") && (
+            {((order.orderStatus === "Chờ xử lý" || order.orderStatus === "Đã hủy") && order.updatedAt === null && order.deliveryMethod === "Giao hàng tận nơi") && (
               <div className="mt-6 flex gap-3 justify-end">
                 <Button
                   onClick={handleReject}
@@ -1142,7 +1140,7 @@ console.log(response);
         <div className="w-full md:w-1/3 p-4">
           <div className="sticky top-4">
             {/* Right Side - Customer Info & Summary */}
-            {order.orderStatus === "Đã xác nhận" &&
+            {order.updatedAt &&
               <div className="flex flex-col w-full">
                 <div className="flex items-center justify-end space-x-4 mt-6 mb-3">
                   <select

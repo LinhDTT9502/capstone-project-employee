@@ -83,7 +83,6 @@ const UpdateRefundModal = ({ open, onClose, orderCode, rentalCode, id }) => {
             value={status}
             onChange={(value) => setStatus(value)}
           >
-            <Option value="Pending">Chờ xử lý</Option>
             <Option value="Approved">Chấp nhận yêu cầu</Option>
             <Option value="Rejected">Từ chối yêu cầu</Option>
           </Select>
