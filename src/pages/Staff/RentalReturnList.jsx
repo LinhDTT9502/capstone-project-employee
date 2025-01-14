@@ -3,7 +3,7 @@ import { getOrderbyBranch, getOrderList } from '../../services/Staff/OrderServic
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { getRentalbyBranch, getRentalbyStatus, removeRental } from '../../services/Staff/RentalService';
+import { getRentalbyBranch, getRentalbyStatus, getRentalReturn, removeRental } from '../../services/Staff/RentalService';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/authSlice';
 import { Button } from '@material-tailwind/react';
@@ -33,7 +33,8 @@ const RentalReturnList = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lateFee, setLateFee] = useState(0);
   const [selectOrder, setSelectOrder] = useState(null);
-console.log(selectOrder);
+  console.log(selectOrder);
+  
 
 
   const statusStyles = {
@@ -86,7 +87,7 @@ console.log(selectOrder);
 
   const fetchOrders = async () => {
     try {
-      const data = await getRentalbyStatus(11);
+      const data = await getRentalReturn();
 
       if (data) {
         const pendingOrders = data.$values
@@ -121,41 +122,54 @@ console.log(selectOrder);
     setFilteredOrders(filtered);
   }, [status, searchTerm, orders]);
 
-  const calculateLateFee = () => {
-    const returnDate = new Date(selectOrder.returnDate);
-    const dueDate = new Date(selectOrder.extendedDueDate || selectOrder.rentalEndDate);
-    returnDate.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
-    console.log(returnDate);
-    
 
-    if (returnDate <= dueDate) return 0;
+  useEffect(() => {
+    const calculateDamageFee = async () => {
+      try {
+        const productData = await fetchProductDetail(selectOrder.productId);
+        const calculatedFee =
+          damagePercent <= 5
+            ? 0
+            : ((damagePercent - 5) / 100) * productData.listedPrice;
+        setDamageFee(calculatedFee);
+      } catch (error) {
+        console.error("Error calculating damage fee:", error);
+        setDamageFee(0);
+      }
+    };
 
-    const daysLate = Math.floor((returnDate - dueDate) / (1000 * 60 * 60 * 24));
-    return daysLate * selectOrder.rentPrice;
-  };
-
-  const calculateDamageFee = async () => {
-
-    try {
-      const productData = await fetchProductDetail(selectOrder.productId);
-      return damagePercent <= 5
-        ? 0
-        : ((damagePercent - 5) / 100) * productData.listedPrice;
-    } catch (error) {
-      console.error("Error calculating damage fee:", error);
-      return 0;
+    if (selectOrder) {
+      calculateDamageFee();
     }
-  };
+  }, [damagePercent, selectOrder]);
+
 
   const handleButtonClick = async (order) => {
     setSelectOrder(order);
-    const calculatedLateFee = calculateLateFee(order);
-    const calculatedDamageFee = await calculateDamageFee();
-    setLateFee(calculatedLateFee);
-    setDamageFee(calculatedDamageFee);
     setShowModal(true);
+    setLateFee(order.rentPrice * 1)
+
+    const calculateLateFee = () => {
+      // Convert string dates to Date objects
+      const returnDate = new Date(order.returnDate);
+      const dueDate = new Date(order.extendedDueDate || order.rentalEndDate);
+    
+      console.log('Due Date:', dueDate);
+      console.log('Return Date:', returnDate);
+    
+      // Check if the return date is before or on the due date
+      if (returnDate <= dueDate) {
+        // setLateFee(0); 
+      } else {
+        const daysLate = Math.ceil((returnDate - dueDate) / (1000 * 60 * 60 * 24));
+        const lateFeeValue = daysLate* order.rentPrice;
+        // setLateFee(lateFeeValue);
+      }
+    };
+    
+    
   };
+
 
   const handleConfirm = async () => {
     if (!selectOrder) return;
@@ -171,19 +185,19 @@ console.log(selectOrder);
 
     try {
       console.log(requestBody);
-      
-      // await axios.put(
-      //   "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/return",
-      //   requestBody,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      //     },
-      //   }
-      // );
-      // toast.success("Cập nhật thành công!");
-      // fetchOrders();
-      // setShowModal(false);
+
+      await axios.put(
+        "https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/return",
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Cập nhật thành công!");
+      fetchOrders();
+      setShowModal(false);
       setIsSubmitting(false);
       resetFields();
     } catch (error) {
@@ -197,7 +211,7 @@ console.log(selectOrder);
   const resetFields = () => {
     setSelectOrder(null);
     setDamagePercent(0);
-    setLateFee(0);
+    // setLateFee(0);
     setDamageFee(0);
   };
 
@@ -294,60 +308,7 @@ console.log(selectOrder);
         </div>
       </div>
 
-      {/* <div className="flex gap-2 py-3">
-        {[
-          { label: "Tất cả", value: "", color: "bg-blue-500 text-white" },
-          {
-            label: "Chờ xử lý",
-            value: "Chờ xử lý",
-            color: "bg-yellow-100 text-yellow-600",
-          },
-          {
-            label: "Đã xác nhận",
-            value: "Đã xác nhận",
-            color: "bg-blue-100 text-blue-600",
-          },
-          {
-            label: "Đang xử lý",
-            value: "Đang xử lý",
-            color: "bg-indigo-100 text-indigo-600",
-          },
-          {
-            label: "Đã giao cho ĐVVC",
-            value: "Đã giao cho ĐVVC",
-            color: "bg-teal-100 text-teal-600",
-          },
-          {
-            label: "Đã giao hàng",
-            value: "Đã giao hàng",
-            color: "bg-green-100 text-green-600",
-          },
 
-          {
-            label: "Đã hoàn thành",
-            value: "Đã hoàn thành",
-            color: "bg-green-100 text-green-600",
-          },
-          {
-            label: "Đã hủy",
-            value: "Đã hủy",
-            color: "bg-red-100 text-red-600",
-          },
-          { label: "Đang gia hạn", value: "Đang gia hạn", color: "bg-indigo-100 text-indigo-600" },
-        ].map((chip) => (
-          <button
-            key={chip.label}
-            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-              status === chip.value
-                ? `${chip.color} shadow-md`
-                : "bg-gray-200 text-black hover:bg-gray-300"
-            }`}
-            onClick={() => handleStatusChange(chip.value)}
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div> */}
 
       {/* Pagination */}
       <div className="flex justify-end items-center gap-2">
@@ -475,7 +436,7 @@ console.log(selectOrder);
                 <input
                   type="number"
                   id="lateFee"
-                  value={calculateLateFee}
+                  value={lateFee}
                   disabled
                   className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />

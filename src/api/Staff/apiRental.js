@@ -85,3 +85,11 @@ export const getRentalbyStatusAPI = (orderStatus) => {
       }
     });
   };
+  
+export const getRentalReturnAPI = () => {
+  return axios.get(`${API_BASE_URL}/get-return-request`, {
+    headers: {
+      'accept': '*/*'
+    },
+  });
+};

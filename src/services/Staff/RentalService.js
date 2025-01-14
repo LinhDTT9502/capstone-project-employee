@@ -1,4 +1,4 @@
-import { approveExtensionAPI, approveRentalAPI, getListExtension, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, getRentalsListAPI, rejectExtensionAPI, rejectRentalAPI, removeRentalAPI } from "../../api/Staff/apiRental";
+import { approveExtensionAPI, approveRentalAPI, getListExtension, getRentalbyBranchAPI, getRentalbyStatusAPI, getRentalDetailAPI, getRentalReturnAPI, getRentalsListAPI, rejectExtensionAPI, rejectRentalAPI, removeRentalAPI } from "../../api/Staff/apiRental";
 
 export const getRentalsList = async () => {
   try {
@@ -102,6 +102,16 @@ export const rejectExtension = async (rentalOrderCode, rejectionReason) => {
     return response.data.data;
   } catch (error) {
     console.error('Error approve:', error);
+    throw error;
+  }
+};
+
+export const getRentalReturn = async () => {
+  try {
+    const response = await getRentalReturnAPI();
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
     throw error;
   }
 };
