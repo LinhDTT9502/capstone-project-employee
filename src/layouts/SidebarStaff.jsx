@@ -206,6 +206,9 @@ export default function SidebarStaff() {
       <SidebarLink to="/coordinator/manage-comments" icon={faComment}>
         Quản lý bình luận
       </SidebarLink>
+      <SidebarLink to="/coordinator/chat" icon={faComment}>
+        CSKH
+      </SidebarLink>
     </div>
   );
 

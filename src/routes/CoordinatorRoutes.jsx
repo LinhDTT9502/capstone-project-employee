@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PendingOrderList from '../pages/OnlineStaff/PendingOrderList';
 import PendingRentalList from '../pages/OnlineStaff/PendingRentalList';
 import CommentList from '../pages/OnlineStaff/CommentList';
+import Chat from '../pages/OnlineStaff/Chat';
 
 const CoordinatorRoutes = () => {
   const token = localStorage.getItem('token');
@@ -18,6 +19,7 @@ const CoordinatorRoutes = () => {
       <Route path="/assign-orders" element={<PendingOrderList />} />
       <Route path="/assign-rentals" element={<PendingRentalList />} />
       <Route path="/manage-comments" element={<CommentList />} />
+      <Route path="/chat" element={<Chat />} />
     </Routes>
   );
 };

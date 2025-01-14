@@ -85,16 +85,29 @@ const RentalDetail = () => {
         tranSportFee: totalFees,
         totalAmount: updatedTotalAmount,
       }));
+
+      if (formData.paymentStatus === "Giao hàng thu tiền hộ - COD") {
+        formData.paymentStatus = 1;
+      } else if (formData.paymentStatus === "Quét mã QR - PayOs") {
+        formData.paymentStatus = 2;
+      } else if (formData.paymentStatus === "Giao dịch trực tuyến - VnPay") {
+        formData.paymentStatus = 3;
+      } else if (formData.paymentStatus === "Chuyển khoản ngân hàng") {
+        formData.paymentStatus = 4;
+      }
       // Check and update paymentStatus based on its current value
       if (formData.paymentStatus === "Đang chờ thanh toán") {
         formData.paymentStatus = 1;
       } else if (formData.paymentStatus === "Đã thanh toán") {
         formData.paymentStatus = 2;
       } else if (formData.paymentStatus === "Đã đặt cọc") {
-        formData.paymentStatus = 3;
+        formData.paymentStatus = 5;
       } else if (formData.paymentStatus === "Đã hủy") {
-        formData.paymentStatus = 4;
-      } else if (formData.paymentStatus === "N/A") {
+        formData.paymentStatus = 0;
+      } else if (formData.paymentStatus === "Thất bại") {
+        formData.paymentStatus = 3;
+      }
+      else if (formData.paymentStatus === "N/A") {
         formData.paymentStatus = 1;
       }
       if (formData.deliveryMethod === "Đến cửa hàng nhận") {
@@ -147,23 +160,25 @@ const RentalDetail = () => {
       };
 
       try {
-        const response = await axios.put(
-          `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
-          payload, // Use the transformed payload
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
+        console.log(formData);
 
-        if (response) {
-          console.log(response);
-          setOrder(formData);
-          fetchOrderDetail()
-        } else {
-          console.log("Failed to update order");
-        }
+        // const response = await axios.put(
+        //   `https://twosport-api-offcial-685025377967.asia-southeast1.run.app/api/RentalOrder/update/?orderId=${rentalId}`,
+        //   payload, // Use the transformed payload
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${user.token}`,
+        //     },
+        //   }
+        // );
+
+        // if (response) {
+        //   console.log(response);
+        //   setOrder(formData);
+        //   fetchOrderDetail()
+        // } else {
+        //   console.log("Failed to update order");
+        // }
       } catch (error) {
         alert("Error updating order");
       }
@@ -873,7 +888,7 @@ const RentalDetail = () => {
                             </p>
                             <p>
                               {order.tranSportFee === 0 ? (
-                                (child.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
+                                (order.totalAmount >= 2000000 || order.deliveryMethod === "Đến cửa hàng nhận") ? (
                                   ""
                                 ) : (
                                   <div>
@@ -1095,26 +1110,28 @@ const RentalDetail = () => {
                 <p className="text-gray-600">Phí vận chuyển</p>
                 <p className="font-semibold text-orange-600">
 
-                  {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ? (
+                  {(order.deliveryMethod === "Đến cửa hàng nhận" || order.totalAmount >= 2000000) ?(
+                    "Miễn phí"
+                  ):  (
                     children.length > 0 ? (
                       totalFees.toLocaleString('vi-VN')
-                    ) : 0
-                  ) : (
-                    childOrders ? ((order.tranSportFee).toLocaleString('vi-VN')) : (<RentalTransportFee
-                      address={order.address}
-                      product={order}
-                      branchId={order.branchId}
-                      setTransportFee={(fee) => updateOrderFee(fee)}
-                    />)
+                    ) : (
+                      childOrders ? ((order.tranSportFee).toLocaleString('vi-VN')) : (<RentalTransportFee
+                        address={order.address}
+                        product={order}
+                        branchId={order.branchId}
+                        setTransportFee={(fee) => updateOrderFee(fee)}
+                      />)
 
-                  )}
+                    )
+                  ) }
 
-                  ₫</p>
+                  </p>
               </div>
               <div className="flex justify-between py-2 border-t mt-4 pt-4">
                 <p className="text-lg font-semibold text-gray-900">Tổng cộng</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount + transportFee).toLocaleString('vi-VN'))}₫
+                  {children.length > 0 ? ((order.totalAmount + totalFees).toLocaleString('vi-VN')) : ((totalAmount).toLocaleString('vi-VN'))}₫
 
                 </p>
               </div>

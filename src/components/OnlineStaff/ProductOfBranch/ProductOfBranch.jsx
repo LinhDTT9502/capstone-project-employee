@@ -73,15 +73,16 @@ const ProductOfBranch = ({ selectedBranchId, setSelectedBranchId, productIds, or
         };
 
         loadBranchesWithStatus();
-    }, [productIds, selectedProducts]);
+    }, [productIds, selectedProducts, selectedBranchId]);
 
     const handleBranchChange = (branchId) => {
         setSelectedBranchId(branchId);
+        setIsLoading(false);
     };
 
     return (
         <div className="mt-4 text-sm text-black bg-gray-300 p-2 rounded">
-            {isLoading ? (
+            {(isLoading && selectedBranchId ===null) ? (
                 <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
                     <p className="mt-4 text-lg font-semibold text-gray-700">Đang tải...</p>

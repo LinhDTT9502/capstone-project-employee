@@ -38,7 +38,7 @@ const UpdateRefundModal = ({ open, onClose, orderCode, rentalCode, id }) => {
         refundAmount: refundAmount,
         refundMethod: refundMethod,
         paymentGatewayTransactionID: null,
-        processedBy: user.StaffId,
+        processedBy: user.UserId,
         staffName: user.FullName,
         staffNotes: staffNotes,
         status: status
