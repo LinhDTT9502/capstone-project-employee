@@ -29,6 +29,8 @@ const ReturnList = () => {
     const [selectedOrderCode, setSelectedOrderCode] = useState(null);
     const [selectedRenalCode, setSelectedRentalCode] = useState(null);
     const [selectRefundId, setSelectRefundId] = useState(null);
+    console.log(orders);
+    
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -39,7 +41,7 @@ const ReturnList = () => {
             if (data.$values) {
                 setOrders(data.$values);
                 setError(null);
-            } else {
+            } else if (data === null) {
                 setOrders([]);
                 setError(null);
             }
@@ -153,9 +155,7 @@ const ReturnList = () => {
             {/* Table for refund orders */}
             {loading ? (
                 <p className="text-center">Loading...</p>
-            ) : error ? (
-                <p className="text-center text-red-500">{error}</p>
-            ) : (
+            ) :  (
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-200 shadow-md">
                         <thead>
@@ -172,7 +172,7 @@ const ReturnList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.length > 0 ? (
+                            {orders?.length > 0 ? (
                                 orders.map((order) => (
                                     <tr key={order.returnID} className="hover:bg-gray-50">
                                         <td className="py-2 px-4 border">{order.returnID}</td>

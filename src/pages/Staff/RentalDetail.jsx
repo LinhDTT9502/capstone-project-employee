@@ -27,7 +27,7 @@ import {
   faSave,
   faTruck,
   faArrowLeft,
-  faPrint
+  faFileInvoiceDollar
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ProductColor } from "../../components/Product/ProductColor";
@@ -62,7 +62,7 @@ const RentalDetail = () => {
   const [updating, setUpdating] = useState(false);
   const [transportFees, setTransportFees] = useState({});
   const [transportFee, setTransportFee] = useState(null)
-  
+
   // Step 1: Extract all fee values
   const feeValues = Object.values(transportFees);
 
@@ -309,7 +309,7 @@ const RentalDetail = () => {
     subTotal,
   } = order;
   console.log(order);
-  
+
 
   const children = childOrders?.$values || [];
 
@@ -358,7 +358,7 @@ const RentalDetail = () => {
           },
         }
       );
-console.log(response);
+      console.log(response);
 
       if (response.data.isSuccess) {
         // Update order status locally without needing to reload
@@ -939,102 +939,102 @@ console.log(response);
                       <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-grow">
                           <div className="flex items-center space-x-4">
-                          <img
-                            src={order.imgAvatarPath}
-                            alt={order.productName}
-                            className="object-cover w-16 h-16 rounded-lg shadow-sm"
-                          />
-                          <div>
-                            <p className="font-semibold text-gray-700">
-                              {order.productName}
-                            </p>
-                            <p className="flex text-sm text-gray-500 gap-2">
-                              Số lượng: {order.quantity}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              <b>Màu sắc: </b>
-                              {editingSection === "productInformations" ? (
-                                <ProductColor
-                                  productCode={order.productCode}
-                                  selectedColor={order.color}
-                                  setSelectedColor={(newColor) => {
-                                    handleProductChange(
-                                      {
-                                        target: {
-                                          name: "color",
-                                          value: newColor
-                                        }
-                                      },
-                                      order.productId
-                                    );
-                                  }}
-                                  onColorSelect={(imgAvatarPath) => {
-                                    handleProductChange(
-                                      {
-                                        target: {
-                                          name: "imgAvatarPath",
-                                          value: imgAvatarPath
-                                        }
-                                      },
-                                      order.productId
-                                    );
-                                  }}
-                                />
-                              ) : (
-                                order.color
-                              )}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              <b>Kích thước: </b>
-                              {editingSection === "productInformations" ? (
-                                <ProductSize
-                                  productCode={order.productCode}
-                                  color={order.color}
-                                  selectedSize={order.size}
-                                  setSelectedSize={(newSize) => {
-                                    handleProductChange(
-                                      {
-                                        target: {
-                                          name: "size",
-                                          value: newSize
-                                        }
-                                      },
-                                      order.productId
-                                    );
-                                  }}
-                                />
-                              ) : (
-                                order.size
-                              )}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              <b>Tình trạng: </b> {order.condition}
+                            <img
+                              src={order.imgAvatarPath}
+                              alt={order.productName}
+                              className="object-cover w-16 h-16 rounded-lg shadow-sm"
+                            />
+                            <div>
+                              <p className="font-semibold text-gray-700">
+                                {order.productName}
+                              </p>
+                              <p className="flex text-sm text-gray-500 gap-2">
+                                Số lượng: {order.quantity}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                <b>Màu sắc: </b>
+                                {editingSection === "productInformations" ? (
+                                  <ProductColor
+                                    productCode={order.productCode}
+                                    selectedColor={order.color}
+                                    setSelectedColor={(newColor) => {
+                                      handleProductChange(
+                                        {
+                                          target: {
+                                            name: "color",
+                                            value: newColor
+                                          }
+                                        },
+                                        order.productId
+                                      );
+                                    }}
+                                    onColorSelect={(imgAvatarPath) => {
+                                      handleProductChange(
+                                        {
+                                          target: {
+                                            name: "imgAvatarPath",
+                                            value: imgAvatarPath
+                                          }
+                                        },
+                                        order.productId
+                                      );
+                                    }}
+                                  />
+                                ) : (
+                                  order.color
+                                )}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                <b>Kích thước: </b>
+                                {editingSection === "productInformations" ? (
+                                  <ProductSize
+                                    productCode={order.productCode}
+                                    color={order.color}
+                                    selectedSize={order.size}
+                                    setSelectedSize={(newSize) => {
+                                      handleProductChange(
+                                        {
+                                          target: {
+                                            name: "size",
+                                            value: newSize
+                                          }
+                                        },
+                                        order.productId
+                                      );
+                                    }}
+                                  />
+                                ) : (
+                                  order.size
+                                )}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                <b>Tình trạng: </b> {order.condition}
 
-                              %
-                            </p>{" "}
-                            <p className="mt-2">
-                              <span className="font-semibold">
-                                Ngày thuê:
-                              </span>{" "}
-                              {new Date(
-                                rentalStartDate
-                              ).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })}{" "}
-                              -{" "}
-                              {new Date(
-                                rentalEndDate
-                              ).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })}
-                            </p>
-                            <p>
-                            
-                              {/* {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? 0 : <TransportFee
+                                %
+                              </p>{" "}
+                              <p className="mt-2">
+                                <span className="font-semibold">
+                                  Ngày thuê:
+                                </span>{" "}
+                                {new Date(
+                                  rentalStartDate
+                                ).toLocaleDateString('en-GB', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                })}{" "}
+                                -{" "}
+                                {new Date(
+                                  rentalEndDate
+                                ).toLocaleDateString('en-GB', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                })}
+                              </p>
+                              <p>
+
+                                {/* {(order.deliveryMethod === "Đến cửa hàng nhận" || child.totalAmount >= 2000000) ? 0 : <TransportFee
                                 address={child.address}
                                 product={order.childOrders.$values}
                                 branchId={order.branchId}
@@ -1048,14 +1048,14 @@ console.log(response);
                                 )}
                                 ₫
                               </p> */}
+                              </p>
+                            </div>
+
+                          </div><div className="text-right">
+                            <p className="font-medium text-gray-900">
+                              {rentPrice.toLocaleString('vi-VN')}₫
                             </p>
                           </div>
-
-                        </div><div className="text-right">
-                          <p className="font-medium text-gray-900">
-                            {rentPrice.toLocaleString('vi-VN')}₫
-                          </p>
-                        </div>
                           {/* <p>
                             <span className="font-semibold">Giá thuê:</span>{" "}
                             {rentPrice || "N/A"} ₫
@@ -1133,6 +1133,28 @@ console.log(response);
                 >
                   Chấp thuận
                 </Button>
+              </div>
+            )}
+            {order.orderStatus === "Đã hoàn thành" && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() =>
+                    navigate("/staff/invoice", {
+                      state: {
+                        searchQuery: order,
+                        orderType: "rentOrder"
+                      }
+                    })
+                  }
+
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md hover:shadow-lg transition duration-300"
+                >
+                  <FontAwesomeIcon
+                    icon={faFileInvoiceDollar}
+                    className="mr-2 text-lg"
+                  />
+                  Xuất hóa đơn
+                </button>
               </div>
             )}
           </div>

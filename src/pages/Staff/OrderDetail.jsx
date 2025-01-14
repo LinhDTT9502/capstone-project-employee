@@ -706,7 +706,15 @@ const OrderDetail = () => {
           {order.orderStatus === "Đã hoàn thành" && (
             <div className="flex justify-end">
               <button
-                onClick={handleButtonClick}
+                onClick={() =>
+                  navigate("/staff/invoice", {
+                    state: {
+                      searchQuery:order,
+                      orderType: "saleOrder"
+                    }
+                  })
+                }
+
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md hover:shadow-lg transition duration-300"
               >
                 <FontAwesomeIcon
@@ -986,30 +994,6 @@ const OrderDetail = () => {
           </div>
         </div>
       </div>
-
-      {/* Modal for Invoice */}
-      {showInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white w-3/4 max-h-[90vh] overflow-y-auto rounded-lg shadow-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Hóa đơn chi tiết</h2>
-              <button
-                onClick={() => setShowInvoice(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-         
-            {/* Invoice Content */}
-           
-            <InvoiceContent
-              searchQuery={order.saleOrderCode}
-              orderType="saleOrder"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

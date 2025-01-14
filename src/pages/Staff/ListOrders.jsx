@@ -69,10 +69,16 @@ const ListOrder = () => {
   const fetchOrders = async () => {
     try {
       const data = await getOrderbyBranch(user.BranchId);
-      const pendingOrders = data
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setOrders(pendingOrders);
-      setFilteredOrders(data);
+      if (data) {
+        const pendingOrders = data
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrders(pendingOrders);
+        setFilteredOrders(data);
+      } else {
+        setOrders([]);
+        setFilteredOrders([]);
+      }
+
     } catch (error) {
       console.error("Error fetching orders:", error);
       setError("Failed to fetch orders");
@@ -219,11 +225,10 @@ const ListOrder = () => {
         ].map((chip) => (
           <button
             key={chip.label}
-            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${
-              status === chip.value
-                ? `${chip.color} shadow-md`
-                : "bg-gray-200 text-black hover:bg-gray-300"
-            }`}
+            className={`cursor-pointer px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${status === chip.value
+              ? `${chip.color} shadow-md`
+              : "bg-gray-200 text-black hover:bg-gray-300"
+              }`}
             onClick={() => handleStatusChange(chip.value)}
           >
             {chip.label}
@@ -280,92 +285,96 @@ const ListOrder = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredOrders
-            .slice(
-              (currentPage - 1) * ordersPerPage,
-              currentPage * ordersPerPage
-            )
-            .map((order) => (
-              <tr
-                key={order.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="p-4">{order.saleOrderCode}</td>
-                <td className="p-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">
-                      {order.fullName}
-                    </span>
-                    <span className="text-sm text-gray-500">{order.email}</span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-                <td className="p-4">{order.deliveryMethod}</td>
-                <td className="p-4">
-                  {" "}
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      paymentStyles[order.paymentStatus] ||
-                      "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {order.paymentStatus}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      statusStyles[order.orderStatus] ||
-                      "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {order.orderStatus}
-                  </span>
-                </td>
 
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    {user.ManagerId !== "Unknow" ? (
-                      <Link to={`/manager/list-orders/${order.id}`}>
-                        <Button
-                          size="md"
-                          color="blue"
-                          variant="text"
-                          className="flex items-center gap-2 px-2 py-2"
-                        >
-                          <FontAwesomeIcon icon={faEye} className="text-sm	" />
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link to={`/staff/list-orders/${order.id}`}>
-                        <Button
-                          size="md"
-                          color="blue"
-                          variant="text"
-                          className="flex items-center gap-2 px-2 py-2"
-                        >
-                          <FontAwesomeIcon icon={faEye} className="text-sm	" />
-                        </Button>
-                      </Link>
-                    )}
-
-                    <Button
-                      onClick={() => handleRemoveOrder(order.id)}
-                      size="md"
-                      color="red"
-                      variant="text"
-                      className="flex items-center gap-2 px-2 py-2"
+          {filteredOrders?.length > 0 ?(
+            filteredOrders
+              .slice(
+                (currentPage - 1) * ordersPerPage,
+                currentPage * ordersPerPage
+              )
+              .map((order) => (
+                <tr
+                  key={order.id}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="p-4">{order.saleOrderCode}</td>
+                  <td className="p-4">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-gray-700">
+                        {order.fullName}
+                      </span>
+                      <span className="text-sm text-gray-500">{order.email}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">{order.deliveryMethod}</td>
+                  <td className="p-4">
+                    {" "}
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${paymentStyles[order.paymentStatus] ||
+                        "bg-gray-100 text-gray-600"
+                        }`}
                     >
-                      <FontAwesomeIcon icon={faTrash} className="text-sm	" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {order.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[order.orderStatus] ||
+                        "bg-gray-100 text-gray-600"
+                        }`}
+                    >
+                      {order.orderStatus}
+                    </span>
+                  </td>
+
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      {user.ManagerId !== "Unknow" ? (
+                        <Link to={`/manager/list-orders/${order.id}`}>
+                          <Button
+                            size="md"
+                            color="blue"
+                            variant="text"
+                            className="flex items-center gap-2 px-2 py-2"
+                          >
+                            <FontAwesomeIcon icon={faEye} className="text-sm	" />
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Link to={`/staff/list-orders/${order.id}`}>
+                          <Button
+                            size="md"
+                            color="blue"
+                            variant="text"
+                            className="flex items-center gap-2 px-2 py-2"
+                          >
+                            <FontAwesomeIcon icon={faEye} className="text-sm	" />
+                          </Button>
+                        </Link>
+                      )}
+
+                      <Button
+                        onClick={() => handleRemoveOrder(order.id)}
+                        size="md"
+                        color="red"
+                        variant="text"
+                        className="flex items-center gap-2 px-2 py-2"
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="text-sm	" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))):( <td className="w-full m-auto flex justify-center items-center h-full text-gray-500 mt-4 font-bold">
+            Hiện tại không có đơn hàng nào cả
+          </td>)
+          }
         </tbody>
       </table>
+
     </div>
   );
 };

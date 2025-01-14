@@ -12,19 +12,20 @@ import { useReactToPrint } from "react-to-print";
 export default function InvoiceContent({ searchQuery, orderType }) {
   const [orderDetails, setOrderDetails] = useState(null);
   const [branch, setBranch] = useState("");
+console.log(searchQuery);
 
 
   const invoiceRef = useRef();
 
 
   const handlePrint = useReactToPrint({
-    content: () => invoiceRef.current, 
-  });console.log("Invoice Ref:", invoiceRef.current);
+    content: () => invoiceRef.current,
+  }); console.log("Invoice Ref:", invoiceRef.current);
 
 
   const fetchOrderDetail = async () => {
     try {
-      const response = await getOrderbyCode(searchQuery);
+      const response = await getOrderbyCode(searchQuery.saleOrderCode);
       setOrderDetails(response);
     } catch (err) {
       console.error(err);
@@ -33,7 +34,7 @@ export default function InvoiceContent({ searchQuery, orderType }) {
 
   const fetchRentalDetail = async () => {
     try {
-      const response = await getRentalDetail(searchQuery);
+      const response = await getRentalDetail(searchQuery.rentalOrderCode);
       setOrderDetails(response.data);
       console.log(response.data);
     } catch (err) {
@@ -96,20 +97,10 @@ export default function InvoiceContent({ searchQuery, orderType }) {
     ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-[210mm] mx-auto min-h-[297mm] ">
-
-<div className="flex justify-end mt-4 print:hidden">
-              <button
-                onClick={() => handlePrint()}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
-              >
-                <FontAwesomeIcon icon={faPrint} className="mr-2" />
-                In hóa đơn
-              </button>
-            </div>
+    <div className="bg-white rounded-lg shadow-lg p-8  ">
       {/* UI print */}
 
-      <div  ref={invoiceRef} className="flex justify-between items-start mb-8">
+      <div ref={invoiceRef} className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             <FontAwesomeIcon icon={faFileInvoiceDollar} className="mr-2 text-blue-500" />
